@@ -1,0 +1,116 @@
+/**
+ * Ficmap data model.
+ *
+ * A "story" is a self-contained fictional world plus the points of interest,
+ * routes and regions that its narrative cares about. Everything a story needs
+ * is described declaratively here — no rendering code required to add one.
+ *
+ * Coordinates use a simple map space: `x` runs west→east, `z` runs north→south,
+ * both in the range [-1, 1] where the world spans the square from (-1,-1) to
+ * (1,1). Elevation is derived by the engine from the terrain config, so authors
+ * place markers in 2D and they snap onto the 3D landscape automatically.
+ */
+
+/** A 2D position in normalized map space, range [-1, 1] on each axis. */
+export interface MapPoint {
+  x: number
+  z: number
+}
+
+/** A colored elevation band. Bands are matched from lowest to highest. */
+export interface BiomeBand {
+  /** Upper elevation bound in [0, 1]; the band applies at or below this. */
+  maxHeight: number
+  /** CSS/hex color for this band. */
+  color: string
+  /** Optional label shown in the legend (e.g. "Snowcaps"). */
+  name?: string
+}
+
+/** Procedural terrain description. Deterministic given `seed`. */
+export interface TerrainConfig {
+  /** Seed string — same seed always yields the same world. */
+  seed: string
+  /** Fractal noise octaves; more = more fine detail. Default 5. */
+  octaves?: number
+  /** Base feature size; smaller = larger continents. Default 2.2. */
+  frequency?: number
+  /** Amplitude falloff per octave, 0..1. Default 0.5. */
+  persistence?: number
+  /** Frequency growth per octave. Default 2. */
+  lacunarity?: number
+  /** Vertical exaggeration of the mesh, in world units. Default 22. */
+  heightScale?: number
+  /**
+   * Water level as a fraction of full height, 0..1. Land below this is sea.
+   * Default 0.42.
+   */
+  seaLevel?: number
+  /**
+   * Island falloff, 0..1. 0 = open continents to the edges, 1 = strong island
+   * shape (land pushed to the center, water at the rim). Default 0.35.
+   */
+  islandFalloff?: number
+  /** Elevation → color bands, low to high. */
+  biomes: BiomeBand[]
+}
+
+export type MarkerKind =
+  | 'capital'
+  | 'city'
+  | 'town'
+  | 'ruin'
+  | 'landmark'
+  | 'battle'
+  | 'peak'
+  | 'port'
+  | 'forest'
+  | 'danger'
+
+/** A labeled point of interest on the map. */
+export interface Marker {
+  id: string
+  name: string
+  kind: MarkerKind
+  at: MapPoint
+  /** Longer description shown in the info panel. Supports plain text. */
+  description?: string
+  /** Optional chapter/act tag used for story filtering later. */
+  chapter?: string
+}
+
+/** A path across the world (a journey, road, border of travel, etc.). */
+export interface Route {
+  id: string
+  name: string
+  /** Ordered waypoints in map space. Drawn draped over the terrain. */
+  points: MapPoint[]
+  /** Line color. Default a warm gold. */
+  color?: string
+  /** Dashed for planned/legendary routes, solid for travelled ones. */
+  style?: 'solid' | 'dashed'
+  description?: string
+}
+
+/** A named area label floated over a region (e.g. "The Northern Wastes"). */
+export interface RegionLabel {
+  id: string
+  name: string
+  at: MapPoint
+  /** Relative text size, 1 = default. */
+  scale?: number
+}
+
+/** A complete story/world definition. */
+export interface Story {
+  id: string
+  title: string
+  /** Short tagline shown in the story picker. */
+  subtitle?: string
+  /** Longer blurb shown in the info panel when nothing is selected. */
+  intro?: string
+  terrain: TerrainConfig
+  markers?: Marker[]
+  routes?: Route[]
+  regions?: RegionLabel[]
+}
