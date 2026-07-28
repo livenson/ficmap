@@ -5,10 +5,11 @@ name: Deploy to GitHub Pages
 # Source: "GitHub Actions".
 
 on:
+  # Validate every PR (build only), and deploy on push to the default branch.
   push:
     branches:
       - main
-      - claude/3d-story-maps-browser-dv87vn
+  pull_request:
   workflow_dispatch:
 
 # Allow the deploy job to publish to Pages.
@@ -49,6 +50,8 @@ jobs:
 
   deploy:
     needs: build
+    # Only publish from the default branch — never from PRs / feature branches.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
