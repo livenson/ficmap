@@ -101,6 +101,47 @@ export interface RegionLabel {
   scale?: number
 }
 
+/**
+ * Where the camera should look during a chapter. Give either a `marker` id or
+ * an explicit `at` point; the engine resolves the surface elevation itself.
+ */
+export interface CameraFocus {
+  /** Focus on this marker's location (takes precedence over `at`). */
+  marker?: string
+  /** Or an explicit map point. */
+  at?: MapPoint
+  /** Camera distance from the focus, in world units. Default ~44. */
+  distance?: number
+  /** Pitch above the ground in degrees (3D only). 90 = straight down. Default 42. */
+  pitch?: number
+  /** Compass heading of the camera in degrees (3D only). Default 0. */
+  heading?: number
+}
+
+/** Which places are unveiled. Ids are cumulative across chapters. */
+export interface ChapterReveal {
+  markers?: string[]
+  routes?: string[]
+  regions?: string[]
+}
+
+/**
+ * A beat in a guided tour of the world. Chapters play in order: the camera
+ * flies to `focus`, the narration shows in the panel, and any `reveal` ids are
+ * added to what's visible (so the map can unfold as the tale is told).
+ */
+export interface Chapter {
+  id: string
+  title: string
+  /** Narration shown in the panel for this beat. */
+  narration: string
+  focus?: CameraFocus
+  /** Places revealed by (and kept visible from) this chapter onward. */
+  reveal?: ChapterReveal
+  /** Marker/route ids to emphasize while this chapter is active. */
+  highlight?: { markers?: string[]; routes?: string[] }
+}
+
 /** A complete story/world definition. */
 export interface Story {
   id: string
@@ -113,4 +154,6 @@ export interface Story {
   markers?: Marker[]
   routes?: Route[]
   regions?: RegionLabel[]
+  /** Optional guided tour. If present, a "Story" mode appears in the UI. */
+  chapters?: Chapter[]
 }

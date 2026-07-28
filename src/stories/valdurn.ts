@@ -181,4 +181,80 @@ export const valdurn: Story = {
     { id: 'fens', name: 'The Greywater Fens', at: { x: -0.4, z: -0.28 } },
     { id: 'coast', name: 'The Drowned Coast', at: { x: 0.05, z: 0.66 }, scale: 0.95 },
   ],
+  chapters: [
+    {
+      id: 'divided',
+      title: 'A Realm Divided',
+      narration:
+        'One crown once bound the whole of this land. Its heartlands still ' +
+        'carry the old names — the Vale, the Reach, the Fens, and the ' +
+        'drowned southern shore — but no single hand rules them now.',
+      focus: { at: { x: 0, z: 0.15 }, distance: 135, pitch: 52 },
+      reveal: {
+        markers: ['caer-valdurn'],
+        regions: ['vale', 'reach', 'fens', 'coast'],
+      },
+    },
+    {
+      id: 'old-seat',
+      title: 'The Old Seat',
+      narration:
+        'In the southern peaks stands Caer Valdurn, the seat of the united ' +
+        'crown. Its bells have not rung for a coronation in three generations, ' +
+        'and its halls keep only ghosts and cartographers.',
+      focus: { marker: 'caer-valdurn', distance: 34, pitch: 30, heading: 15 },
+      reveal: { markers: ['duskwater'] },
+      highlight: { markers: ['caer-valdurn'] },
+    },
+    {
+      id: 'rival',
+      title: 'The Eastern Rival',
+      narration:
+        'Across the Ashen Reach rises Thornhold, grown rich on eastern ore and ' +
+        'the deep-water trade of Saltmere. Its lords have not knelt in living ' +
+        'memory, and they watch the western roads with open envy.',
+      focus: { marker: 'thornhold', distance: 40, pitch: 34, heading: -25 },
+      reveal: { markers: ['thornhold', 'saltmere'] },
+      highlight: { markers: ['thornhold', 'saltmere'] },
+    },
+    {
+      id: 'kings-road',
+      title: "The King's Road",
+      narration:
+        'Between them runs the old royal road, from the fog-bound harbor of ' +
+        'Duskwater through Ashford’s neutral markets to the eastern seat. ' +
+        'Whoever holds the road holds the realm — and no one holds it.',
+      focus: { at: { x: 0.0, z: 0.25 }, distance: 100, pitch: 46 },
+      reveal: {
+        markers: ['greywatch', 'ashford', 'emberpeak'],
+        routes: ['kings-road'],
+      },
+      highlight: { routes: ['kings-road'] },
+    },
+    {
+      id: 'long-march',
+      title: 'The Long March',
+      narration:
+        'When the crown was last contested, the royal army marched from ' +
+        'Duskwater through the whispering dark of Hollowfen — and met its end ' +
+        'on the Ashen Field, where ten thousand fell and no side claimed a win.',
+      focus: { at: { x: -0.1, z: -0.15 }, distance: 90, pitch: 44 },
+      reveal: {
+        markers: ['hollowfen', 'north-spur', 'ashen-field'],
+        routes: ['the-long-march'],
+      },
+      highlight: { routes: ['the-long-march'], markers: ['ashen-field'] },
+    },
+    {
+      id: 'drowned-coast',
+      title: 'The Drowned Coast',
+      narration:
+        'And in the south, beneath the tide, lies the Sunken Crown — the first ' +
+        'capital, lost to the sea. At low water its towers still break the ' +
+        'surface, a reminder of how far a crown can fall.',
+      focus: { marker: 'sunken-crown', distance: 30, pitch: 26, heading: 5 },
+      reveal: { markers: ['sunken-crown', 'ravenfell'] },
+      highlight: { markers: ['sunken-crown'] },
+    },
+  ],
 }

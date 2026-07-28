@@ -1,10 +1,11 @@
 import { useMemo, useRef } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { MapControls, PerspectiveCamera, Sky } from '@react-three/drei'
 import * as THREE from 'three'
 import { makeHeightField } from '../engine/noise'
-import { WORLD_SIZE } from '../engine/terrain'
-import type { Story } from '../types'
+import { WORLD_SIZE, elevationAt, mapToWorld } from '../engine/terrain'
+import type { CameraFocus, Story } from '../types'
+import { resolveHighlight, resolveVisibility, isVisible } from '../engine/story'
 import { Terrain } from './Terrain'
 import { Water } from './Water'
 import { Markers } from './Markers'
@@ -19,6 +20,8 @@ interface Props {
   selectedId: string | null
   onSelect: (id: string | null) => void
   showLabels: boolean
+  /** Active chapter index when in story mode, else null. */
+  chapterIndex: number | null
 }
 
 export function MapScene({
@@ -27,9 +30,39 @@ export function MapScene({
   selectedId,
   onSelect,
   showLabels,
+  chapterIndex,
 }: Props) {
   // Height field is the single source of truth for terrain, markers & routes.
   const field = useMemo(() => makeHeightField(story.terrain), [story.terrain])
+  const controls = useRef<any>(null)
+
+  // Story-mode state: what's visible, what's emphasized, where to fly.
+  const visibility = useMemo(
+    () => resolveVisibility(story, chapterIndex),
+    [story, chapterIndex],
+  )
+  const highlight = useMemo(
+    () => resolveHighlight(story, chapterIndex),
+    [story, chapterIndex],
+  )
+  const storyMode = chapterIndex != null
+
+  const markers = (story.markers ?? []).filter((m) =>
+    isVisible(visibility.markers, m.id),
+  )
+  const routes = (story.routes ?? []).filter((r) =>
+    isVisible(visibility.routes, r.id),
+  )
+  const regions = (story.regions ?? []).filter((r) =>
+    isVisible(visibility.regions, r.id),
+  )
+
+  // Resolve the current chapter's camera focus into a world-space goal.
+  const focus = storyMode ? story.chapters?.[chapterIndex]?.focus : undefined
+  const goal = useMemo(
+    () => resolveGoal(focus, story, field, mode),
+    [focus, story, field, mode, chapterIndex],
+  )
 
   return (
     <Canvas
@@ -41,7 +74,8 @@ export function MapScene({
       <color attach="background" args={[mode === '2d' ? '#0d1b26' : '#9fc2d6']} />
       {mode === '3d' && <fog attach="fog" args={['#9fc2d6', WORLD_SIZE * 0.8, WORLD_SIZE * 2.2]} />}
 
-      <Cameras mode={mode} />
+      <Cameras mode={mode} controlsRef={controls} />
+      <CameraDirector goal={goal} controlsRef={controls} />
 
       {/* Lighting */}
       <ambientLight intensity={mode === '2d' ? 0.9 : 0.55} />
@@ -63,24 +97,147 @@ export function MapScene({
       <Terrain field={field} terrain={story.terrain} />
       <Water terrain={story.terrain} />
 
-      {story.routes && story.routes.length > 0 && (
-        <Routes routes={story.routes} field={field} terrain={story.terrain} />
+      {routes.length > 0 && (
+        <Routes
+          routes={routes}
+          field={field}
+          terrain={story.terrain}
+          highlight={storyMode ? highlight.routes : null}
+        />
       )}
-      {story.regions && story.regions.length > 0 && (
-        <Regions regions={story.regions} field={field} terrain={story.terrain} />
+      {regions.length > 0 && (
+        <Regions regions={regions} field={field} terrain={story.terrain} />
       )}
-      {story.markers && story.markers.length > 0 && (
+      {markers.length > 0 && (
         <Markers
-          markers={story.markers}
+          markers={markers}
           field={field}
           terrain={story.terrain}
           selectedId={selectedId}
           onSelect={onSelect}
           showLabels={showLabels}
+          highlight={storyMode ? highlight.markers : null}
         />
       )}
     </Canvas>
   )
+}
+
+/** A resolved camera destination: where to sit and what to look at. */
+interface CameraGoal {
+  key: string
+  pos: THREE.Vector3
+  target: THREE.Vector3
+}
+
+function resolveGoal(
+  focus: CameraFocus | undefined,
+  story: Story,
+  field: ReturnType<typeof makeHeightField>,
+  mode: ViewMode,
+): CameraGoal | null {
+  if (!focus) return null
+
+  // Resolve the focus point in map space (from a marker or an explicit point).
+  let mx: number | undefined
+  let mz: number | undefined
+  if (focus.marker) {
+    const m = story.markers?.find((mk) => mk.id === focus.marker)
+    if (m) {
+      mx = m.at.x
+      mz = m.at.z
+    }
+  }
+  if (mx == null && focus.at) {
+    mx = focus.at.x
+    mz = focus.at.z
+  }
+  if (mx == null || mz == null) return null
+
+  const tx = mapToWorld(mx)
+  const tz = mapToWorld(mz)
+  const ty = elevationAt(field, story.terrain, mx, mz)
+  const target = new THREE.Vector3(tx, ty, tz)
+  const distance = focus.distance ?? 44
+
+  let pos: THREE.Vector3
+  if (mode === '3d') {
+    const pitch = THREE.MathUtils.degToRad(focus.pitch ?? 42)
+    const heading = THREE.MathUtils.degToRad(focus.heading ?? 0)
+    const horiz = distance * Math.cos(pitch)
+    const vert = distance * Math.sin(pitch)
+    pos = new THREE.Vector3(
+      tx + horiz * Math.sin(heading),
+      ty + vert,
+      tz + horiz * Math.cos(heading),
+    )
+  } else {
+    // Top-down: sit above the target, a touch of Z to stay off the singularity.
+    pos = new THREE.Vector3(tx, ty + distance * 2.4, tz + 0.01)
+  }
+
+  const key = `${story.id}:${focus.marker ?? ''}:${mx},${mz}:${mode}`
+  return { key, pos, target }
+}
+
+/**
+ * Eases the camera toward `goal` whenever it changes (i.e. on chapter turns),
+ * then hands control back to the user. Setting position/target directly and
+ * calling controls.update() keeps OrbitControls' internal state consistent.
+ */
+function CameraDirector({
+  goal,
+  controlsRef,
+}: {
+  goal: CameraGoal | null
+  controlsRef: React.MutableRefObject<any>
+}) {
+  const { camera } = useThree()
+  const anim = useRef<{
+    sp: THREE.Vector3
+    st: THREE.Vector3
+    gp: THREE.Vector3
+    gt: THREE.Vector3
+    t: number
+    dur: number
+  } | null>(null)
+  const lastKey = useRef<string | null>(null)
+
+  useFrame((_, dt) => {
+    const controls = controlsRef.current
+    if (!controls) return
+
+    if (goal && goal.key !== lastKey.current) {
+      lastKey.current = goal.key
+      anim.current = {
+        sp: camera.position.clone(),
+        st: controls.target.clone(),
+        gp: goal.pos,
+        gt: goal.target,
+        t: 0,
+        dur: 1.25,
+      }
+    }
+
+    const a = anim.current
+    if (!a) return
+    controls.enabled = false
+    a.t = Math.min(1, a.t + dt / a.dur)
+    const e = easeInOut(a.t)
+    camera.position.lerpVectors(a.sp, a.gp, e)
+    controls.target.lerpVectors(a.st, a.gt, e)
+    controls.update()
+    if (a.t >= 1) {
+      controls.enabled = true
+      anim.current = null
+    }
+  })
+
+  return null
+}
+
+function easeInOut(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 
 /**
@@ -93,8 +250,13 @@ export function MapScene({
  * perspective camera avoids the orientation singularity a straight-down
  * orthographic camera hits when its view axis is parallel to its up vector.
  */
-function Cameras({ mode }: { mode: ViewMode }) {
-  const controls = useRef<any>(null)
+function Cameras({
+  mode,
+  controlsRef,
+}: {
+  mode: ViewMode
+  controlsRef: React.MutableRefObject<any>
+}) {
   const is3d = mode === '3d'
 
   return (
@@ -110,7 +272,7 @@ function Cameras({ mode }: { mode: ViewMode }) {
       />
       <MapControls
         key={mode}
-        ref={controls}
+        ref={controlsRef}
         makeDefault
         target={[0, 0, 0]}
         enableRotate={is3d}
