@@ -19,6 +19,23 @@ npm run build      # static output in dist/
 npm run preview    # serve the production build
 ```
 
+## Deploy (GitHub Pages)
+
+A workflow at `.github/workflows/deploy.yml` builds the site and publishes it to
+GitHub Pages on every push to the default branch (and can be run manually from
+the Actions tab).
+
+**One-time setup:** in the repo, go to **Settings → Pages → Build and
+deployment** and set **Source: "GitHub Actions"**. After the next push the site
+goes live at:
+
+```
+https://livenson.github.io/ficmap/
+```
+
+The Vite `base` is already set to `./` so assets resolve correctly under the
+`/ficmap/` project-page path.
+
 ## The idea
 
 - **Worlds are data, not code.** A world is one `Story` object (see
