@@ -9,6 +9,10 @@ interface Props {
   onMode: (m: ViewMode) => void
   showLabels: boolean
   onToggleLabels: (v: boolean) => void
+  hasChapters: boolean
+  inStory: boolean
+  onPlayStory: () => void
+  onExitStory: () => void
 }
 
 export function Toolbar({
@@ -19,6 +23,10 @@ export function Toolbar({
   onMode,
   showLabels,
   onToggleLabels,
+  hasChapters,
+  inStory,
+  onPlayStory,
+  onExitStory,
 }: Props) {
   return (
     <header className="toolbar">
@@ -41,6 +49,15 @@ export function Toolbar({
           ))}
         </select>
       </label>
+
+      {hasChapters && (
+        <button
+          className={`toolbar__story ${inStory ? 'is-active' : ''}`}
+          onClick={inStory ? onExitStory : onPlayStory}
+        >
+          {inStory ? '✕ Exit story' : '▶ Play story'}
+        </button>
+      )}
 
       <div className="toolbar__spacer" />
 

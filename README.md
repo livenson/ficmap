@@ -89,6 +89,37 @@ can paste straight into your story.
 | `markers[]` | Labeled points of interest (`capital`, `city`, `port`, `ruin`, …). |
 | `routes[]` | Journeys/roads drawn draped over the terrain. |
 | `regions[]` | Ambient area names floated over the map. |
+| `chapters[]` | Optional guided tour — see below. |
+
+## Story mode (chapters)
+
+Give a story a `chapters` array and a **▶ Play story** button appears. Each
+chapter is one beat of a guided tour:
+
+```ts
+chapters: [
+  {
+    id: 'old-seat',
+    title: 'The Old Seat',
+    narration: 'In the southern peaks stands Caer Valdurn…',
+    focus: { marker: 'caer-valdurn', distance: 34, pitch: 30, heading: 15 },
+    reveal: { markers: ['duskwater'] },       // added to what's visible, cumulative
+    highlight: { markers: ['caer-valdurn'] }, // glows; everything else dims
+  },
+  // …
+]
+```
+
+- **`focus`** flies the camera to a `marker` (or an explicit `at` point), from
+  `distance` world units away, at a `pitch`/`heading` (3D only). Both 2D and 3D
+  are supported; the camera eases in, then hands control back to the viewer.
+- **`reveal`** unveils markers/routes/regions as the tale progresses — ids are
+  cumulative from chapter 0 onward, so the map unfolds. Categories nobody
+  reveals stay fully visible. Omit `chapters` entirely and nothing changes.
+- **`highlight`** emphasizes the current beat's markers/routes.
+
+Navigate with the panel's Prev/Next, the chapter rail, or the **← / →** keys;
+**Esc** exits.
 
 ## Project layout
 

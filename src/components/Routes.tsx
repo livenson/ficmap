@@ -9,6 +9,8 @@ interface Props {
   routes: Route[]
   field: HeightField
   terrain: TerrainConfig
+  /** Story-mode emphasis: ids in the set draw bold, others dim. null = normal. */
+  highlight: Set<string> | null
 }
 
 const SAMPLES_PER_SEGMENT = 24
@@ -18,12 +20,22 @@ const SAMPLES_PER_SEGMENT = 24
  * splined, then every sampled point is lifted to the surface elevation so the
  * line hugs hills and valleys instead of cutting through them.
  */
-export function Routes({ routes, field, terrain }: Props) {
+export function Routes({ routes, field, terrain, highlight }: Props) {
   return (
     <>
-      {routes.map((r) => (
-        <RouteLine key={r.id} route={r} field={field} terrain={terrain} />
-      ))}
+      {routes.map((r) => {
+        const hot = highlight?.has(r.id) ?? false
+        const dim = highlight != null && !hot
+        return (
+          <RouteLine
+            key={r.id}
+            route={r}
+            field={field}
+            terrain={terrain}
+            emphasis={hot ? 'hot' : dim ? 'dim' : 'normal'}
+          />
+        )
+      })}
     </>
   )
 }
@@ -32,10 +44,12 @@ function RouteLine({
   route,
   field,
   terrain,
+  emphasis,
 }: {
   route: Route
   field: HeightField
   terrain: TerrainConfig
+  emphasis: 'hot' | 'dim' | 'normal'
 }) {
   const points = useMemo(() => {
     if (route.points.length < 2) {
@@ -70,7 +84,9 @@ function RouteLine({
     <Line
       points={points}
       color={route.color ?? '#ffcf6b'}
-      lineWidth={2.5}
+      lineWidth={emphasis === 'hot' ? 4 : 2.5}
+      transparent
+      opacity={emphasis === 'dim' ? 0.25 : 1}
       dashed={route.style === 'dashed'}
       dashSize={1.2}
       gapSize={0.8}

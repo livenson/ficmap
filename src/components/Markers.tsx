@@ -10,6 +10,8 @@ interface Props {
   selectedId: string | null
   onSelect: (id: string) => void
   showLabels: boolean
+  /** Story-mode emphasis: ids in the set glow, others dim. null = no emphasis. */
+  highlight: Set<string> | null
 }
 
 /** Icon + accent color per marker kind. */
@@ -33,6 +35,7 @@ export function Markers({
   selectedId,
   onSelect,
   showLabels,
+  highlight,
 }: Props) {
   return (
     <>
@@ -42,6 +45,8 @@ export function Markers({
         const wy = elevationAt(field, terrain, m.at.x, m.at.z)
         const s = STYLE[m.kind]
         const selected = m.id === selectedId
+        const hot = highlight?.has(m.id) ?? false
+        const dim = highlight != null && !hot
 
         return (
           <group key={m.id} position={[wx, wy, wz]}>
@@ -52,7 +57,9 @@ export function Markers({
             </mesh>
             <Html position={[0, 3, 0]} center distanceFactor={38} zIndexRange={[10, 0]}>
               <button
-                className={`marker ${selected ? 'marker--selected' : ''}`}
+                className={`marker ${selected ? 'marker--selected' : ''} ${
+                  hot ? 'marker--hot' : ''
+                } ${dim ? 'marker--dim' : ''}`}
                 style={{ ['--accent' as string]: s.color }}
                 onClick={(e) => {
                   e.stopPropagation()
