@@ -4,13 +4,14 @@ import { MapControls, PerspectiveCamera, Sky } from '@react-three/drei'
 import * as THREE from 'three'
 import { makeHeightField } from '../engine/noise'
 import { WORLD_SIZE, elevationAt, mapToWorld } from '../engine/terrain'
-import type { CameraFocus, Story } from '../types'
+import type { CameraFocus, Marker, Story } from '../types'
 import {
   resolveHighlight,
   resolveVisibility,
   isVisible,
   flattenChapters,
 } from '../engine/story'
+import type { ResolvedLevel } from '../engine/levels'
 import { Terrain } from './Terrain'
 import { Water } from './Water'
 import { Markers } from './Markers'
@@ -25,6 +26,8 @@ export type ViewMode = '2d' | '3d'
 
 interface Props {
   story: Story
+  /** The map level currently displayed (surface or a deeper floor). */
+  level: ResolvedLevel
   mode: ViewMode
   selectedId: string | null
   onSelect: (id: string | null) => void
@@ -37,6 +40,7 @@ interface Props {
 
 export function MapScene({
   story,
+  level,
   mode,
   selectedId,
   onSelect,
@@ -45,9 +49,11 @@ export function MapScene({
   layers,
   chapterIndex,
 }: Props) {
+  const terrain = level.terrain
   // Height field is the single source of truth for terrain, markers & routes.
-  const field = useMemo(() => makeHeightField(story.terrain), [story.terrain])
+  const field = useMemo(() => makeHeightField(terrain), [terrain])
   const controls = useRef<any>(null)
+  const dark = terrain.sky === 'dark'
 
   // Story-mode state: what's visible, what's emphasized, where to fly.
   const visibility = useMemo(
@@ -60,24 +66,21 @@ export function MapScene({
   )
   const storyMode = chapterIndex != null
 
-  const markers = (story.markers ?? []).filter((m) =>
-    isVisible(visibility.markers, m.id),
-  )
-  const routes = (story.routes ?? []).filter((r) =>
-    isVisible(visibility.routes, r.id),
-  )
-  const regions = (story.regions ?? []).filter((r) =>
-    isVisible(visibility.regions, r.id),
-  )
+  const markers = level.markers.filter((m) => isVisible(visibility.markers, m.id))
+  const routes = level.routes.filter((r) => isVisible(visibility.routes, r.id))
+  const regions = level.regions.filter((r) => isVisible(visibility.regions, r.id))
 
   // Resolve the current chapter's camera focus into a world-space goal.
   const focus = storyMode
     ? flattenChapters(story)[chapterIndex!]?.chapter.focus
     : undefined
   const goal = useMemo(
-    () => resolveGoal(focus, story, field, mode),
-    [focus, story, field, mode, chapterIndex],
+    () => resolveGoal(focus, level, field, mode),
+    [focus, level, field, mode, chapterIndex],
   )
+
+  const bg = dark ? '#160608' : mode === '2d' ? '#0d1b26' : '#9fc2d6'
+  const fogColor = dark ? '#2a0c0a' : '#9fc2d6'
 
   return (
     <Canvas
@@ -89,17 +92,21 @@ export function MapScene({
         onSelectElement(null)
       }}
     >
-      <color attach="background" args={[mode === '2d' ? '#0d1b26' : '#9fc2d6']} />
-      {mode === '3d' && <fog attach="fog" args={['#9fc2d6', WORLD_SIZE * 0.8, WORLD_SIZE * 2.2]} />}
+      <color attach="background" args={[bg]} />
+      {mode === '3d' && <fog attach="fog" args={[fogColor, WORLD_SIZE * 0.8, WORLD_SIZE * 2.2]} />}
 
       <Cameras mode={mode} controlsRef={controls} />
       <CameraDirector goal={goal} controlsRef={controls} />
 
       {/* Lighting */}
-      <ambientLight intensity={mode === '2d' ? 0.9 : 0.55} />
+      <ambientLight
+        intensity={dark ? 0.55 : mode === '2d' ? 0.9 : 0.55}
+        color={dark ? '#ff8a66' : '#ffffff'}
+      />
       <directionalLight
         position={[40, 80, 20]}
-        intensity={mode === '2d' ? 0.7 : 1.15}
+        intensity={dark ? 0.5 : mode === '2d' ? 0.7 : 1.15}
+        color={dark ? '#ff5a3c' : '#ffffff'}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-WORLD_SIZE}
@@ -108,20 +115,20 @@ export function MapScene({
         shadow-camera-bottom={-WORLD_SIZE}
         shadow-camera-far={300}
       />
-      {mode === '3d' && (
+      {mode === '3d' && !dark && (
         <Sky sunPosition={[40, 30, 20]} turbidity={6} rayleigh={1.4} />
       )}
 
-      <Terrain field={field} terrain={story.terrain} />
-      <Water terrain={story.terrain} />
-      {layers.rivers && <Rivers field={field} terrain={story.terrain} />}
+      <Terrain field={field} terrain={terrain} />
+      <Water terrain={terrain} />
+      {layers.rivers && <Rivers field={field} terrain={terrain} />}
 
       {/* Ambient life enriches the 3D view; omitted in the flat 2D map and
           when the "Trees & wildlife" layer is switched off for a clean view. */}
       {mode === '3d' && layers.nature && (
         <>
-          <Flora field={field} terrain={story.terrain} ambient={story.ambient ?? {}} />
-          <Wildlife ambient={story.ambient ?? {}} />
+          <Flora field={field} terrain={terrain} ambient={level.ambient} />
+          <Wildlife ambient={level.ambient} />
         </>
       )}
 
@@ -129,18 +136,18 @@ export function MapScene({
         <Routes
           routes={routes}
           field={field}
-          terrain={story.terrain}
+          terrain={terrain}
           highlight={storyMode ? highlight.routes : null}
         />
       )}
       {layers.labels && regions.length > 0 && (
-        <Regions regions={regions} field={field} terrain={story.terrain} />
+        <Regions regions={regions} field={field} terrain={terrain} />
       )}
       {markers.length > 0 && (
         <Markers
           markers={markers}
           field={field}
-          terrain={story.terrain}
+          terrain={terrain}
           selectedId={selectedId}
           onSelect={onSelect}
           showLabels={layers.labels}
@@ -151,7 +158,8 @@ export function MapScene({
         <Elements
           story={story}
           field={field}
-          terrain={story.terrain}
+          terrain={terrain}
+          activeLevelId={level.id}
           chapterIndex={chapterIndex}
           selectedElementId={selectedElementId}
           onSelect={onSelectElement}
@@ -170,7 +178,7 @@ interface CameraGoal {
 
 function resolveGoal(
   focus: CameraFocus | undefined,
-  story: Story,
+  level: ResolvedLevel,
   field: ReturnType<typeof makeHeightField>,
   mode: ViewMode,
 ): CameraGoal | null {
@@ -180,7 +188,7 @@ function resolveGoal(
   let mx: number | undefined
   let mz: number | undefined
   if (focus.marker) {
-    const m = story.markers?.find((mk) => mk.id === focus.marker)
+    const m = level.markers.find((mk: Marker) => mk.id === focus.marker)
     if (m) {
       mx = m.at.x
       mz = m.at.z
@@ -194,7 +202,7 @@ function resolveGoal(
 
   const tx = mapToWorld(mx)
   const tz = mapToWorld(mz)
-  const ty = elevationAt(field, story.terrain, mx, mz)
+  const ty = elevationAt(field, level.terrain, mx, mz)
   const target = new THREE.Vector3(tx, ty, tz)
   const distance = focus.distance ?? 44
 
@@ -214,7 +222,7 @@ function resolveGoal(
     pos = new THREE.Vector3(tx, ty + distance * 2.4, tz + 0.01)
   }
 
-  const key = `${story.id}:${focus.marker ?? ''}:${mx},${mz}:${mode}`
+  const key = `${level.id}:${focus.marker ?? ''}:${mx},${mz}:${mode}`
   return { key, pos, target }
 }
 

@@ -5,6 +5,8 @@ import { ElementDetail } from './ElementDetail'
 
 interface Props {
   story: Story
+  /** Places listed in the gazetteer — the markers on the current level. */
+  markers: Marker[]
   selected: Marker | null
   selectedElement: StoryElement | null
   references: Record<string, PlaceReference[]>
@@ -23,6 +25,7 @@ interface Props {
  */
 export function InfoPanel({
   story,
+  markers,
   selected,
   selectedElement,
   references,
@@ -88,11 +91,11 @@ export function InfoPanel({
         </div>
       )}
 
-      {story.markers && story.markers.length > 0 && (
+      {markers.length > 0 && (
         <div className="panel__gazetteer">
           <h3 className="panel__section">Places</h3>
           <ul>
-            {story.markers.map((m) => (
+            {markers.map((m) => (
               <li key={m.id}>
                 <button
                   className={selected?.id === m.id ? 'is-active' : ''}

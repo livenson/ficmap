@@ -5,9 +5,11 @@ import { InfoPanel } from './ui/InfoPanel'
 import { StoryPlayer } from './ui/StoryPlayer'
 import { PlaceDetail } from './ui/PlaceDetail'
 import { ElementDetail } from './ui/ElementDetail'
+import { FloorSwitcher } from './ui/FloorSwitcher'
 import { Legend } from './ui/Legend'
 import { buildPlaceReferences } from './engine/references'
 import { flattenChapters } from './engine/story'
+import { getLevels, getLevel, allMarkers, SURFACE_ID } from './engine/levels'
 import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
 
@@ -27,15 +29,26 @@ export default function App() {
     setLayers((l) => ({ ...l, [key]: !l[key] }))
   // null = free exploration; a number = playing that chapter.
   const [chapterIndex, setChapterIndex] = useState<number | null>(null)
+  // Which map level (floor) is displayed.
+  const [levelId, setLevelId] = useState<string>(SURFACE_ID)
 
   const story = getStory(storyId)
   const flat = useMemo(() => flattenChapters(story), [story])
+  const levels = useMemo(() => getLevels(story), [story])
+  const activeLevel = getLevel(story, levelId)
   const inStory = chapterIndex != null
 
   const selected = useMemo(
-    () => story.markers?.find((m) => m.id === selectedId) ?? null,
+    () => allMarkers(story).find((m) => m.id === selectedId) ?? null,
     [story, selectedId],
   )
+
+  // A chapter can play on a deeper level; entering it switches the floor.
+  useEffect(() => {
+    if (chapterIndex == null) return
+    const chapterLevel = flat[chapterIndex]?.chapter.level ?? SURFACE_ID
+    setLevelId(chapterLevel)
+  }, [chapterIndex, flat])
   const selectedElement = useMemo(
     () => story.elements?.find((e) => e.id === selectedElementId) ?? null,
     [story, selectedElementId],
@@ -58,6 +71,7 @@ export default function App() {
     setSelectedId(null)
     setSelectedElementId(null)
     setChapterIndex(null)
+    setLevelId(SURFACE_ID)
   }
 
   function startStory() {
@@ -131,6 +145,7 @@ export default function App() {
         ) : (
           <InfoPanel
             story={story}
+            markers={activeLevel.markers}
             selected={selected}
             selectedElement={selectedElement}
             references={references}
@@ -150,6 +165,7 @@ export default function App() {
           <MapScene
             key={story.id}
             story={story}
+            level={activeLevel}
             mode={mode}
             selectedId={selectedId}
             onSelect={selectMarker}
@@ -158,7 +174,16 @@ export default function App() {
             layers={layers}
             chapterIndex={chapterIndex}
           />
-          <Legend terrain={story.terrain} />
+          <Legend terrain={activeLevel.terrain} />
+          <FloorSwitcher
+            levels={levels}
+            activeId={levelId}
+            onSelect={(id) => {
+              setLevelId(id)
+              selectMarker(null)
+              selectElement(null)
+            }}
+          />
 
           {/* In story mode the detail shows as an overlay so the tour panel
               stays put. In free mode the InfoPanel handles it. */}

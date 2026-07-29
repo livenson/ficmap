@@ -4,12 +4,15 @@ import { Html, Line } from '@react-three/drei'
 import type { HeightField } from '../engine/noise'
 import { elevationAt, mapToWorld } from '../engine/terrain'
 import { activeStopIndex, elementPoint, stopPoint } from '../engine/elements'
+import { markerLevelId } from '../engine/levels'
 import type { Story, StoryElement, TerrainConfig } from '../types'
 
 interface Props {
   story: Story
   field: HeightField
   terrain: TerrainConfig
+  /** The level currently displayed — artifacts only show on their own level. */
+  activeLevelId: string
   /** Active tour index (across books), or null in free exploration. */
   chapterIndex: number | null
   selectedElementId: string | null
@@ -25,6 +28,7 @@ export function Elements({
   story,
   field,
   terrain,
+  activeLevelId,
   chapterIndex,
   selectedElementId,
   onSelect,
@@ -34,18 +38,24 @@ export function Elements({
 
   return (
     <>
-      {elements.map((el) => (
-        <ElementPin
-          key={el.id}
-          element={el}
-          story={story}
-          field={field}
-          terrain={terrain}
-          chapterIndex={chapterIndex}
-          selected={el.id === selectedElementId}
-          onSelect={onSelect}
-        />
-      ))}
+      {elements.map((el) => {
+        // Show the artifact only when its current location is on this level.
+        const stop = el.journey[activeStopIndex(el, chapterIndex)]
+        const lvl = stop?.marker ? markerLevelId(story, stop.marker) : 'surface'
+        if (lvl !== activeLevelId) return null
+        return (
+          <ElementPin
+            key={el.id}
+            element={el}
+            story={story}
+            field={field}
+            terrain={terrain}
+            chapterIndex={chapterIndex}
+            selected={el.id === selectedElementId}
+            onSelect={onSelect}
+          />
+        )
+      })}
     </>
   )
 }

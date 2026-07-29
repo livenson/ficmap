@@ -20,7 +20,7 @@ export function Water({ terrain }: Props) {
     <mesh rotation-x={-Math.PI / 2} position-y={y}>
       <planeGeometry args={[WORLD_SIZE * 1.5, WORLD_SIZE * 1.5]} />
       <meshStandardMaterial
-        color="#2b6c8f"
+        color={terrain.waterColor ?? '#2b6c8f'}
         transparent
         opacity={0.72}
         roughness={0.25}
