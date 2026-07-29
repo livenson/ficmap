@@ -224,6 +224,10 @@ export interface Ambient {
   birds?: number
   /** Number of circling dragons (default 0). */
   dragons?: number
+  /** Number of mosquito swarms buzzing near the ground (default 0). */
+  mosquitoes?: number
+  /** Overcast clouds with animated rain (default false). */
+  rain?: boolean
 }
 
 /**
