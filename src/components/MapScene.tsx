@@ -23,6 +23,8 @@ import { Flora } from './Flora'
 import { Wildlife } from './Wildlife'
 import { Rivers } from './Rivers'
 import { Elements } from './Elements'
+import { Weather } from './Weather'
+import { Mosquitoes } from './Mosquitoes'
 
 export type ViewMode = '2d' | '3d'
 
@@ -83,8 +85,15 @@ export function MapScene({
     [focus, level, field, mode, chapterIndex],
   )
 
-  const bg = dark ? '#160608' : mode === '2d' ? '#0d1b26' : '#9fc2d6'
-  const fogColor = dark ? '#2a0c0a' : '#9fc2d6'
+  const rainy = !dark && !!level.ambient.rain
+  const bg = dark
+    ? '#160608'
+    : mode === '2d'
+      ? '#0d1b26'
+      : rainy
+        ? '#7c8892'
+        : '#9fc2d6'
+  const fogColor = dark ? '#2a0c0a' : rainy ? '#7c8892' : '#9fc2d6'
 
   return (
     <Canvas
@@ -104,13 +113,13 @@ export function MapScene({
 
       {/* Lighting */}
       <ambientLight
-        intensity={dark ? 0.55 : mode === '2d' ? 0.9 : 0.55}
-        color={dark ? '#ff8a66' : '#ffffff'}
+        intensity={dark ? 0.55 : rainy ? 0.7 : mode === '2d' ? 0.9 : 0.55}
+        color={dark ? '#ff8a66' : rainy ? '#c2ccd4' : '#ffffff'}
       />
       <directionalLight
         position={[40, 80, 20]}
-        intensity={dark ? 0.5 : mode === '2d' ? 0.7 : 1.15}
-        color={dark ? '#ff5a3c' : '#ffffff'}
+        intensity={dark ? 0.5 : rainy ? 0.5 : mode === '2d' ? 0.7 : 1.15}
+        color={dark ? '#ff5a3c' : rainy ? '#c8d0d6' : '#ffffff'}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-WORLD_SIZE}
@@ -119,7 +128,7 @@ export function MapScene({
         shadow-camera-bottom={-WORLD_SIZE}
         shadow-camera-far={300}
       />
-      {mode === '3d' && !dark && (
+      {mode === '3d' && !dark && !rainy && (
         <Sky sunPosition={[40, 30, 20]} turbidity={6} rayleigh={1.4} />
       )}
 
@@ -133,6 +142,10 @@ export function MapScene({
         <>
           <Flora field={field} terrain={terrain} ambient={level.ambient} />
           <Wildlife ambient={level.ambient} />
+          {level.ambient.mosquitoes ? (
+            <Mosquitoes swarms={level.ambient.mosquitoes} field={field} terrain={terrain} />
+          ) : null}
+          {level.ambient.rain ? <Weather /> : null}
         </>
       )}
 

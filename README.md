@@ -94,7 +94,7 @@ can paste straight into your story.
 | `elements[]` | Tracked artifacts (a crown, a sword) with a `journey` of stops; shown on the map wherever they are for the current chapter, so they visibly move. |
 | `chapters[]` | Optional guided tour — see below. |
 | `books[]` | Multi-book tour: one shared map, several books each with their own `chapters`. References then span books ("Bk 2 · Ch 3"). |
-| `ambient` | 3D-only life: `{ trees, treeKind, treeColor, birds, dragons }`. Trees scatter across wooded elevations; birds/dragons circle overhead. Deterministic; shown only in 3D. |
+| `ambient` | 3D-only life: `{ trees, treeKind, treeColor, birds, dragons, mosquitoes, rain }`. Trees scatter across wooded elevations; birds/dragons circle; `mosquitoes` adds buzzing swarms; `rain: true` brings overcast clouds + animated rain (see **Kalevipoeg**). Shown only in 3D, under the "Trees & wildlife" layer. |
 
 ## Story mode (chapters)
 

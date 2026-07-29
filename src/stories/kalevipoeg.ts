@@ -25,7 +25,7 @@ export const kalevipoeg: Story = {
     'voyages, and his end at the gates of Põrgu. Press ▶ Play story to follow ' +
     'the whole saga, or use the floor switcher to descend into Põrgu below.',
   surfaceName: 'The Living Lands',
-  ambient: { trees: 0.6, treeKind: 'conifer', birds: 6 },
+  ambient: { trees: 0.6, treeKind: 'conifer', birds: 6, mosquitoes: 7, rain: true },
   terrain: {
     seed: 'kalev-9', // unused: heightmap takes precedence
     heightmap: estoniaHeight,
