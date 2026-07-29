@@ -54,8 +54,12 @@ export function Toolbar({
         <button
           className={`toolbar__story ${inStory ? 'is-active' : ''}`}
           onClick={inStory ? onExitStory : onPlayStory}
+          aria-label={inStory ? 'Exit story' : 'Play story'}
         >
-          {inStory ? '✕ Exit story' : '▶ Play story'}
+          <span className="toolbar__story-icon">{inStory ? '✕' : '▶'}</span>
+          <span className="toolbar__story-text">
+            {inStory ? 'Exit story' : 'Play story'}
+          </span>
         </button>
       )}
 
@@ -86,7 +90,7 @@ export function Toolbar({
           checked={showLabels}
           onChange={(e) => onToggleLabels(e.target.checked)}
         />
-        Labels
+        <span className="toolbar__check-text">Labels</span>
       </label>
     </header>
   )

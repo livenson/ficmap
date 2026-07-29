@@ -115,6 +115,10 @@ body,
   accent-color: var(--accent);
 }
 .toolbar__story {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
   background: var(--panel-2);
   color: var(--ink);
   border: 1px solid var(--accent);
@@ -441,7 +445,8 @@ body,
   padding: 18px 20px;
   backdrop-filter: blur(6px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  z-index: 8;
+  /* Above the in-canvas marker/region labels (drei Html zIndexRange max 10). */
+  z-index: 30;
 }
 
 /* ---------- Markers (rendered via drei Html) ---------- */
@@ -557,6 +562,63 @@ body,
     border-top: 1px solid var(--line);
   }
   .legend {
+    display: none;
+  }
+  .place-overlay {
+    width: auto;
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    max-height: 50%;
+  }
+}
+
+/* Compact toolbar so the mode toggle + Labels never get pushed off-screen. */
+@media (max-width: 640px) {
+  .toolbar {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  /* Drop the wordmark and the "World" caption; keep the ✦ mark. */
+  .toolbar__name,
+  .toolbar__caption,
+  .toolbar__spacer {
+    display: none;
+  }
+  /* Let the world selector take the slack and truncate instead of pushing. */
+  .toolbar__group {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .toolbar__select {
+    width: 100%;
+    min-width: 0;
+    text-overflow: ellipsis;
+    padding: 8px 10px;
+  }
+  /* Story button collapses to just its icon. */
+  .toolbar__story {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+  }
+  .toolbar__story-icon {
+    display: inline;
+  }
+  .toolbar__story-text {
+    display: none;
+  }
+  /* Bigger tap targets for the 2D/3D toggle; hide the "Labels" word. */
+  .toolbar__toggle {
+    flex: 0 0 auto;
+  }
+  .toolbar__toggle button {
+    padding: 8px 14px;
+    font-size: 15px;
+  }
+  .toolbar__check {
+    flex: 0 0 auto;
+  }
+  .toolbar__check-text {
     display: none;
   }
 }
