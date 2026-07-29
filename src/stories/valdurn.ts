@@ -183,6 +183,33 @@ export const valdurn: Story = {
     { id: 'fens', name: 'The Greywater Fens', at: { x: -0.4, z: -0.28 } },
     { id: 'coast', name: 'The Drowned Coast', at: { x: 0.05, z: 0.66 }, scale: 0.95 },
   ],
+  elements: [
+    {
+      id: 'crown',
+      name: 'The Crown of Valdurn',
+      glyph: '♔',
+      description:
+        'The crown that once bound the whole realm. Follow where it goes — ' +
+        'from the old seat, to the field where it was lost, to the sea.',
+      journey: [
+        {
+          marker: 'caer-valdurn',
+          sinceChapter: 0,
+          note: 'Worn at Caer Valdurn, seat of the united crown.',
+        },
+        {
+          marker: 'ashen-field',
+          sinceChapter: 4,
+          note: 'Lost on the Ashen Field, where the crown fell.',
+        },
+        {
+          marker: 'sunken-crown',
+          sinceChapter: 5,
+          note: 'Gone into the sea off the Drowned Coast.',
+        },
+      ],
+    },
+  ],
   chapters: [
     {
       id: 'divided',

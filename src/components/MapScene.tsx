@@ -19,6 +19,7 @@ import { Regions } from './Regions'
 import { Flora } from './Flora'
 import { Wildlife } from './Wildlife'
 import { Rivers } from './Rivers'
+import { Elements } from './Elements'
 
 export type ViewMode = '2d' | '3d'
 
@@ -27,7 +28,9 @@ interface Props {
   mode: ViewMode
   selectedId: string | null
   onSelect: (id: string | null) => void
-  layers: { labels: boolean; nature: boolean; rivers: boolean }
+  selectedElementId: string | null
+  onSelectElement: (id: string | null) => void
+  layers: { labels: boolean; nature: boolean; rivers: boolean; artifacts: boolean }
   /** Active chapter index when in story mode, else null. */
   chapterIndex: number | null
 }
@@ -37,6 +40,8 @@ export function MapScene({
   mode,
   selectedId,
   onSelect,
+  selectedElementId,
+  onSelectElement,
   layers,
   chapterIndex,
 }: Props) {
@@ -79,7 +84,10 @@ export function MapScene({
       shadows
       dpr={[1, 2]}
       gl={{ antialias: true }}
-      onPointerMissed={() => onSelect(null)}
+      onPointerMissed={() => {
+        onSelect(null)
+        onSelectElement(null)
+      }}
     >
       <color attach="background" args={[mode === '2d' ? '#0d1b26' : '#9fc2d6']} />
       {mode === '3d' && <fog attach="fog" args={['#9fc2d6', WORLD_SIZE * 0.8, WORLD_SIZE * 2.2]} />}
@@ -137,6 +145,16 @@ export function MapScene({
           onSelect={onSelect}
           showLabels={layers.labels}
           highlight={storyMode ? highlight.markers : null}
+        />
+      )}
+      {layers.artifacts && (
+        <Elements
+          story={story}
+          field={field}
+          terrain={story.terrain}
+          chapterIndex={chapterIndex}
+          selectedElementId={selectedElementId}
+          onSelect={onSelectElement}
         />
       )}
     </Canvas>

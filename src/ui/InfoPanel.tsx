@@ -1,32 +1,54 @@
-import type { Story, Marker } from '../types'
+import type { Story, Marker, StoryElement } from '../types'
 import type { PlaceReference } from '../engine/references'
 import { PlaceDetail } from './PlaceDetail'
+import { ElementDetail } from './ElementDetail'
 
 interface Props {
   story: Story
   selected: Marker | null
+  selectedElement: StoryElement | null
   references: Record<string, PlaceReference[]>
+  chapterIndex: number | null
   onClose: () => void
   onJumpTo: (id: string) => void
+  onSelectElement: (id: string) => void
   onJumpToChapter: (index: number) => void
 }
 
 /**
- * Left-hand panel. Shows the world intro when nothing is selected, and the
- * selected place's detail (paragraph + chapter references) otherwise, plus a
- * clickable gazetteer of places.
+ * Left-hand panel. Shows the world intro when nothing is selected; a place's
+ * detail (paragraph + chapter references) or a tracked artifact's detail
+ * (paragraph + journey) when one is selected; plus clickable lists of places
+ * and artifacts.
  */
 export function InfoPanel({
   story,
   selected,
+  selectedElement,
   references,
+  chapterIndex,
   onClose,
   onJumpTo,
+  onSelectElement,
   onJumpToChapter,
 }: Props) {
+  const elements = story.elements ?? []
+
   return (
     <aside className="panel">
-      {selected ? (
+      {selectedElement ? (
+        <div className="panel__detail">
+          <button className="panel__back" onClick={onClose}>
+            ‹ Back to {story.title}
+          </button>
+          <ElementDetail
+            element={selectedElement}
+            story={story}
+            chapterIndex={chapterIndex}
+            onJumpToChapter={onJumpToChapter}
+          />
+        </div>
+      ) : selected ? (
         <div className="panel__detail">
           <button className="panel__back" onClick={onClose}>
             ‹ Back to {story.title}
@@ -42,6 +64,27 @@ export function InfoPanel({
           <h1 className="panel__title">{story.title}</h1>
           {story.subtitle && <p className="panel__subtitle">{story.subtitle}</p>}
           {story.intro && <p className="panel__body">{story.intro}</p>}
+        </div>
+      )}
+
+      {elements.length > 0 && (
+        <div className="panel__gazetteer">
+          <h3 className="panel__section">Artifacts</h3>
+          <ul>
+            {elements.map((e) => (
+              <li key={e.id}>
+                <button
+                  className={selectedElement?.id === e.id ? 'is-active' : ''}
+                  onClick={() => onSelectElement(e.id)}
+                >
+                  <span>
+                    <span className="element__glyph">{e.glyph ?? '◆'}</span> {e.name}
+                  </span>
+                  <span className="panel__gazetteer-kind">track</span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

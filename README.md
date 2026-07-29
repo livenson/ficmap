@@ -90,6 +90,7 @@ can paste straight into your story.
 | `markers[]` | Labeled points of interest (`capital`, `city`, `port`, `ruin`, …). |
 | `routes[]` | Journeys/roads drawn draped over the terrain. |
 | `regions[]` | Ambient area names floated over the map. |
+| `elements[]` | Tracked artifacts (a crown, a sword) with a `journey` of stops; shown on the map wherever they are for the current chapter, so they visibly move. |
 | `chapters[]` | Optional guided tour — see below. |
 | `books[]` | Multi-book tour: one shared map, several books each with their own `chapters`. References then span books ("Bk 2 · Ch 3"). |
 | `ambient` | 3D-only life: `{ trees, treeKind, treeColor, birds, dragons }`. Trees scatter across wooded elevations; birds/dragons circle overhead. Deterministic; shown only in 3D. |
@@ -141,6 +142,28 @@ headings, and a place's **references span books** — click the Kääpa brook in
 the **Kalevipoeg** sample and you'll see it surface in both *Wars & Wanderings*
 and *Põrgu & the End*. `chapters` and `books` are interchangeable; a plain
 `chapters` run is just a single implicit book.
+
+### Tracked artifacts
+
+Give a world `elements` to track objects whose location matters — a crown, a
+cursed sword. Each element has a `journey` of stops, each tied to a chapter it
+moves in:
+
+```ts
+elements: [{
+  id: 'sword', name: 'The Cursed Sword', glyph: '⚔',
+  journey: [
+    { marker: 'finland',   sinceChapter: 2, note: 'Forged, then cursed.' },
+    { marker: 'lindanisa', sinceChapter: 4, note: 'Carried into the wars.' },
+    { marker: 'kaapa',     sinceChapter: 6, note: 'Lost in the brook.' },
+  ],
+}]
+```
+
+On the map the artifact is drawn wherever it is for the current chapter, so it
+**visibly travels** as the tour advances; click it to trace its whole journey.
+Toggle the **Artifacts** layer to hide them. (Try the sword in **Kalevipoeg**
+or the crown in **Valdurn**.)
 
 ## Project layout
 
