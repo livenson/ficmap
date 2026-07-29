@@ -43,6 +43,9 @@ export function Weather() {
     return p
   }, [drops])
 
+  const flashRef = useRef<THREE.AmbientLight>(null)
+  const flash = useRef({ active: false, start: 0, next: 3 + Math.random() * 5 })
+
   const cloudRef = useRef<THREE.Group>(null)
   const clouds = useMemo(() => {
     const arr: { x: number; y: number; z: number; s: number; drift: number }[] = []
@@ -81,10 +84,33 @@ export function Weather() {
         if (c.position.x > SPAN) c.position.x = -SPAN
       })
     }
+    // Lightning: an occasional flickering flash that lights the whole scene.
+    const fl = flashRef.current
+    if (fl) {
+      const now = _.clock.getElapsedTime()
+      if (!flash.current.active && now > flash.current.next) {
+        flash.current.active = true
+        flash.current.start = now
+      }
+      if (flash.current.active) {
+        const tt = now - flash.current.start
+        fl.intensity = Math.max(0, Math.sin(tt * 45) * 0.5 + 0.5) * Math.exp(-tt * 6.5) * 3.4
+        if (tt > 0.75) {
+          flash.current.active = false
+          fl.intensity = 0
+          flash.current.next = now + 5 + Math.random() * 9
+        }
+      } else {
+        fl.intensity = 0
+      }
+    }
   })
 
   return (
     <group>
+      {/* Lightning flash (intensity driven each frame). */}
+      <ambientLight ref={flashRef} intensity={0} color="#e8eeff" />
+
       <lineSegments frustumCulled={false}>
         <bufferGeometry ref={rainRef}>
           <bufferAttribute
