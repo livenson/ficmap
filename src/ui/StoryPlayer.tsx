@@ -1,32 +1,27 @@
-import type { Story } from '../types'
+import type { FlatChapter } from '../engine/story'
 
 interface Props {
-  story: Story
+  flat: FlatChapter[]
   index: number
   onPrev: () => void
   onNext: () => void
-  onJump: (i: number) => void
+  onJump: (globalIndex: number) => void
   onExit: () => void
 }
 
 /**
- * The guided-tour panel. Replaces the info panel while story mode is active:
- * shows the current chapter's narration, step controls, and a chapter rail.
+ * The guided-tour panel. Plays a world's flattened chapter list; when the
+ * world has several books, the current book is shown and the chapter rail is
+ * grouped under book headings.
  */
-export function StoryPlayer({
-  story,
-  index,
-  onPrev,
-  onNext,
-  onJump,
-  onExit,
-}: Props) {
-  const chapters = story.chapters ?? []
-  const chapter = chapters[index]
-  if (!chapter) return null
+export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Props) {
+  const current = flat[index]
+  if (!current) return null
 
+  const multiBook = current.bookCount > 1
+  const inBook = flat.filter((f) => f.bookIndex === current.bookIndex)
   const atStart = index === 0
-  const atEnd = index === chapters.length - 1
+  const atEnd = index === flat.length - 1
 
   return (
     <aside className="panel panel--story">
@@ -35,12 +30,17 @@ export function StoryPlayer({
       </button>
 
       <div className="story__meta">
+        {multiBook && (
+          <span className="story__book">
+            Book {current.bookIndex + 1} · {current.bookTitle}
+          </span>
+        )}
         <span className="story__count">
-          Chapter {index + 1} / {chapters.length}
+          Chapter {current.indexInBook + 1} / {inBook.length}
         </span>
       </div>
-      <h2 className="panel__title">{chapter.title}</h2>
-      <p className="panel__body story__narration">{chapter.narration}</p>
+      <h2 className="panel__title">{current.chapter.title}</h2>
+      <p className="panel__body story__narration">{current.chapter.narration}</p>
 
       <div className="story__nav">
         <button onClick={onPrev} disabled={atStart} className="story__btn">
@@ -55,19 +55,27 @@ export function StoryPlayer({
       </div>
 
       <div className="story__rail">
-        {chapters.map((c, i) => (
-          <button
-            key={c.id}
-            className={`story__dot ${i === index ? 'is-active' : ''} ${
-              i < index ? 'is-done' : ''
-            }`}
-            onClick={() => onJump(i)}
-            title={c.title}
-          >
-            <span className="story__dot-mark" />
-            <span className="story__dot-label">{c.title}</span>
-          </button>
-        ))}
+        {flat.map((f, i) => {
+          const bookHeader =
+            multiBook && (i === 0 || flat[i - 1].bookIndex !== f.bookIndex)
+          return (
+            <div key={f.chapter.id}>
+              {bookHeader && (
+                <div className="story__rail-book">{f.bookTitle}</div>
+              )}
+              <button
+                className={`story__dot ${i === index ? 'is-active' : ''} ${
+                  i < index ? 'is-done' : ''
+                }`}
+                onClick={() => onJump(i)}
+                title={f.chapter.title}
+              >
+                <span className="story__dot-mark" />
+                <span className="story__dot-label">{f.chapter.title}</span>
+              </button>
+            </div>
+          )
+        })}
       </div>
     </aside>
   )

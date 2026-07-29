@@ -1,5 +1,6 @@
 import type { ViewMode } from '../components/MapScene'
 import type { Story } from '../types'
+import { LayersMenu, type Layers } from './LayersMenu'
 
 interface Props {
   stories: Story[]
@@ -7,8 +8,8 @@ interface Props {
   onPick: (id: string) => void
   mode: ViewMode
   onMode: (m: ViewMode) => void
-  showLabels: boolean
-  onToggleLabels: (v: boolean) => void
+  layers: Layers
+  onToggleLayer: (key: keyof Layers) => void
   hasChapters: boolean
   inStory: boolean
   onPlayStory: () => void
@@ -21,8 +22,8 @@ export function Toolbar({
   onPick,
   mode,
   onMode,
-  showLabels,
-  onToggleLabels,
+  layers,
+  onToggleLayer,
   hasChapters,
   inStory,
   onPlayStory,
@@ -84,14 +85,7 @@ export function Toolbar({
         </button>
       </div>
 
-      <label className="toolbar__check">
-        <input
-          type="checkbox"
-          checked={showLabels}
-          onChange={(e) => onToggleLabels(e.target.checked)}
-        />
-        <span className="toolbar__check-text">Labels</span>
-      </label>
+      <LayersMenu layers={layers} onToggle={onToggleLayer} />
     </header>
   )
 }

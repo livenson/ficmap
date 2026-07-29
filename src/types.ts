@@ -53,6 +53,10 @@ export interface TerrainConfig {
   islandFalloff?: number
   /** Elevation → color bands, low to high. */
   biomes: BiomeBand[]
+  /** Number of rivers traced downhill from the highlands to the sea. Default 0. */
+  rivers?: number
+  /** River line color (default a river blue; e.g. lava-orange for ash worlds). */
+  riverColor?: string
 }
 
 export type MarkerKind =
@@ -160,7 +164,24 @@ export interface Ambient {
   dragons?: number
 }
 
-/** A complete story/world definition. */
+/**
+ * A book: one work set in the world, with its own run of chapters. A world can
+ * hold several (a saga spanning multiple books over one shared map), and place
+ * references then span books ("Book II · Ch. 3").
+ */
+export interface Book {
+  id: string
+  title: string
+  /** Short tagline for the book. */
+  subtitle?: string
+  chapters: Chapter[]
+}
+
+/**
+ * A complete world definition. Its guided tour can be supplied either as a
+ * single `chapters` run (one book) or as several `books`; the engine flattens
+ * them into one ordered sequence for playback and references.
+ */
 export interface Story {
   id: string
   title: string
@@ -174,6 +195,8 @@ export interface Story {
   markers?: Marker[]
   routes?: Route[]
   regions?: RegionLabel[]
-  /** Optional guided tour. If present, a "Story" mode appears in the UI. */
+  /** Single-book tour. Mutually exclusive with `books`. */
   chapters?: Chapter[]
+  /** Multi-book tour over the shared map. Takes precedence over `chapters`. */
+  books?: Book[]
 }

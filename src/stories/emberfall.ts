@@ -21,6 +21,8 @@ export const emberfall: Story = {
     seaLevel: 0.46,
     heightScale: 20,
     octaves: 6,
+    rivers: 5,
+    riverColor: '#ff7a1a',
     biomes: [
       { maxHeight: 0.46, color: '#3a2530', name: 'Dark Waters' },
       { maxHeight: 0.5, color: '#3d3038', name: 'Obsidian Shore' },

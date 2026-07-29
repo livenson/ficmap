@@ -6,18 +6,22 @@ import { StoryPlayer } from './ui/StoryPlayer'
 import { PlaceDetail } from './ui/PlaceDetail'
 import { Legend } from './ui/Legend'
 import { buildPlaceReferences } from './engine/references'
+import { flattenChapters } from './engine/story'
 import { stories, getStory } from './stories'
 
 export default function App() {
   const [storyId, setStoryId] = useState(stories[0].id)
   const [mode, setMode] = useState<ViewMode>('3d')
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [showLabels, setShowLabels] = useState(true)
+  // Toggleable map detail layers (strip back to a clean map).
+  const [layers, setLayers] = useState({ labels: true, nature: true, rivers: true })
+  const toggleLayer = (key: 'labels' | 'nature' | 'rivers') =>
+    setLayers((l) => ({ ...l, [key]: !l[key] }))
   // null = free exploration; a number = playing that chapter.
   const [chapterIndex, setChapterIndex] = useState<number | null>(null)
 
   const story = getStory(storyId)
-  const chapters = story.chapters ?? []
+  const flat = useMemo(() => flattenChapters(story), [story])
   const inStory = chapterIndex != null
 
   const selected = useMemo(
@@ -42,7 +46,7 @@ export default function App() {
   const jumpToChapter = (index: number) => setChapterIndex(index)
   const step = (delta: number) =>
     setChapterIndex((i) =>
-      i == null ? i : Math.max(0, Math.min(chapters.length - 1, i + delta)),
+      i == null ? i : Math.max(0, Math.min(flat.length - 1, i + delta)),
     )
 
   // Arrow keys drive the tour while it's playing.
@@ -55,7 +59,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [inStory, chapters.length])
+  }, [inStory, flat.length])
 
   return (
     <div className="app">
@@ -65,9 +69,9 @@ export default function App() {
         onPick={pickStory}
         mode={mode}
         onMode={setMode}
-        showLabels={showLabels}
-        onToggleLabels={setShowLabels}
-        hasChapters={chapters.length > 0}
+        layers={layers}
+        onToggleLayer={toggleLayer}
+        hasChapters={flat.length > 0}
         inStory={inStory}
         onPlayStory={startStory}
         onExitStory={exitStory}
@@ -76,7 +80,7 @@ export default function App() {
       <div className="stage">
         {inStory ? (
           <StoryPlayer
-            story={story}
+            flat={flat}
             index={chapterIndex!}
             onPrev={() => step(-1)}
             onNext={() => step(1)}
@@ -102,7 +106,7 @@ export default function App() {
             mode={mode}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            showLabels={showLabels}
+            layers={layers}
             chapterIndex={chapterIndex}
           />
           <Legend terrain={story.terrain} />

@@ -24,6 +24,7 @@ export const valdurn: Story = {
     seaLevel: 0.36,
     heightScale: 24,
     octaves: 5,
+    rivers: 6,
     biomes: [
       { maxHeight: 0.36, color: '#2e5f7d', name: 'Seas' },
       { maxHeight: 0.40, color: '#d8c79c', name: 'Shore' },

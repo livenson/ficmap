@@ -1,6 +1,7 @@
 import type { Story } from '../types'
 import { valdurn } from './valdurn'
 import { emberfall } from './emberfall'
+import { kalevipoeg } from './kalevipoeg'
 
 /**
  * The atlas registry. To add a world:
@@ -8,7 +9,7 @@ import { emberfall } from './emberfall'
  *   2. Import it here and add it to the array below.
  * That's the whole extension surface — no engine changes required.
  */
-export const stories: Story[] = [valdurn, emberfall]
+export const stories: Story[] = [valdurn, emberfall, kalevipoeg]
 
 export function getStory(id: string | null | undefined): Story {
   return stories.find((s) => s.id === id) ?? stories[0]
