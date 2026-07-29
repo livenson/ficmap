@@ -1,8 +1,34 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
 import { scatterTrees } from '../engine/scatter'
 import type { Ambient, TerrainConfig } from '../types'
+
+/**
+ * Vertex-shader wind: sway canopy vertices by a time uniform, phased per
+ * instance (from its world position) so trees don't move in lockstep, and
+ * scaled by local height so tops sway while trunks stay planted. GPU-side, so
+ * it's free across the whole instanced forest.
+ */
+function useWindMaterial(uniforms: { uTime: { value: number } }) {
+  return useMemo(() => {
+    const onBeforeCompile = (shader: any) => {
+      shader.uniforms.uTime = uniforms.uTime
+      shader.vertexShader =
+        'uniform float uTime;\n' +
+        shader.vertexShader.replace(
+          '#include <begin_vertex>',
+          `#include <begin_vertex>
+           float wPhase = instanceMatrix[3].x * 0.6 + instanceMatrix[3].z * 0.4;
+           float wUp = max(position.y, 0.0);
+           transformed.x += sin(uTime * 1.6 + wPhase) * 0.12 * wUp;
+           transformed.z += cos(uTime * 1.3 + wPhase * 1.4) * 0.10 * wUp;`,
+        )
+    }
+    return onBeforeCompile
+  }, [uniforms])
+}
 
 interface Props {
   field: HeightField
@@ -34,6 +60,12 @@ export function Flora({ field, terrain, ambient }: Props) {
   const trunkRef = useRef<THREE.InstancedMesh>(null)
   const lowRef = useRef<THREE.InstancedMesh>(null)
   const topRef = useRef<THREE.InstancedMesh>(null)
+
+  const uniforms = useMemo(() => ({ uTime: { value: 0 } }), [])
+  const wind = useWindMaterial(uniforms)
+  useFrame((s) => {
+    uniforms.uTime.value = s.clock.getElapsedTime()
+  })
 
   useLayoutEffect(() => {
     const trunk = trunkRef.current
@@ -108,21 +140,21 @@ export function Flora({ field, terrain, ambient }: Props) {
       {/* Lower / larger canopy tier */}
       <instancedMesh ref={lowRef} args={[undefined, undefined, trees.length]} castShadow>
         {conifer ? (
-          <coneGeometry args={[0.72, 1.7, 7]} />
+          <coneGeometry args={[0.72, 1.7, 8]} />
         ) : (
-          <icosahedronGeometry args={[0.82, 1]} />
+          <icosahedronGeometry args={[0.82, 2]} />
         )}
-        <meshStandardMaterial roughness={0.85} flatShading />
+        <meshStandardMaterial roughness={0.9} onBeforeCompile={wind} />
       </instancedMesh>
 
       {/* Upper / smaller canopy tier */}
       <instancedMesh ref={topRef} args={[undefined, undefined, trees.length]} castShadow>
         {conifer ? (
-          <coneGeometry args={[0.5, 1.3, 7]} />
+          <coneGeometry args={[0.5, 1.3, 8]} />
         ) : (
-          <icosahedronGeometry args={[0.58, 1]} />
+          <icosahedronGeometry args={[0.58, 2]} />
         )}
-        <meshStandardMaterial roughness={0.85} flatShading />
+        <meshStandardMaterial roughness={0.9} onBeforeCompile={wind} />
       </instancedMesh>
     </group>
   )
