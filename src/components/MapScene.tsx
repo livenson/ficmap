@@ -25,6 +25,7 @@ import { Rivers } from './Rivers'
 import { Elements } from './Elements'
 import { Weather } from './Weather'
 import { Mosquitoes } from './Mosquitoes'
+import { Ripples } from './Ripples'
 
 export type ViewMode = '2d' | '3d'
 
@@ -146,6 +147,7 @@ export function MapScene({
             <Mosquitoes swarms={level.ambient.mosquitoes} field={field} terrain={terrain} />
           ) : null}
           {level.ambient.rain ? <Weather /> : null}
+          {level.ambient.rain ? <Ripples field={field} terrain={terrain} /> : null}
         </>
       )}
 
