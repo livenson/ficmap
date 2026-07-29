@@ -1,17 +1,29 @@
 import type { Story, Marker } from '../types'
+import type { PlaceReference } from '../engine/references'
+import { PlaceDetail } from './PlaceDetail'
 
 interface Props {
   story: Story
   selected: Marker | null
+  references: Record<string, PlaceReference[]>
   onClose: () => void
   onJumpTo: (id: string) => void
+  onJumpToChapter: (index: number) => void
 }
 
 /**
  * Left-hand panel. Shows the world intro when nothing is selected, and the
- * selected marker's detail otherwise, plus a clickable gazetteer of places.
+ * selected place's detail (paragraph + chapter references) otherwise, plus a
+ * clickable gazetteer of places.
  */
-export function InfoPanel({ story, selected, onClose, onJumpTo }: Props) {
+export function InfoPanel({
+  story,
+  selected,
+  references,
+  onClose,
+  onJumpTo,
+  onJumpToChapter,
+}: Props) {
   return (
     <aside className="panel">
       {selected ? (
@@ -19,14 +31,11 @@ export function InfoPanel({ story, selected, onClose, onJumpTo }: Props) {
           <button className="panel__back" onClick={onClose}>
             ‹ Back to {story.title}
           </button>
-          <span className="panel__kind">{selected.kind}</span>
-          <h2 className="panel__title">{selected.name}</h2>
-          {selected.chapter && (
-            <div className="panel__chapter">Chapter {selected.chapter}</div>
-          )}
-          {selected.description && (
-            <p className="panel__body">{selected.description}</p>
-          )}
+          <PlaceDetail
+            marker={selected}
+            references={references[selected.id] ?? []}
+            onJumpToChapter={onJumpToChapter}
+          />
         </div>
       ) : (
         <div className="panel__intro">
