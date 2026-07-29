@@ -31,6 +31,12 @@ export interface BiomeBand {
 export interface TerrainConfig {
   /** Seed string — same seed always yields the same world. */
   seed: string
+  /**
+   * Optional grayscale heightmap image URL. When set, terrain is sampled from
+   * the image (0=black=lowest, 1=white=highest) instead of procedural noise —
+   * used for real-world elevation (DEM) maps. The seed is then unused.
+   */
+  heightmap?: string
   /** Fractal noise octaves; more = more fine detail. Default 5. */
   octaves?: number
   /** Base feature size; smaller = larger continents. Default 2.2. */
