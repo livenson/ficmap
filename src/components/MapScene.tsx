@@ -26,6 +26,7 @@ import { Elements } from './Elements'
 import { Weather } from './Weather'
 import { Mosquitoes } from './Mosquitoes'
 import { Ripples } from './Ripples'
+import { SeaLife } from './SeaLife'
 
 export type ViewMode = '2d' | '3d'
 
@@ -148,6 +149,14 @@ export function MapScene({
           ) : null}
           {level.ambient.rain ? <Weather /> : null}
           {level.ambient.rain ? <Ripples field={field} terrain={terrain} /> : null}
+          {level.ambient.fish || level.ambient.seaMonsters ? (
+            <SeaLife
+              field={field}
+              terrain={terrain}
+              fish={level.ambient.fish ?? 0}
+              monsters={level.ambient.seaMonsters ?? 0}
+            />
+          ) : null}
         </>
       )}
 

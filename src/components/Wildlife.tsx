@@ -65,7 +65,9 @@ export function Wildlife({ ambient }: Props) {
   }, [birds, dragons])
 
   const groups = useRef<THREE.Group[]>([])
+  const inners = useRef<THREE.Group[]>([])
   const wings = useRef<{ l: THREE.Object3D; r: THREE.Object3D }[]>([])
+  const tails = useMemo(() => ({ bird: makeTail(false), dragon: makeTail(true) }), [])
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
@@ -83,9 +85,19 @@ export function Wildlife({ ambient }: Props) {
       const vz = Math.cos(theta) * c.dir
       g.rotation.y = Math.atan2(vx, vz)
 
+      // Bank into the turn and pitch gently with the bob.
+      const inner = inners.current[i]
+      if (inner) {
+        inner.rotation.z = -c.dir * 0.32
+        inner.rotation.x = Math.sin(t * 0.8 + c.phase) * 0.06
+      }
+
       const w = wings.current[i]
       if (w) {
-        const a = Math.sin(t * c.flap + c.phase) * 0.6
+        // Flap-then-glide: amplitude waxes and wanes so birds soar between beats.
+        const glide = 0.3 + 0.7 * Math.max(0, Math.sin(t * 0.5 + c.phase * 1.3))
+        const amp = c.kind === 'dragon' ? 0.5 : 0.85
+        const a = Math.sin(t * c.flap + c.phase) * amp * glide
         w.l.rotation.z = a
         w.r.rotation.z = -a
       }
@@ -94,47 +106,64 @@ export function Wildlife({ ambient }: Props) {
 
   return (
     <>
-      {creatures.map((c, i) => (
-        <group
-          key={i}
-          ref={(el) => {
-            if (el) groups.current[i] = el
-          }}
-          scale={c.size}
-        >
-          {/* body */}
-          <mesh>
-            <capsuleGeometry args={[0.12, c.kind === 'dragon' ? 1.4 : 0.5, 3, 6]} />
-            <meshBasicMaterial color={c.color} />
-          </mesh>
-          {/* wings */}
+      {creatures.map((c, i) => {
+        const dragon = c.kind === 'dragon'
+        return (
           <group
+            key={i}
             ref={(el) => {
-              if (el) {
-                wings.current[i] = wings.current[i] ?? ({} as any)
-                wings.current[i].l = el
-              }
+              if (el) groups.current[i] = el
             }}
+            scale={c.size}
           >
-            <Wing color={c.color} dragon={c.kind === 'dragon'} side={1} />
+            {/* Banked body frame */}
+            <group
+              ref={(el) => {
+                if (el) inners.current[i] = el
+              }}
+            >
+              {/* slim body */}
+              <mesh rotation-x={Math.PI / 2}>
+                <capsuleGeometry args={[0.1, dragon ? 1.6 : 0.7, 4, 8]} />
+                <meshBasicMaterial color={c.color} />
+              </mesh>
+              {/* tail fan */}
+              <mesh
+                geometry={dragon ? tails.dragon : tails.bird}
+                position={[0, 0, -(dragon ? 1.1 : 0.6)]}
+              >
+                <meshBasicMaterial color={c.color} side={THREE.DoubleSide} />
+              </mesh>
+              {/* wings */}
+              <group
+                ref={(el) => {
+                  if (el) {
+                    wings.current[i] = wings.current[i] ?? ({} as any)
+                    wings.current[i].l = el
+                  }
+                }}
+              >
+                <Wing color={c.color} dragon={dragon} side={1} />
+              </group>
+              <group
+                ref={(el) => {
+                  if (el) {
+                    wings.current[i] = wings.current[i] ?? ({} as any)
+                    wings.current[i].r = el
+                  }
+                }}
+              >
+                <Wing color={c.color} dragon={dragon} side={-1} />
+              </group>
+            </group>
           </group>
-          <group
-            ref={(el) => {
-              if (el) {
-                wings.current[i] = wings.current[i] ?? ({} as any)
-                wings.current[i].r = el
-              }
-            }}
-          >
-            <Wing color={c.color} dragon={c.kind === 'dragon'} side={-1} />
-          </group>
-        </group>
-      ))}
+        )
+      })}
     </>
   )
 }
 
-/** A single triangular wing extending along ±X, hinged at the body. */
+/** A swept, tapered wing extending along ±X and hinged at the body. */
 function Wing({
   color,
   dragon,
@@ -145,14 +174,19 @@ function Wing({
   side: 1 | -1
 }) {
   const geo = useMemo(() => {
-    const span = dragon ? 2.6 : 1.7
-    const chord = dragon ? 1.1 : 0.7
+    const sx = dragon ? 1.55 : 1
+    const cF = (dragon ? 0.5 : 0.32) // chord at root, front
+    const cB = (dragon ? 0.9 : 0.55) // chord at root, back
+    const rf = [0, 0, cF]
+    const rb = [0, 0, -cB]
+    const mid = [side * 0.9 * sx, 0.04, -0.06]
+    const tip = [side * 1.75 * sx, 0.08, -0.5]
     const g = new THREE.BufferGeometry()
-    // Triangle: front-of-body, back-of-body, wingtip.
+    // Two triangles: a swept-back, tapered wing.
     g.setAttribute(
       'position',
       new THREE.Float32BufferAttribute(
-        [0, 0, chord, 0, 0, -chord, side * span, 0, dragon ? -0.4 : 0],
+        [...rf, ...mid, ...rb, ...rf, ...tip, ...mid],
         3,
       ),
     )
@@ -165,4 +199,17 @@ function Wing({
       <meshBasicMaterial color={color} side={THREE.DoubleSide} />
     </mesh>
   )
+}
+
+/** A small fan tail (a triangle) pointing back along -Z. */
+function makeTail(dragon: boolean): THREE.BufferGeometry {
+  const w = dragon ? 0.55 : 0.32
+  const l = dragon ? 0.9 : 0.5
+  const g = new THREE.BufferGeometry()
+  g.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([0, 0, 0, w, 0, -l, -w, 0, -l], 3),
+  )
+  g.computeVertexNormals()
+  return g
 }
