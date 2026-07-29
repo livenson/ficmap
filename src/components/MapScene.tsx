@@ -1,8 +1,10 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { MapControls, PerspectiveCamera, Sky } from '@react-three/drei'
 import * as THREE from 'three'
-import { makeHeightField } from '../engine/noise'
+import { makeHeightField, type HeightField } from '../engine/noise'
+import { FLAT_FIELD, loadImageHeightField } from '../engine/heightmap'
+import type { TerrainConfig } from '../types'
 import { WORLD_SIZE, elevationAt, mapToWorld } from '../engine/terrain'
 import type { CameraFocus, Marker, Story } from '../types'
 import {
@@ -51,7 +53,9 @@ export function MapScene({
 }: Props) {
   const terrain = level.terrain
   // Height field is the single source of truth for terrain, markers & routes.
-  const field = useMemo(() => makeHeightField(terrain), [terrain])
+  // Procedural terrains resolve synchronously; heightmap (DEM) terrains load
+  // their image and swap in once ready (flat sea until then).
+  const field = useHeightField(terrain)
   const controls = useRef<any>(null)
   const dark = terrain.sky === 'dark'
 
@@ -167,6 +171,35 @@ export function MapScene({
       )}
     </Canvas>
   )
+}
+
+/**
+ * Resolve a terrain's height field. Procedural terrains build synchronously;
+ * heightmap terrains load the image asynchronously and swap in when ready.
+ */
+function useHeightField(terrain: TerrainConfig): HeightField {
+  const [imgField, setImgField] = useState<HeightField | null>(null)
+  const url = terrain.heightmap
+
+  useEffect(() => {
+    if (!url) {
+      setImgField(null)
+      return
+    }
+    let alive = true
+    setImgField(null)
+    loadImageHeightField(url).then((f) => {
+      if (alive) setImgField(f)
+    })
+    return () => {
+      alive = false
+    }
+  }, [url])
+
+  return useMemo(() => {
+    if (url) return imgField ?? FLAT_FIELD
+    return makeHeightField(terrain)
+  }, [terrain, url, imgField])
 }
 
 /** A resolved camera destination: where to sit and what to look at. */

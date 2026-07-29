@@ -1,14 +1,19 @@
 import type { Story } from '../types'
+import estoniaHeight from '../assets/estonia-height.png'
 
 /**
  * Kalevipoeg — a public-domain sample world drawn from the Estonian national
  * epic (F. R. Kreutzwald, 1857; author d. 1882 → public domain). It exercises
- * the multi-book model: one shared map, three "books", and places that recur
- * across them (the Kääpa brook and Finland each surface in more than one book).
+ * the multi-book model, tracked artifacts, and map levels.
+ *
+ * The surface uses a REAL heightmap: a Terrarium DEM of Estonia + the Gulf of
+ * Finland + Lake Peipus + Pskov, so the coastline is the actual one. Markers
+ * sit at their true relative positions (Tallinn on the north coast, Finland
+ * north across the gulf, Peipus on the east, Pskov to the south-east). The
+ * mythic Põrgu underworld below stays procedurally generated.
  *
  * Narration is a brief paraphrase of the epic's events, not a quotation of any
- * particular translation. Place coordinates were verified on land for this seed
- * (see scripts/preview.mjs).
+ * particular translation.
  */
 export const kalevipoeg: Story = {
   id: 'kalevipoeg',
@@ -22,21 +27,18 @@ export const kalevipoeg: Story = {
   surfaceName: 'The Living Lands',
   ambient: { trees: 0.6, treeKind: 'conifer', birds: 6 },
   terrain: {
-    seed: 'kalev-9',
-    frequency: 1.5,
-    islandFalloff: 0.22,
-    seaLevel: 0.4,
-    heightScale: 24,
-    octaves: 5,
+    seed: 'kalev-9', // unused: heightmap takes precedence
+    heightmap: estoniaHeight,
+    seaLevel: 0.18, // 0 m sits at this normalized height in the DEM
+    heightScale: 46, // Estonia is flat, so exaggerate the relief
     rivers: 6,
     biomes: [
-      { maxHeight: 0.4, color: '#2c5a74', name: 'Cold Seas' },
-      { maxHeight: 0.44, color: '#d7cba1', name: 'Sands' },
-      { maxHeight: 0.54, color: '#6f9b57', name: 'Meadows' },
-      { maxHeight: 0.66, color: '#3f7a44', name: 'Deep Forest' },
-      { maxHeight: 0.78, color: '#6f7a55', name: 'Uplands' },
-      { maxHeight: 0.9, color: '#8a8079', name: 'Bare Rock' },
-      { maxHeight: 1.0, color: '#eef4f8', name: 'Snows' },
+      { maxHeight: 0.18, color: '#2c5a74', name: 'Baltic Sea' },
+      { maxHeight: 0.225, color: '#d7cba1', name: 'Coast' },
+      { maxHeight: 0.34, color: '#6f9b57', name: 'Lowlands' },
+      { maxHeight: 0.5, color: '#4f8a4a', name: 'Forests' },
+      { maxHeight: 0.72, color: '#7c8a5a', name: 'Uplands' },
+      { maxHeight: 1.0, color: '#b7ad94', name: 'Hills' },
     ],
   },
   markers: [
@@ -44,7 +46,7 @@ export const kalevipoeg: Story = {
       id: 'lindanisa',
       name: 'Lindanisa',
       kind: 'capital',
-      at: { x: -0.3, z: 0.3 },
+      at: { x: -0.08, z: -0.18 },
       description:
         'The hill-seat Kalevipoeg raises as his royal burg — the stronghold ' +
         'later remembered as Tallinn.',
@@ -53,7 +55,7 @@ export const kalevipoeg: Story = {
       id: 'kalev-barrow',
       name: "Kalev's Barrow",
       kind: 'landmark',
-      at: { x: -0.2, z: -0.2 },
+      at: { x: 0.04, z: -0.02 },
       description:
         'Where the old king Kalev is laid to rest. His widow Linda’s weeping ' +
         'is said to have raised the mound and welled up a lake of tears.',
@@ -62,7 +64,7 @@ export const kalevipoeg: Story = {
       id: 'peipus',
       name: 'Lake Peipus',
       kind: 'port',
-      at: { x: 0.3, z: 0.1 },
+      at: { x: 0.64, z: 0.18 },
       description:
         'The great eastern water. Along its shores the hero hauls timber and ' +
         'rests — and here his fortunes turn.',
@@ -71,7 +73,7 @@ export const kalevipoeg: Story = {
       id: 'finland',
       name: 'Finland',
       kind: 'peak',
-      at: { x: 0.62, z: 0.02 },
+      at: { x: -0.15, z: -0.75 },
       description:
         'Across the gulf lies the hall of the Finnish smith, who forges a ' +
         'sword worthy of a giant — and later curses it.',
@@ -80,21 +82,21 @@ export const kalevipoeg: Story = {
       id: 'assamalla',
       name: 'Assamälla',
       kind: 'battle',
-      at: { x: -0.2, z: 0.4 },
+      at: { x: 0.32, z: -0.12 },
       description: 'A field of one of the hero’s great battles against invaders.',
     },
     {
       id: 'pihkva',
       name: 'Pihkva',
       kind: 'city',
-      at: { x: 0.4, z: 0.6 },
+      at: { x: 0.87, z: 0.69 },
       description: 'The southern city (Pskov) against which the hero campaigns.',
     },
     {
       id: 'kaapa',
       name: 'Kääpa',
       kind: 'danger',
-      at: { x: -0.05, z: 0.1 },
+      at: { x: 0.53, z: 0.59 },
       description:
         'The brook where the stolen sword comes to rest — and waits, under a ' +
         'curse, for the day its master wades across.',
@@ -103,14 +105,14 @@ export const kalevipoeg: Story = {
       id: 'endla',
       name: 'Lake Endla',
       kind: 'forest',
-      at: { x: -0.3, z: 0.05 },
+      at: { x: 0.29, z: 0.08 },
       description: 'A misted lake of the inland forests, haunt of spirits and song.',
     },
     {
       id: 'deep-gate',
       name: 'The Mouth of Põrgu',
       kind: 'danger',
-      at: { x: -0.55, z: 0.55 },
+      at: { x: 0.37, z: 0.82 },
       description:
         'The cavern-mouth where the hero descends into the underworld. Use the ' +
         'floor switcher to follow him down into Põrgu.',
@@ -119,7 +121,7 @@ export const kalevipoeg: Story = {
       id: 'world-end',
       name: "The World's End",
       kind: 'landmark',
-      at: { x: -0.3, z: -0.45 },
+      at: { x: -0.2, z: -0.88 },
       description:
         'The rim of the world, which the hero sails to seek — and finds no man ' +
         'may pass.',
@@ -132,9 +134,9 @@ export const kalevipoeg: Story = {
       color: '#ffd27a',
       style: 'solid',
       points: [
-        { x: -0.3, z: 0.3 },
-        { x: 0.12, z: 0.16 },
-        { x: 0.62, z: 0.02 },
+        { x: -0.08, z: -0.18 },
+        { x: -0.11, z: -0.48 },
+        { x: -0.15, z: -0.75 },
       ],
     },
     {
@@ -143,9 +145,9 @@ export const kalevipoeg: Story = {
       color: '#e0a25a',
       style: 'solid',
       points: [
-        { x: -0.3, z: 0.3 },
-        { x: -0.2, z: 0.4 },
-        { x: 0.4, z: 0.6 },
+        { x: -0.08, z: -0.18 },
+        { x: 0.32, z: -0.12 },
+        { x: 0.87, z: 0.69 },
       ],
     },
     {
@@ -154,17 +156,17 @@ export const kalevipoeg: Story = {
       color: '#c56b7a',
       style: 'dashed',
       points: [
-        { x: -0.3, z: 0.3 },
-        { x: -0.55, z: 0.55 },
-        { x: -0.05, z: 0.1 },
+        { x: -0.08, z: -0.18 },
+        { x: 0.37, z: 0.82 },
+        { x: 0.53, z: 0.59 },
       ],
     },
   ],
   regions: [
-    { id: 'homeland', name: 'The Homeland', at: { x: -0.28, z: 0.18 }, scale: 1.15 },
-    { id: 'eastern-waters', name: 'The Eastern Waters', at: { x: 0.3, z: 0.22 } },
-    { id: 'suomi', name: 'Finland', at: { x: 0.62, z: -0.12 }, scale: 0.9 },
-    { id: 'underworld', name: 'The Marches of Põrgu', at: { x: -0.55, z: 0.42 }, scale: 0.9 },
+    { id: 'homeland', name: 'The Homeland', at: { x: 0.05, z: -0.05 }, scale: 1.15 },
+    { id: 'eastern-waters', name: 'The Eastern Waters', at: { x: 0.64, z: 0.2 } },
+    { id: 'suomi', name: 'Finland', at: { x: -0.1, z: -0.85 }, scale: 0.9 },
+    { id: 'underworld', name: 'The Marches of Põrgu', at: { x: 0.4, z: 0.7 }, scale: 0.9 },
   ],
   levels: [
     {
