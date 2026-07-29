@@ -1,5 +1,7 @@
 import { BufferGeometry, Float32BufferAttribute } from 'three'
-import type { HeightField } from './noise'
+import { createNoise2D } from 'simplex-noise'
+import alea from 'alea'
+import { clamp01, type HeightField } from './noise'
 import { makeBiomeColorer } from './biomes'
 import type { TerrainConfig } from '../types'
 
@@ -44,7 +46,11 @@ export function buildTerrainGeometry(
   resolution = 220,
 ): BufferGeometry {
   const heightScale = cfg.heightScale ?? 22
+  const seaLevel = cfg.seaLevel ?? 0.42
   const colorer = makeBiomeColorer(cfg)
+  // Procedural "texture": mid-frequency patches + high-frequency grain that
+  // mottle the flat biome colors so land reads as fields/woods, not paint.
+  const mottle = createNoise2D(alea(`${cfg.seed ?? 'x'}:mottle`))
 
   const n = resolution + 1
   const positions = new Float32Array(n * n * 3)
@@ -67,9 +73,13 @@ export function buildTerrainGeometry(
       positions[idx + 2] = mz * WORLD_HALF
 
       const c = colorer(h)
-      colors[idx] = c.r
-      colors[idx + 1] = c.g
-      colors[idx + 2] = c.b
+      // Mottle brightness by noise — stronger on land, faint under the sea.
+      const patch = mottle(mx * 7, mz * 7)
+      const grain = mottle(mx * 38 + 11, mz * 38 - 7)
+      const shade = 1 + (patch * 0.12 + grain * 0.06) * (h > seaLevel ? 1 : 0.3)
+      colors[idx] = clamp01(c.r * shade)
+      colors[idx + 1] = clamp01(c.g * shade)
+      colors[idx + 2] = clamp01(c.b * shade)
     }
   }
 
