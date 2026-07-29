@@ -230,8 +230,6 @@ export interface Ambient {
   rain?: boolean
   /** Number of fish schools swimming under the sea (default 0). */
   fish?: number
-  /** Number of minor sea monsters/serpents (default 0). */
-  seaMonsters?: number
 }
 
 /**

@@ -32,7 +32,6 @@ export const kalevipoeg: Story = {
     mosquitoes: 7,
     rain: true,
     fish: 4,
-    seaMonsters: 2,
   },
   terrain: {
     seed: 'kalev-9', // unused: heightmap takes precedence

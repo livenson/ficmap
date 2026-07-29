@@ -31,7 +31,6 @@ export const fotr: Story = {
     trees: 0.7,
     birds: 8,
     fish: 3,
-    seaMonsters: 1,
   },
   markers: [
     {
