@@ -10,11 +10,18 @@ interface Props {
   ambient: Ambient
 }
 
+/** Deterministic per-tree pseudo-random in [0,1) from its index. */
+function rand(i: number, salt: number): number {
+  const x = Math.sin((i + 1) * 12.9898 + salt * 78.233) * 43758.5453
+  return x - Math.floor(x)
+}
+
 /**
- * Instanced trees over the wooded terrain. Two InstancedMeshes (trunks +
- * canopies) share the same transforms, so thousands of trees cost only a
- * couple of draw calls. Canopies are tinted per-instance by elevation so
- * lowland woods read lusher than the tree line.
+ * Instanced trees over the wooded terrain. Each tree is built from three
+ * InstancedMeshes (trunk + two canopy tiers), so a fuller, less "blobby" tree
+ * still costs only a handful of draw calls for the whole forest. Trees are
+ * small, and vary per-instance in size, tint, and lean so the wood reads
+ * organic rather than stamped.
  */
 export function Flora({ field, terrain, ambient }: Props) {
   const trees = useMemo(
@@ -22,69 +29,100 @@ export function Flora({ field, terrain, ambient }: Props) {
     [field, terrain, ambient.trees],
   )
   const conifer = ambient.treeKind === 'conifer'
-  const base = new THREE.Color(ambient.treeColor ?? (conifer ? '#3f6b4a' : '#4f8a4a'))
+  const base = new THREE.Color(ambient.treeColor ?? (conifer ? '#3f6f4a' : '#5a9455'))
 
   const trunkRef = useRef<THREE.InstancedMesh>(null)
-  const canopyRef = useRef<THREE.InstancedMesh>(null)
+  const lowRef = useRef<THREE.InstancedMesh>(null)
+  const topRef = useRef<THREE.InstancedMesh>(null)
 
   useLayoutEffect(() => {
     const trunk = trunkRef.current
-    const canopy = canopyRef.current
-    if (!trunk || !canopy) return
+    const low = lowRef.current
+    const top = topRef.current
+    if (!trunk || !low || !top) return
 
     const dummy = new THREE.Object3D()
-    const color = new THREE.Color()
-    const dark = base.clone().multiplyScalar(0.7)
-    const light = base.clone().lerp(new THREE.Color('#c7d98a'), 0.25)
+    const col = new THREE.Color()
+    const hsl = { h: 0, s: 0, l: 0 }
+    base.getHSL(hsl)
+
+    const place = (
+      mesh: THREE.InstancedMesh,
+      i: number,
+      t: (typeof trees)[number],
+      s: number,
+      localY: number,
+      lightMul: number,
+      colored: boolean,
+    ) => {
+      const lean = 0.14
+      dummy.position.set(t.x, t.y + localY * s, t.z)
+      dummy.rotation.set(
+        (rand(i, 3) - 0.5) * lean,
+        t.rot,
+        (rand(i, 4) - 0.5) * lean,
+      )
+      dummy.scale.set(s, s, s)
+      dummy.updateMatrix()
+      mesh.setMatrixAt(i, dummy.matrix)
+      if (colored) {
+        // Per-tree hue/lightness jitter, darker low, lighter up, drier high.
+        const l = THREE.MathUtils.clamp(
+          hsl.l * lightMul + (rand(i, 1) - 0.5) * 0.1 - t.shade * 0.12,
+          0.12,
+          0.7,
+        )
+        const h = hsl.h + (rand(i, 2) - 0.5) * 0.04
+        col.setHSL(h, hsl.s * (1 - t.shade * 0.25), l)
+        mesh.setColorAt(i, col)
+      }
+    }
 
     trees.forEach((t, i) => {
-      // Trunk: a short tapered post rooted at the surface.
-      const trunkH = 1.1 * t.scale
-      dummy.position.set(t.x, t.y + trunkH / 2, t.z)
-      dummy.rotation.set(0, t.rot, 0)
-      dummy.scale.set(t.scale, t.scale, t.scale)
-      dummy.updateMatrix()
-      trunk.setMatrixAt(i, dummy.matrix)
-
-      // Canopy: a cone (conifer) / rounded blob (broadleaf) above the trunk.
-      const canopyH = (conifer ? 3.4 : 2.6) * t.scale
-      dummy.position.set(t.x, t.y + trunkH + canopyH * 0.42, t.z)
-      dummy.rotation.set(0, t.rot, 0)
-      dummy.scale.set(t.scale, t.scale * (conifer ? 1.15 : 1), t.scale)
-      dummy.updateMatrix()
-      canopy.setMatrixAt(i, dummy.matrix)
-
-      color.copy(light).lerp(dark, t.shade)
-      canopy.setColorAt(i, color)
+      const s = t.scale * 0.6 // overall smaller than before
+      place(trunk, i, t, s, 0.45, 1, false)
+      if (conifer) {
+        place(low, i, t, s, 1.6, 0.85, true)
+        place(top, i, t, s, 2.35, 1.15, true)
+      } else {
+        place(low, i, t, s, 1.35, 0.9, true)
+        place(top, i, t, s, 1.95, 1.18, true)
+      }
     })
-    trunk.instanceMatrix.needsUpdate = true
-    canopy.instanceMatrix.needsUpdate = true
-    if (canopy.instanceColor) canopy.instanceColor.needsUpdate = true
+
+    for (const m of [trunk, low, top]) {
+      m.instanceMatrix.needsUpdate = true
+      if (m.instanceColor) m.instanceColor.needsUpdate = true
+    }
   }, [trees, conifer, base])
 
   if (trees.length === 0) return null
 
   return (
     <group>
-      <instancedMesh
-        ref={trunkRef}
-        args={[undefined, undefined, trees.length]}
-        castShadow
-      >
-        <cylinderGeometry args={[0.12, 0.18, 1.1, 5]} />
+      <instancedMesh ref={trunkRef} args={[undefined, undefined, trees.length]} castShadow>
+        <cylinderGeometry args={[0.05, 0.08, 0.9, 5]} />
         <meshStandardMaterial color="#5b4634" roughness={1} />
       </instancedMesh>
-      <instancedMesh
-        ref={canopyRef}
-        args={[undefined, undefined, trees.length]}
-        castShadow
-      >
+
+      {/* Lower / larger canopy tier */}
+      <instancedMesh ref={lowRef} args={[undefined, undefined, trees.length]} castShadow>
         {conifer ? (
-          <coneGeometry args={[1.0, 3.4, 7]} />
+          <coneGeometry args={[0.72, 1.7, 7]} />
         ) : (
-          <icosahedronGeometry args={[1.4, 0]} />
+          <icosahedronGeometry args={[0.82, 1]} />
         )}
-        <meshStandardMaterial roughness={0.9} flatShading />
+        <meshStandardMaterial roughness={0.85} flatShading />
+      </instancedMesh>
+
+      {/* Upper / smaller canopy tier */}
+      <instancedMesh ref={topRef} args={[undefined, undefined, trees.length]} castShadow>
+        {conifer ? (
+          <coneGeometry args={[0.5, 1.3, 7]} />
+        ) : (
+          <icosahedronGeometry args={[0.58, 1]} />
+        )}
+        <meshStandardMaterial roughness={0.85} flatShading />
       </instancedMesh>
     </group>
   )
