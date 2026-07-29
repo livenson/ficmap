@@ -149,13 +149,8 @@ export function MapScene({
           ) : null}
           {level.ambient.rain ? <Weather /> : null}
           {level.ambient.rain ? <Ripples field={field} terrain={terrain} /> : null}
-          {level.ambient.fish || level.ambient.seaMonsters ? (
-            <SeaLife
-              field={field}
-              terrain={terrain}
-              fish={level.ambient.fish ?? 0}
-              monsters={level.ambient.seaMonsters ?? 0}
-            />
+          {level.ambient.fish ? (
+            <SeaLife field={field} terrain={terrain} fish={level.ambient.fish} />
           ) : null}
         </>
       )}

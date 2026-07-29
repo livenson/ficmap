@@ -20,7 +20,6 @@ export const emberfall: Story = {
     birds: 0,
     dragons: 3,
     fish: 2,
-    seaMonsters: 3,
   },
   terrain: {
     seed: 'emberfall-2',
