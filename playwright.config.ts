@@ -10,7 +10,10 @@ const PORT = 5173
 
 export default defineConfig({
   testDir: './e2e',
-  timeout: 45_000,
+  // The 3D scenes render under software WebGL here, so per-test budgets are
+  // generous — a chapter tour includes a camera fly-through plus the full
+  // post-processing pass.
+  timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
   workers: 1,

@@ -27,6 +27,7 @@ import { Weather } from './Weather'
 import { Mosquitoes } from './Mosquitoes'
 import { Ripples } from './Ripples'
 import { SeaLife } from './SeaLife'
+import { Postprocess } from './Postprocess'
 
 export type ViewMode = '2d' | '3d'
 
@@ -175,6 +176,7 @@ export function MapScene({
           onSelect={onSelect}
           showLabels={layers.labels}
           highlight={storyMode ? highlight.markers : null}
+          controlsRef={controls}
         />
       )}
       {layers.artifacts && (
@@ -188,6 +190,8 @@ export function MapScene({
           onSelect={onSelectElement}
         />
       )}
+
+      <Postprocess />
     </Canvas>
   )
 }
