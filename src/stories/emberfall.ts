@@ -13,7 +13,15 @@ export const emberfall: Story = {
     'The mountain that made these isles never truly slept. Ash-forests, ' +
     'obsidian shores and rivers of cooling stone — a harsher atlas, drawn with ' +
     'the same tools as any other. Toggle 2D/3D and explore the cinders.',
-  ambient: { trees: 0.18, treeKind: 'conifer', treeColor: '#3a3d33', birds: 0, dragons: 3 },
+  ambient: {
+    trees: 0.18,
+    treeKind: 'conifer',
+    treeColor: '#3a3d33',
+    birds: 0,
+    dragons: 3,
+    fish: 2,
+    seaMonsters: 3,
+  },
   terrain: {
     seed: 'emberfall-2',
     frequency: 2.4,

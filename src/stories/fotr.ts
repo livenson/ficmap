@@ -30,6 +30,8 @@ export const fotr: Story = {
   ambient: {
     trees: 0.7,
     birds: 8,
+    fish: 3,
+    seaMonsters: 1,
   },
   markers: [
     {
