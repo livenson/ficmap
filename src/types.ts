@@ -142,6 +142,24 @@ export interface Chapter {
   highlight?: { markers?: string[]; routes?: string[] }
 }
 
+/**
+ * Ambient "life" layered onto the 3D view — scattered vegetation and animated
+ * creatures. Purely decorative, deterministic, and only shown in 3D. Omit for
+ * sensible defaults; set counts to 0 to switch a layer off.
+ */
+export interface Ambient {
+  /** Tree density, 0..1 (default 0.6). Trees populate wooded elevations. */
+  trees?: number
+  /** Foliage color; defaults to a green tuned to the world. */
+  treeColor?: string
+  /** Trunk/canopy shape hint. 'broadleaf' (default) or 'conifer'. */
+  treeKind?: 'broadleaf' | 'conifer'
+  /** Number of circling birds (default 6). */
+  birds?: number
+  /** Number of circling dragons (default 0). */
+  dragons?: number
+}
+
 /** A complete story/world definition. */
 export interface Story {
   id: string
@@ -151,6 +169,8 @@ export interface Story {
   /** Longer blurb shown in the info panel when nothing is selected. */
   intro?: string
   terrain: TerrainConfig
+  /** Ambient 3D life (trees, birds, dragons). */
+  ambient?: Ambient
   markers?: Marker[]
   routes?: Route[]
   regions?: RegionLabel[]
