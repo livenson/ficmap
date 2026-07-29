@@ -56,7 +56,8 @@ test('plays a chapter tour and exits', async ({ page }) => {
   await page.getByRole('button', { name: /Next/ }).click()
   await page.waitForTimeout(1400)
   await expect(page.getByText(/Chapter 2/)).toBeVisible()
-  await page.getByRole('button', { name: /Exit story/ }).first().click()
+  // Exit via the story panel's own button (the toolbar also has one).
+  await page.locator('.panel--story').getByRole('button', { name: /Exit story/ }).click()
   await expect(page.getByRole('heading', { name: 'Places', exact: true })).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
 })
