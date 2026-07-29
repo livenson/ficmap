@@ -57,6 +57,10 @@ export interface TerrainConfig {
   rivers?: number
   /** River line color (default a river blue; e.g. lava-orange for ash worlds). */
   riverColor?: string
+  /** Sky mood. 'day' (default) draws a sky + daylight; 'dark' suits underworlds. */
+  sky?: 'day' | 'dark'
+  /** Color of the water/sea plane (default a sea blue). */
+  waterColor?: string
 }
 
 export type MarkerKind =
@@ -174,6 +178,28 @@ export interface Chapter {
   reveal?: ChapterReveal
   /** Marker/route ids to emphasize while this chapter is active. */
   highlight?: { markers?: string[]; routes?: string[] }
+  /**
+   * Which map level this chapter plays on (a level id; default the surface).
+   * Entering the chapter switches the floor, so the tour can descend into an
+   * underworld and back.
+   */
+  level?: string
+}
+
+/**
+ * An additional map level beneath the surface — its own terrain and places,
+ * reached via the floor switcher. Used for underworlds, dungeons, sky realms.
+ */
+export interface Level {
+  id: string
+  /** Name shown in the floor switcher (e.g. "Põrgu"). */
+  title: string
+  subtitle?: string
+  terrain: TerrainConfig
+  ambient?: Ambient
+  markers?: Marker[]
+  routes?: Route[]
+  regions?: RegionLabel[]
 }
 
 /**
@@ -225,6 +251,10 @@ export interface Story {
   markers?: Marker[]
   routes?: Route[]
   regions?: RegionLabel[]
+  /** Name for the implicit surface level in the floor switcher. Default "Surface". */
+  surfaceName?: string
+  /** Additional map levels below the surface (e.g. an underworld). */
+  levels?: Level[]
   /** Tracked artifacts whose location moves across the story. */
   elements?: StoryElement[]
   /** Single-book tour. Mutually exclusive with `books`. */

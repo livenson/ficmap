@@ -1,4 +1,5 @@
 import type { MapPoint, Story, StoryElement, ElementStop } from '../types'
+import { findMarker } from './levels'
 
 /**
  * Which leg of an element's journey is active at a point in the tour.
@@ -27,7 +28,7 @@ export function stopPoint(
   story: Story,
 ): MapPoint | null {
   if (stop.marker) {
-    const m = story.markers?.find((mk) => mk.id === stop.marker)
+    const m = findMarker(story, stop.marker)
     if (m) return m.at
   }
   return stop.at ?? null

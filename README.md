@@ -143,6 +143,20 @@ the **Kalevipoeg** sample and you'll see it surface in both *Wars & Wanderings*
 and *Põrgu & the End*. `chapters` and `books` are interchangeable; a plain
 `chapters` run is just a single implicit book.
 
+### Map levels (floors)
+
+A world can have levels below the surface — an underworld, a dungeon, a sky
+realm. Add `levels` (each with its own `terrain`, `markers`, etc.) and a **floor
+switcher** appears. A chapter's `level` id makes the guided tour **descend and
+resurface** automatically. Try **Kalevipoeg** → descend into **Põrgu**, or play
+Book III and watch the tour drop below and climb back.
+
+```ts
+levels: [{ id: 'porgu', title: 'Põrgu', terrain: { /* dark, sky: 'dark' */ }, markers: [...] }],
+// and on a chapter:
+{ id: 'porgu', title: 'The Gates of Põrgu', level: 'porgu', focus: { marker: 'sarvik-hall' }, ... }
+```
+
 ### Tracked artifacts
 
 Give a world `elements` to track objects whose location matters — a crown, a

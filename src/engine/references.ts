@@ -1,5 +1,6 @@
 import type { Story } from '../types'
 import { flattenChapters } from './story'
+import { allMarkers } from './levels'
 
 /** One place's appearance in a chapter (identified by its global tour index). */
 export interface PlaceReference {
@@ -34,7 +35,7 @@ export function buildPlaceReferences(
   story: Story,
 ): Record<string, PlaceReference[]> {
   const out: Record<string, PlaceReference[]> = {}
-  const markers = story.markers ?? []
+  const markers = allMarkers(story)
   const flat = flattenChapters(story)
   if (markers.length === 0 || flat.length === 0) return out
 

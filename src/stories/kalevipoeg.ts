@@ -18,7 +18,8 @@ export const kalevipoeg: Story = {
     'The song of Kalev’s son — giant, king, and wanderer. One land, told in ' +
     'three books: his birth and the winning of the sword, his wars and ' +
     'voyages, and his end at the gates of Põrgu. Press ▶ Play story to follow ' +
-    'the whole saga, or click a place to see every book it appears in.',
+    'the whole saga, or use the floor switcher to descend into Põrgu below.',
+  surfaceName: 'The Living Lands',
   ambient: { trees: 0.6, treeKind: 'conifer', birds: 6 },
   terrain: {
     seed: 'kalev-9',
@@ -106,13 +107,13 @@ export const kalevipoeg: Story = {
       description: 'A misted lake of the inland forests, haunt of spirits and song.',
     },
     {
-      id: 'porgu',
-      name: 'Põrgu',
+      id: 'deep-gate',
+      name: 'The Mouth of Põrgu',
       kind: 'danger',
       at: { x: -0.55, z: 0.55 },
       description:
-        'The gates of the underworld, realm of Sarvik the Horned, whom the ' +
-        'hero descends to fight.',
+        'The cavern-mouth where the hero descends into the underworld. Use the ' +
+        'floor switcher to follow him down into Põrgu.',
     },
     {
       id: 'world-end',
@@ -164,6 +165,71 @@ export const kalevipoeg: Story = {
     { id: 'eastern-waters', name: 'The Eastern Waters', at: { x: 0.3, z: 0.22 } },
     { id: 'suomi', name: 'Finland', at: { x: 0.62, z: -0.12 }, scale: 0.9 },
     { id: 'underworld', name: 'The Marches of Põrgu', at: { x: -0.55, z: 0.42 }, scale: 0.9 },
+  ],
+  levels: [
+    {
+      id: 'porgu',
+      title: 'Põrgu',
+      subtitle: 'The underworld below',
+      terrain: {
+        seed: 'porgu-2',
+        frequency: 2.0,
+        islandFalloff: 0.32,
+        seaLevel: 0.42,
+        heightScale: 18,
+        octaves: 5,
+        rivers: 4,
+        riverColor: '#ff6a1a',
+        sky: 'dark',
+        waterColor: '#3a0d0a',
+        biomes: [
+          { maxHeight: 0.42, color: '#240a0a', name: 'Black Lake' },
+          { maxHeight: 0.5, color: '#3a1512', name: 'Ashen Shore' },
+          { maxHeight: 0.62, color: '#5a1f18', name: 'Cinder Floor' },
+          { maxHeight: 0.74, color: '#7a2a1a', name: 'Ember Rock' },
+          { maxHeight: 0.86, color: '#b04a22', name: 'Glowing Crags' },
+          { maxHeight: 1.0, color: '#ffb24a', name: 'The Pyres' },
+        ],
+      },
+      ambient: { trees: 0, birds: 0, dragons: 2 },
+      markers: [
+        {
+          id: 'porgu-gates',
+          name: 'The Gates of Põrgu',
+          kind: 'landmark',
+          at: { x: 0.0, z: -0.1 },
+          description: 'The iron gates the hero is later bound to guard.',
+        },
+        {
+          id: 'sarvik-hall',
+          name: "Sarvik's Hall",
+          kind: 'danger',
+          at: { x: -0.2, z: 0.15 },
+          description:
+            'The seat of Sarvik the Horned, lord of the underworld, whom the ' +
+            'hero wrestles and binds.',
+        },
+        {
+          id: 'the-hoard',
+          name: 'The Hoard',
+          kind: 'landmark',
+          at: { x: 0.25, z: 0.1 },
+          description: 'The demon’s treasure, carried up into the light.',
+        },
+        {
+          id: 'the-binding',
+          name: 'The Binding Stone',
+          kind: 'ruin',
+          at: { x: -0.05, z: 0.35 },
+          description:
+            'Where the gods later fasten the fallen hero’s hand to the rock, ' +
+            'to guard the gates until his people are free.',
+        },
+      ],
+      regions: [
+        { id: 'deeps', name: 'The Deeps of Põrgu', at: { x: 0.0, z: 0.05 }, scale: 1.1 },
+      ],
+    },
   ],
   elements: [
     {
@@ -299,33 +365,38 @@ export const kalevipoeg: Story = {
           id: 'porgu',
           title: 'The Gates of Põrgu',
           narration:
-            'The hero descends into Põrgu, the underworld, to wrestle Sarvik ' +
-            'the Horned, binding the demon and carrying off his treasure.',
-          focus: { marker: 'porgu', distance: 34, pitch: 38 },
+            'Down through the Mouth of Põrgu the hero descends into the ' +
+            'underworld, to wrestle Sarvik the Horned in his hall — binding ' +
+            'the demon and carrying off his hoard. (You have descended a level.)',
+          level: 'porgu',
+          focus: { marker: 'sarvik-hall', distance: 34, pitch: 38 },
           reveal: {
-            markers: ['porgu'],
-            routes: ['last-road'],
-            regions: ['underworld'],
+            markers: ['porgu-gates', 'sarvik-hall', 'the-hoard'],
+            regions: ['deeps'],
           },
-          highlight: { markers: ['porgu'], routes: ['last-road'] },
+          highlight: { markers: ['sarvik-hall'] },
         },
         {
           id: 'kaapa-death',
           title: 'The Kääpa',
           narration:
-            'Homeward at last, Kalevipoeg wades the Kääpa brook. The lost sword ' +
-            'wakes to its old curse and shears the legs from its master.',
+            'Back in the daylight, Kalevipoeg wades the Kääpa brook. The lost ' +
+            'sword wakes to its old curse and shears the legs from its master.',
           focus: { marker: 'kaapa', distance: 30, pitch: 28 },
+          reveal: { markers: ['deep-gate'], routes: ['last-road'], regions: ['underworld'] },
           highlight: { markers: ['kaapa'] },
         },
         {
           id: 'guardian',
           title: 'Guardian at the Gates',
           narration:
-            'The gods set the fallen hero to guard the gates of Põrgu, his ' +
-            'hand fast to the rock, until the day his people are free again.',
-          focus: { marker: 'porgu', distance: 38, pitch: 42, heading: 15 },
-          highlight: { markers: ['porgu'] },
+            'The gods set the fallen hero back below, his hand fast to the ' +
+            'Binding Stone, to guard the gates of Põrgu until the day his ' +
+            'people are free again.',
+          level: 'porgu',
+          focus: { marker: 'porgu-gates', distance: 38, pitch: 42, heading: 15 },
+          reveal: { markers: ['the-binding'] },
+          highlight: { markers: ['porgu-gates', 'the-binding'] },
         },
       ],
     },
