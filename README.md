@@ -17,7 +17,17 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # static output in dist/
 npm run preview    # serve the production build
+npm test           # Playwright e2e tests (see below)
 ```
+
+### Tests
+
+End-to-end tests (`e2e/`, Playwright) cover **all demo scenarios** — every
+world loads without errors, plus the 2D/3D toggle, chapter playback,
+cross-chapter place references, artifact journeys, the Põrgu underworld floor
+switch, and the layers menu. `npm test` starts a dev server and runs them.
+It uses the environment's preinstalled Chromium via `executablePath`; point
+`PW_CHROMIUM` at a different binary if needed.
 
 ## Deploy (GitHub Pages)
 
