@@ -336,6 +336,114 @@ body,
   color: var(--ink-dim);
 }
 
+/* ---------- Place detail (paragraph + references) ---------- */
+.place {
+  position: relative;
+}
+.place__close {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: none;
+  border: none;
+  color: var(--ink-dim);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 4px;
+}
+.place__close:hover {
+  color: var(--ink);
+}
+.place__refs ul {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.place__refs li button {
+  width: 100%;
+  text-align: left;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+  padding: 9px 11px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.12s ease;
+}
+.place__refs li button:hover {
+  border-color: var(--accent);
+}
+.place__ref-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.place__ref-num {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--accent-2);
+  text-transform: uppercase;
+  flex: 0 0 auto;
+}
+.place__ref-title {
+  font-size: 15px;
+  flex: 1;
+}
+.place__ref-via {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: var(--ink-dim);
+  border: 1px solid var(--line);
+}
+.place__ref-via--focus {
+  color: #22180a;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.place__ref-via--highlight {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.place__ref-quote {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-dim);
+  line-height: 1.5;
+}
+.place__none {
+  color: var(--ink-dim);
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Story-mode overlay card (floats over the map, tour panel stays put). */
+.place-overlay {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 320px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100% - 120px);
+  overflow-y: auto;
+  background: rgba(16, 22, 28, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 8;
+}
+
 /* ---------- Markers (rendered via drei Html) ---------- */
 .marker {
   display: inline-flex;

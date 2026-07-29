@@ -3,7 +3,9 @@ import { MapScene, type ViewMode } from './components/MapScene'
 import { Toolbar } from './ui/Toolbar'
 import { InfoPanel } from './ui/InfoPanel'
 import { StoryPlayer } from './ui/StoryPlayer'
+import { PlaceDetail } from './ui/PlaceDetail'
 import { Legend } from './ui/Legend'
+import { buildPlaceReferences } from './engine/references'
 import { stories, getStory } from './stories'
 
 export default function App() {
@@ -22,6 +24,8 @@ export default function App() {
     () => story.markers?.find((m) => m.id === selectedId) ?? null,
     [story, selectedId],
   )
+  // Which chapters mention each place — computed once per story.
+  const references = useMemo(() => buildPlaceReferences(story), [story])
 
   function pickStory(id: string) {
     setStoryId(id)
@@ -34,6 +38,8 @@ export default function App() {
     setChapterIndex(0)
   }
   const exitStory = () => setChapterIndex(null)
+  // Jump to a chapter that mentions the selected place (enters story mode).
+  const jumpToChapter = (index: number) => setChapterIndex(index)
   const step = (delta: number) =>
     setChapterIndex((i) =>
       i == null ? i : Math.max(0, Math.min(chapters.length - 1, i + delta)),
@@ -81,8 +87,10 @@ export default function App() {
           <InfoPanel
             story={story}
             selected={selected}
+            references={references}
             onClose={() => setSelectedId(null)}
             onJumpTo={setSelectedId}
+            onJumpToChapter={jumpToChapter}
           />
         )}
 
@@ -98,9 +106,23 @@ export default function App() {
             chapterIndex={chapterIndex}
           />
           <Legend terrain={story.terrain} />
+
+          {/* In story mode, clicking a place shows its detail as an overlay so
+              the tour panel stays put. In free mode the InfoPanel handles it. */}
+          {inStory && selected && (
+            <div className="place-overlay">
+              <PlaceDetail
+                marker={selected}
+                references={references[selected.id] ?? []}
+                onJumpToChapter={jumpToChapter}
+                onClose={() => setSelectedId(null)}
+              />
+            </div>
+          )}
+
           <div className="hint">
             drag to pan · scroll to zoom{mode === '3d' ? ' · right-drag to orbit' : ''}
-            {inStory ? ' · ← → chapters' : ''}
+            {inStory ? ' · ← → chapters · click a place for its references' : ''}
           </div>
         </div>
       </div>
