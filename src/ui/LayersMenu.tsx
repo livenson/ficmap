@@ -4,6 +4,7 @@ export interface Layers {
   labels: boolean
   nature: boolean
   rivers: boolean
+  artifacts: boolean
 }
 
 interface Props {
@@ -15,6 +16,7 @@ const ITEMS: { key: keyof Layers; label: string }[] = [
   { key: 'labels', label: 'Labels' },
   { key: 'nature', label: 'Trees & wildlife' },
   { key: 'rivers', label: 'Rivers' },
+  { key: 'artifacts', label: 'Artifacts' },
 ]
 
 /**

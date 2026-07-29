@@ -4,18 +4,26 @@ import { Toolbar } from './ui/Toolbar'
 import { InfoPanel } from './ui/InfoPanel'
 import { StoryPlayer } from './ui/StoryPlayer'
 import { PlaceDetail } from './ui/PlaceDetail'
+import { ElementDetail } from './ui/ElementDetail'
 import { Legend } from './ui/Legend'
 import { buildPlaceReferences } from './engine/references'
 import { flattenChapters } from './engine/story'
 import { stories, getStory } from './stories'
+import type { Layers } from './ui/LayersMenu'
 
 export default function App() {
   const [storyId, setStoryId] = useState(stories[0].id)
   const [mode, setMode] = useState<ViewMode>('3d')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
   // Toggleable map detail layers (strip back to a clean map).
-  const [layers, setLayers] = useState({ labels: true, nature: true, rivers: true })
-  const toggleLayer = (key: 'labels' | 'nature' | 'rivers') =>
+  const [layers, setLayers] = useState<Layers>({
+    labels: true,
+    nature: true,
+    rivers: true,
+    artifacts: true,
+  })
+  const toggleLayer = (key: keyof Layers) =>
     setLayers((l) => ({ ...l, [key]: !l[key] }))
   // null = free exploration; a number = playing that chapter.
   const [chapterIndex, setChapterIndex] = useState<number | null>(null)
@@ -28,21 +36,37 @@ export default function App() {
     () => story.markers?.find((m) => m.id === selectedId) ?? null,
     [story, selectedId],
   )
+  const selectedElement = useMemo(
+    () => story.elements?.find((e) => e.id === selectedElementId) ?? null,
+    [story, selectedElementId],
+  )
   // Which chapters mention each place — computed once per story.
   const references = useMemo(() => buildPlaceReferences(story), [story])
+
+  // Marker and artifact selection are mutually exclusive.
+  const selectMarker = (id: string | null) => {
+    setSelectedId(id)
+    if (id) setSelectedElementId(null)
+  }
+  const selectElement = (id: string | null) => {
+    setSelectedElementId(id)
+    if (id) setSelectedId(null)
+  }
 
   function pickStory(id: string) {
     setStoryId(id)
     setSelectedId(null)
+    setSelectedElementId(null)
     setChapterIndex(null)
   }
 
   function startStory() {
     setSelectedId(null)
+    setSelectedElementId(null)
     setChapterIndex(0)
   }
   const exitStory = () => setChapterIndex(null)
-  // Jump to a chapter that mentions the selected place (enters story mode).
+  // Jump to a chapter (from a place reference or an artifact's journey leg).
   const jumpToChapter = (index: number) => setChapterIndex(index)
   const step = (delta: number) =>
     setChapterIndex((i) =>
@@ -60,6 +84,23 @@ export default function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [inStory, flat.length])
+
+  const detailOverlay = selectedElement ? (
+    <ElementDetail
+      element={selectedElement}
+      story={story}
+      chapterIndex={chapterIndex}
+      onJumpToChapter={jumpToChapter}
+      onClose={() => selectElement(null)}
+    />
+  ) : selected ? (
+    <PlaceDetail
+      marker={selected}
+      references={references[selected.id] ?? []}
+      onJumpToChapter={jumpToChapter}
+      onClose={() => selectMarker(null)}
+    />
+  ) : null
 
   return (
     <div className="app">
@@ -91,9 +132,15 @@ export default function App() {
           <InfoPanel
             story={story}
             selected={selected}
+            selectedElement={selectedElement}
             references={references}
-            onClose={() => setSelectedId(null)}
-            onJumpTo={setSelectedId}
+            chapterIndex={chapterIndex}
+            onClose={() => {
+              selectMarker(null)
+              selectElement(null)
+            }}
+            onJumpTo={selectMarker}
+            onSelectElement={selectElement}
             onJumpToChapter={jumpToChapter}
           />
         )}
@@ -105,28 +152,23 @@ export default function App() {
             story={story}
             mode={mode}
             selectedId={selectedId}
-            onSelect={setSelectedId}
+            onSelect={selectMarker}
+            selectedElementId={selectedElementId}
+            onSelectElement={selectElement}
             layers={layers}
             chapterIndex={chapterIndex}
           />
           <Legend terrain={story.terrain} />
 
-          {/* In story mode, clicking a place shows its detail as an overlay so
-              the tour panel stays put. In free mode the InfoPanel handles it. */}
-          {inStory && selected && (
-            <div className="place-overlay">
-              <PlaceDetail
-                marker={selected}
-                references={references[selected.id] ?? []}
-                onJumpToChapter={jumpToChapter}
-                onClose={() => setSelectedId(null)}
-              />
-            </div>
+          {/* In story mode the detail shows as an overlay so the tour panel
+              stays put. In free mode the InfoPanel handles it. */}
+          {inStory && detailOverlay && (
+            <div className="place-overlay">{detailOverlay}</div>
           )}
 
           <div className="hint">
             drag to pan · scroll to zoom{mode === '3d' ? ' · right-drag to orbit' : ''}
-            {inStory ? ' · ← → chapters · click a place for its references' : ''}
+            {inStory ? ' · ← → chapters' : ''}
           </div>
         </div>
       </div>

@@ -165,6 +165,34 @@ export const kalevipoeg: Story = {
     { id: 'suomi', name: 'Finland', at: { x: 0.62, z: -0.12 }, scale: 0.9 },
     { id: 'underworld', name: 'The Marches of Põrgu', at: { x: -0.55, z: 0.42 }, scale: 0.9 },
   ],
+  elements: [
+    {
+      id: 'sword',
+      name: 'The Cursed Sword',
+      glyph: '⚔',
+      description:
+        'The great blade forged in Finland — and cursed to one day cut down ' +
+        'its bearer. Track it across the epic: forged, carried, lost, and ' +
+        'waiting in the brook for the day its master wades across.',
+      journey: [
+        {
+          marker: 'finland',
+          sinceChapter: 2,
+          note: 'Forged by the smith of Finland, then cursed.',
+        },
+        {
+          marker: 'lindanisa',
+          sinceChapter: 4,
+          note: 'Borne home and carried into the wars.',
+        },
+        {
+          marker: 'kaapa',
+          sinceChapter: 6,
+          note: 'Stolen by Peipus and lost in the Kääpa — where it waits.',
+        },
+      ],
+    },
+  ],
   books: [
     {
       id: 'birth',

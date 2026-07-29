@@ -581,6 +581,54 @@ body,
   letter-spacing: 0.02em;
 }
 
+/* ---------- Tracked artifacts ---------- */
+.element {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(30, 20, 8, 0.9);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  padding: 4px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 0 14px rgba(255, 210, 122, 0.5);
+  animation: element-pulse 2.4s ease-in-out infinite;
+  transition: transform 0.12s ease;
+}
+.element:hover {
+  transform: translateY(-2px);
+}
+.element--selected {
+  background: var(--accent);
+  color: #22180a;
+  box-shadow: 0 0 22px 3px rgba(255, 210, 122, 0.75);
+}
+.element__glyph {
+  font-size: 15px;
+  line-height: 1;
+}
+.element__name {
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+@keyframes element-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 210, 122, 0.4); }
+  50% { box-shadow: 0 0 22px rgba(255, 210, 122, 0.75); }
+}
+.element__here {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #22180a;
+  background: var(--accent);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
 /* ---------- Region labels ---------- */
 .region {
   color: rgba(232, 238, 244, 0.72);

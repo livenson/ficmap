@@ -96,6 +96,36 @@ export interface Route {
   description?: string
 }
 
+/** One leg of an element's journey: where it is, and from when. */
+export interface ElementStop {
+  /** Where the element rests for this leg — a marker id or an explicit point. */
+  marker?: string
+  at?: MapPoint
+  /**
+   * Global tour index (across all books) from which the element is here.
+   * Legs are matched by the latest `sinceChapter` at or before the current
+   * chapter; omit on the first leg. Default 0.
+   */
+  sinceChapter?: number
+  /** Short note shown in the element's journey list. */
+  note?: string
+}
+
+/**
+ * A tracked story element — an artifact or object whose whereabouts matter
+ * (a crown, a cursed sword). It carries a journey of stops; on the map it is
+ * shown at wherever it is for the current chapter, so you can watch it move.
+ */
+export interface StoryElement {
+  id: string
+  name: string
+  /** Glyph shown on the map pin (emoji or symbol). Default ◆. */
+  glyph?: string
+  description?: string
+  /** Ordered legs of the element's journey across the map. */
+  journey: ElementStop[]
+}
+
 /** A named area label floated over a region (e.g. "The Northern Wastes"). */
 export interface RegionLabel {
   id: string
@@ -195,6 +225,8 @@ export interface Story {
   markers?: Marker[]
   routes?: Route[]
   regions?: RegionLabel[]
+  /** Tracked artifacts whose location moves across the story. */
+  elements?: StoryElement[]
   /** Single-book tour. Mutually exclusive with `books`. */
   chapters?: Chapter[]
   /** Multi-book tour over the shared map. Takes precedence over `chapters`. */
