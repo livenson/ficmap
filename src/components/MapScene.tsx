@@ -11,6 +11,8 @@ import { Water } from './Water'
 import { Markers } from './Markers'
 import { Routes } from './Routes'
 import { Regions } from './Regions'
+import { Flora } from './Flora'
+import { Wildlife } from './Wildlife'
 
 export type ViewMode = '2d' | '3d'
 
@@ -96,6 +98,14 @@ export function MapScene({
 
       <Terrain field={field} terrain={story.terrain} />
       <Water terrain={story.terrain} />
+
+      {/* Ambient life enriches the 3D view; omitted in the flat 2D map. */}
+      {mode === '3d' && (
+        <>
+          <Flora field={field} terrain={story.terrain} ambient={story.ambient ?? {}} />
+          <Wildlife ambient={story.ambient ?? {}} />
+        </>
+      )}
 
       {routes.length > 0 && (
         <Routes

@@ -16,6 +16,7 @@ export const valdurn: Story = {
     'the west. Now three powers watch the roads between them. Pan and zoom to ' +
     'explore — click any marker to read its tale, and toggle 2D/3D from the ' +
     'top bar.',
+  ambient: { trees: 0.75, treeKind: 'broadleaf', birds: 7 },
   terrain: {
     seed: 'valdurn-5',
     frequency: 1.4,

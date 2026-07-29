@@ -90,6 +90,7 @@ can paste straight into your story.
 | `routes[]` | Journeys/roads drawn draped over the terrain. |
 | `regions[]` | Ambient area names floated over the map. |
 | `chapters[]` | Optional guided tour — see below. |
+| `ambient` | 3D-only life: `{ trees, treeKind, treeColor, birds, dragons }`. Trees scatter across wooded elevations; birds/dragons circle overhead. Deterministic; shown only in 3D. |
 
 ## Story mode (chapters)
 
