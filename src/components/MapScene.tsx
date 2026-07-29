@@ -5,7 +5,12 @@ import * as THREE from 'three'
 import { makeHeightField } from '../engine/noise'
 import { WORLD_SIZE, elevationAt, mapToWorld } from '../engine/terrain'
 import type { CameraFocus, Story } from '../types'
-import { resolveHighlight, resolveVisibility, isVisible } from '../engine/story'
+import {
+  resolveHighlight,
+  resolveVisibility,
+  isVisible,
+  flattenChapters,
+} from '../engine/story'
 import { Terrain } from './Terrain'
 import { Water } from './Water'
 import { Markers } from './Markers'
@@ -13,6 +18,7 @@ import { Routes } from './Routes'
 import { Regions } from './Regions'
 import { Flora } from './Flora'
 import { Wildlife } from './Wildlife'
+import { Rivers } from './Rivers'
 
 export type ViewMode = '2d' | '3d'
 
@@ -21,7 +27,7 @@ interface Props {
   mode: ViewMode
   selectedId: string | null
   onSelect: (id: string | null) => void
-  showLabels: boolean
+  layers: { labels: boolean; nature: boolean; rivers: boolean }
   /** Active chapter index when in story mode, else null. */
   chapterIndex: number | null
 }
@@ -31,7 +37,7 @@ export function MapScene({
   mode,
   selectedId,
   onSelect,
-  showLabels,
+  layers,
   chapterIndex,
 }: Props) {
   // Height field is the single source of truth for terrain, markers & routes.
@@ -60,7 +66,9 @@ export function MapScene({
   )
 
   // Resolve the current chapter's camera focus into a world-space goal.
-  const focus = storyMode ? story.chapters?.[chapterIndex]?.focus : undefined
+  const focus = storyMode
+    ? flattenChapters(story)[chapterIndex!]?.chapter.focus
+    : undefined
   const goal = useMemo(
     () => resolveGoal(focus, story, field, mode),
     [focus, story, field, mode, chapterIndex],
@@ -98,9 +106,11 @@ export function MapScene({
 
       <Terrain field={field} terrain={story.terrain} />
       <Water terrain={story.terrain} />
+      {layers.rivers && <Rivers field={field} terrain={story.terrain} />}
 
-      {/* Ambient life enriches the 3D view; omitted in the flat 2D map. */}
-      {mode === '3d' && (
+      {/* Ambient life enriches the 3D view; omitted in the flat 2D map and
+          when the "Trees & wildlife" layer is switched off for a clean view. */}
+      {mode === '3d' && layers.nature && (
         <>
           <Flora field={field} terrain={story.terrain} ambient={story.ambient ?? {}} />
           <Wildlife ambient={story.ambient ?? {}} />
@@ -115,7 +125,7 @@ export function MapScene({
           highlight={storyMode ? highlight.routes : null}
         />
       )}
-      {regions.length > 0 && (
+      {layers.labels && regions.length > 0 && (
         <Regions regions={regions} field={field} terrain={story.terrain} />
       )}
       {markers.length > 0 && (
@@ -125,7 +135,7 @@ export function MapScene({
           terrain={story.terrain}
           selectedId={selectedId}
           onSelect={onSelect}
-          showLabels={showLabels}
+          showLabels={layers.labels}
           highlight={storyMode ? highlight.markers : null}
         />
       )}

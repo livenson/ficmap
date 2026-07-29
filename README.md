@@ -86,10 +86,12 @@ can paste straight into your story.
 | `terrain.islandFalloff` | 0 = land runs to the edges, 1 = strong island shape. |
 | `terrain.heightScale` | Vertical exaggeration of the 3D mesh. |
 | `terrain.biomes[]` | Elevation → color bands (low to high). |
+| `terrain.rivers` | Number of rivers traced downhill from highlands to sea (`riverColor` to tint — e.g. lava-orange). |
 | `markers[]` | Labeled points of interest (`capital`, `city`, `port`, `ruin`, …). |
 | `routes[]` | Journeys/roads drawn draped over the terrain. |
 | `regions[]` | Ambient area names floated over the map. |
 | `chapters[]` | Optional guided tour — see below. |
+| `books[]` | Multi-book tour: one shared map, several books each with their own `chapters`. References then span books ("Bk 2 · Ch 3"). |
 | `ambient` | 3D-only life: `{ trees, treeKind, treeColor, birds, dragons }`. Trees scatter across wooded elevations; birds/dragons circle overhead. Deterministic; shown only in 3D. |
 
 ## Story mode (chapters)
@@ -121,6 +123,24 @@ chapters: [
 
 Navigate with the panel's Prev/Next, the chapter rail, or the **← / →** keys;
 **Esc** exits.
+
+### Multi-book worlds
+
+For a saga that spans several books over one shared map, use `books` instead of
+`chapters`:
+
+```ts
+books: [
+  { id: 'birth', title: 'Birth & the Sword', chapters: [ /* … */ ] },
+  { id: 'wars',  title: 'Wars & Wanderings', chapters: [ /* … */ ] },
+]
+```
+
+Playback flows across books in order, the chapter rail groups under book
+headings, and a place's **references span books** — click the Kääpa brook in
+the **Kalevipoeg** sample and you'll see it surface in both *Wars & Wanderings*
+and *Põrgu & the End*. `chapters` and `books` are interchangeable; a plain
+`chapters` run is just a single implicit book.
 
 ## Project layout
 

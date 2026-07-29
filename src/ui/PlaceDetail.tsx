@@ -43,12 +43,17 @@ export function PlaceDetail({
               <li key={`${r.chapterId}:${r.via}`}>
                 <button onClick={() => onJumpToChapter(r.index)}>
                   <span className="place__ref-head">
-                    <span className="place__ref-num">Ch. {r.index + 1}</span>
+                    <span className="place__ref-num">
+                      {r.multiBook ? `Bk ${r.bookIndex + 1}·` : ''}Ch. {r.chapterInBook}
+                    </span>
                     <span className="place__ref-title">{r.title}</span>
                     <span className={`place__ref-via place__ref-via--${r.via}`}>
                       {r.via}
                     </span>
                   </span>
+                  {r.multiBook && (
+                    <span className="place__ref-book">{r.bookTitle}</span>
+                  )}
                   {r.snippet && <span className="place__ref-quote">“{r.snippet}”</span>}
                 </button>
               </li>
