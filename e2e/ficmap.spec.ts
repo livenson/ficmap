@@ -112,3 +112,14 @@ test('deep-links a world via the ?world= query param', async ({ page }) => {
   await page.selectOption('select', 'fotr')
   await expect(page).toHaveURL(/world=fotr/)
 })
+
+test('deep-links a subfloor via the ?floor= query param', async ({ page }) => {
+  await page.goto('/?world=center-earth&floor=lidenbrock-sea')
+  // The named floor is active on load and its markers are shown.
+  await expect(page.getByRole('button', { name: /Port Gräuben/ }).first()).toBeVisible()
+  // Switching floors keeps the URL in sync; the surface clears the param.
+  await page.getByRole('button', { name: 'Toward the Centre', exact: true }).click()
+  await expect(page).toHaveURL(/floor=deep-caverns/)
+  await page.getByRole('button', { name: 'Iceland', exact: true }).click()
+  await expect(page).not.toHaveURL(/floor=/)
+})
