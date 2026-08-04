@@ -1,4 +1,5 @@
 import type { Story } from '../types'
+import scadrialHeight from '../assets/scadrial-height.png'
 
 /**
  * Mistborn — Brandon Sanderson's Scadrial, across both eras.
@@ -6,10 +7,13 @@ import type { Story } from '../types'
  * NOTE: Mistborn, Scadrial and the place names are the intellectual property of
  * Brandon Sanderson / Dragonsteel (in copyright). This is user-authored,
  * paraphrased data over an INVENTED world — a fan-project use, not an official
- * work. Scadrial has no real DEM, so the terrain is a shaped procedural field
- * and the marker positions are approximate reconstructions of the published
- * Final Empire and Elendel Basin maps (Luthadel at the centre of Era 1, Elendel
- * near the centre of Era 2), with the ashmount bearings from the Coppermind.
+ * work. Scadrial has no real DEM, so the terrain is a SHAPED FIELD, not a real
+ * heightmap. Era 1 is laid out to match the published "Lord Ruler's Final
+ * Empire" map — the inland Southern Sea, the Terris mountains across the north,
+ * the ashmounts, and the lakes of the Central Dominance — with the cities and
+ * dominances at their map positions (rebuild with `node scripts/build-scadrial.mjs`).
+ * Era 2's Elendel Basin is a procedural field with its cities placed by the
+ * Coppermind's Basin map.
  *
  * The world is told as two maps on one planet: the ash-choked FINAL EMPIRE of
  * the original trilogy (the surface), and — three centuries later — the green
@@ -31,25 +35,25 @@ export const mistborn: Story = {
     'things. Press ▶ Play story to follow the saga, or use the level switcher to ' +
     'cross from the Final Empire down to the Basin of the second era.',
   surfaceName: 'The Final Empire',
-  ambient: { trees: 0.14, treeColor: '#5d5236', treeKind: 'conifer', birds: 3 },
+  ambient: { trees: 0.12, treeColor: '#5d5236', treeKind: 'conifer', birds: 3 },
   terrain: {
-    // A broad ash-choked interior: a low bowl around Luthadel, higher ashland to
-    // the rim, dark ashfall water. Ashmounts read as the peak markers.
-    seed: 'scadrial-final-empire-2',
-    frequency: 1.35,
-    islandFalloff: 0.28,
-    seaLevel: 0.34,
-    heightScale: 14,
-    octaves: 5,
-    rivers: 3,
-    riverColor: '#5a6a72',
+    // Laid out to match the published Final Empire map (see build-scadrial.mjs):
+    // the inland Southern Sea, the Terris mountains north, the ashmount cones,
+    // and the Central lakes. 4:3, like the map.
+    seed: 'scadrial-dem',
+    heightmap: scadrialHeight,
+    aspect: 4 / 3,
+    seaLevel: 0.14,
+    heightScale: 15,
+    rivers: 0,
     waterColor: '#33414b',
     biomes: [
-      { maxHeight: 0.34, color: '#2b3843', name: 'Ashen Waters' },
-      { maxHeight: 0.4, color: '#6b6152', name: 'Ashfall Flats' },
-      { maxHeight: 0.52, color: '#726250', name: 'Ashlands' },
-      { maxHeight: 0.66, color: '#6a5f50', name: 'Ash Dunes' },
-      { maxHeight: 0.82, color: '#4c4239', name: 'Ashmount Slopes' },
+      { maxHeight: 0.14, color: '#2b3843', name: 'Ashen Waters' },
+      { maxHeight: 0.2, color: '#6b6152', name: 'Ashfall Flats' },
+      { maxHeight: 0.42, color: '#726250', name: 'Ashlands' },
+      { maxHeight: 0.66, color: '#5f5648', name: 'Ash Dunes' },
+      { maxHeight: 0.88, color: '#4a4038', name: 'Ash Stone' },
+      { maxHeight: 0.95, color: '#332c26', name: 'Dark Peaks' },
       { maxHeight: 1.0, color: '#d1622f', name: 'Ashmount Fires' },
     ],
   },
@@ -58,141 +62,244 @@ export const mistborn: Story = {
       id: 'luthadel',
       name: 'Luthadel',
       kind: 'capital',
-      at: { x: 0.0, z: 0.0 },
+      at: { x: 0.2, z: -0.07 },
       description:
-        'The capital, the City of Ashes — and above it Kredik Shaw, the Lord ' +
-        'Ruler’s black palace, the Hill of a Thousand Spires. Here Kelsier’s crew ' +
-        'plots to break a thousand years of tyranny, and beneath it lies the Well ' +
-        'of Ascension.',
+        'The capital, the City of Ashes, on the River Channerel — and above it ' +
+        'Kredik Shaw, the Lord Ruler’s black palace, the Hill of a Thousand ' +
+        'Spires. Here Kelsier’s crew plots to break a thousand years of tyranny, ' +
+        'and beneath it lies the Well of Ascension.',
+    },
+    {
+      id: 'fellis',
+      name: 'Fellis',
+      kind: 'town',
+      at: { x: 0.11, z: -0.06 },
+      description: 'A noble retreat-town just west of Luthadel, on the way to the Central lakes.',
     },
     {
       id: 'pits-of-hathsin',
       name: 'The Pits of Hathsin',
       kind: 'ruin',
-      at: { x: 0.05, z: 0.28 },
+      at: { x: 0.08, z: -0.21 },
       description:
-        'The knife-crystal caves where atium is grown, worked by doomed skaa ' +
-        'slaves. Kelsier survived them once; the crew strikes here at the Lord ' +
-        'Ruler’s secret source of power.',
+        'The knife-crystal caves (by Tresting) where atium is grown, worked by ' +
+        'doomed skaa slaves. Kelsier survived them once; the crew strikes here at ' +
+        'the Lord Ruler’s secret source of power.',
+    },
+    {
+      id: 'arguois',
+      name: 'The Arguois Caverns',
+      kind: 'ruin',
+      at: { x: 0.22, z: -0.26 },
+      description: 'A cave system north-east of Luthadel, nearer than the distant Pits.',
     },
     {
       id: 'fadrex-city',
       name: 'Fadrex City',
       kind: 'city',
-      at: { x: -0.58, z: -0.05 },
+      at: { x: -0.23, z: -0.14 },
       description:
         'A rocky, defensible city of the Western Dominance. Behind Keep Hasting ' +
         'lies the great atium cache the Lord Ruler hid — the prize of Elend’s ' +
         'final campaign.',
     },
     {
+      id: 'tremredare',
+      name: 'Tremredare',
+      kind: 'city',
+      at: { x: -0.37, z: -0.24 },
+      description: 'The larger capital of the Western Dominance, deeper into the western ranges.',
+    },
+    {
+      id: 'mantiz',
+      name: 'Mantiz',
+      kind: 'town',
+      at: { x: -0.35, z: -0.09 },
+      description: 'A western canal-town on the routes toward Fadrex and the Southern Sea.',
+    },
+    {
       id: 'urteau',
       name: 'Urteau',
       kind: 'city',
-      at: { x: -0.05, z: -0.48 },
+      at: { x: 0.45, z: -0.21 },
       description:
         'Capital of the Northern Dominance and House Venture’s ancestral seat — a ' +
         'city of drained canals, later ruled by the tyrant Citizen.',
     },
     {
-      id: 'statlin-city',
-      name: 'Statlin City',
-      kind: 'town',
-      at: { x: 0.4, z: 0.06 },
-      description: 'A small mining city just over the Eastern border of the Central Dominance.',
-    },
-    {
-      id: 'conventical-of-seran',
-      name: 'The Conventical of Seran',
-      kind: 'ruin',
-      at: { x: 0.22, z: 0.58 },
-      description:
-        'A cliff-ringed fortress of the Steel Ministry where Inquisitors are ' +
-        'forged — and where, on a steel plate, a long-dead Keeper left the truth ' +
-        'about the Deepness.',
-    },
-    {
       id: 'tathingdwen',
       name: 'Tathingdwen',
       kind: 'town',
-      at: { x: 0.05, z: -0.7 },
+      at: { x: 0.18, z: -0.63 },
       description:
         'Capital of the Terris people at the southern edge of their mountains — ' +
         'burned in a Ministry purge meant to stamp out Feruchemy.',
     },
     {
+      id: 'austrex',
+      name: 'Austrex',
+      kind: 'town',
+      at: { x: -0.01, z: 0.07 },
+      description: 'A town on the northern shore of the great Southern Sea.',
+    },
+    {
+      id: 'lekal-city',
+      name: 'Lekal City',
+      kind: 'town',
+      at: { x: -0.07, z: 0.11 },
+      description: 'A Southern Dominance city on the sea, seat of the noble House Lekal.',
+    },
+    {
+      id: 'vetitan',
+      name: 'Vetitan',
+      kind: 'town',
+      at: { x: 0.07, z: 0.16 },
+      description:
+        'A small southern skaa town that Vin and Elend free late in the war — one ' +
+        'of the last places the mists turn deadly.',
+    },
+    {
+      id: 'suisna',
+      name: 'Suisna',
+      kind: 'town',
+      at: { x: 0.45, z: 0.26 },
+      description: 'A town of the Eastern Dominance, out toward the Conventical.',
+    },
+    {
+      id: 'urbene',
+      name: 'Urbene',
+      kind: 'town',
+      at: { x: 0.49, z: 0.35 },
+      description: 'An eastern town on the road to the Conventical of Seran.',
+    },
+    {
+      id: 'conventical-of-seran',
+      name: 'The Conventical of Seran',
+      kind: 'ruin',
+      at: { x: 0.53, z: 0.43 },
+      description:
+        'A cliff-ringed fortress of the Steel Ministry where Inquisitors are ' +
+        'forged — and where, on a steel plate, a long-dead Keeper left the truth ' +
+        'about the Deepness.',
+    },
+    // --- The ashmounts (the Lord Ruler's volcanoes) ---
+    {
+      id: 'tyrian',
+      name: 'Mount Tyrian',
+      kind: 'peak',
+      at: { x: 0.0, z: -0.16 },
+      description: 'The ashmount that stands in Lake Tyrian, just west of Luthadel.',
+    },
+    {
+      id: 'torinost',
+      name: 'Mount Torinost',
+      kind: 'peak',
+      at: { x: 0.0, z: -0.43 },
+      description: 'A tall ashmount of the north, on the Western–Northern march.',
+    },
+    {
+      id: 'morag',
+      name: 'Mount Morag',
+      kind: 'peak',
+      at: { x: -0.22, z: -0.31 },
+      description: 'An ashmount of the Western Dominance.',
+    },
+    {
+      id: 'kalling',
+      name: 'Mount Kalling',
+      kind: 'peak',
+      at: { x: 0.33, z: -0.33 },
+      description: 'A north-eastern ashmount, over the Northern Dominance.',
+    },
+    {
+      id: 'zerinah',
+      name: 'Mount Zerinah',
+      kind: 'peak',
+      at: { x: -0.2, z: 0.06 },
+      description: 'An ashmount on the north-western shore of the Southern Sea.',
+    },
+    {
+      id: 'faleast',
+      name: 'Mount Faleast',
+      kind: 'peak',
+      at: { x: 0.18, z: 0.11 },
+      description: 'A south-eastern ashmount; its name survives, ages later, in a range of the Basin.',
+    },
+    {
+      id: 'doriel',
+      name: 'Mount Doriel',
+      kind: 'peak',
+      at: { x: 0.06, z: 0.25 },
+      description: 'A southern ashmount, inland of the Southern Sea.',
+    },
+    {
       id: 'terris-mountains',
       name: 'The Terris Mountains',
       kind: 'peak',
-      at: { x: 0.0, z: -0.82 },
+      at: { x: 0.33, z: -0.72 },
       description:
         'The cold northern homeland of the Terris and their Keepers, who hid the ' +
         'world’s memory in metalminds through the long night of the Empire.',
     },
-    {
-      id: 'ashmount-kalling',
-      name: 'Mount Kalling',
-      kind: 'peak',
-      at: { x: 0.24, z: -0.46 },
-      description: 'An ashmount to the north-east, one of the burning peaks that rain ash on the Empire.',
-    },
-    {
-      id: 'ashmount-faleast',
-      name: 'Mount Faleast',
-      kind: 'peak',
-      at: { x: 0.34, z: 0.34 },
-      description: 'A south-eastern ashmount; its name survives, ages later, in a range of the Basin.',
-    },
-    {
-      id: 'ashmount-doriel',
-      name: 'Mount Doriel',
-      kind: 'peak',
-      at: { x: -0.18, z: 0.55 },
-      description: 'A southern ashmount near the shore of the Southern Sea.',
-    },
   ],
   routes: [
+    {
+      id: 'river-channerel',
+      name: 'The River Channerel',
+      color: '#7fa6b8',
+      style: 'solid',
+      points: [
+        { x: 0.2, z: -0.07 },
+        { x: 0.45, z: -0.05 },
+        { x: 0.72, z: -0.02 },
+      ],
+    },
     {
       id: 'western-road',
       name: 'The Road to Fadrex',
       color: '#c9a24a',
       style: 'solid',
       points: [
-        { x: 0.0, z: 0.0 },
-        { x: -0.3, z: -0.03 },
-        { x: -0.58, z: -0.05 },
+        { x: 0.2, z: -0.07 },
+        { x: 0.11, z: -0.06 },
+        { x: -0.23, z: -0.14 },
+        { x: -0.37, z: -0.24 },
       ],
     },
     {
-      id: 'northern-canal',
-      name: 'The Northern Canal',
-      color: '#7fa6b8',
+      id: 'northern-road',
+      name: 'The Road to Urteau',
+      color: '#c9a24a',
       style: 'solid',
       points: [
-        { x: 0.0, z: 0.0 },
-        { x: -0.03, z: -0.24 },
-        { x: -0.05, z: -0.48 },
+        { x: 0.2, z: -0.07 },
+        { x: 0.45, z: -0.21 },
       ],
     },
     {
-      id: 'southern-road',
-      name: 'The Southern Road',
+      id: 'terris-road',
+      name: 'The Road to Terris',
       color: '#c9a24a',
       style: 'dashed',
       points: [
-        { x: 0.0, z: 0.0 },
-        { x: 0.05, z: 0.28 },
-        { x: 0.22, z: 0.58 },
+        { x: 0.2, z: -0.07 },
+        { x: 0.19, z: -0.35 },
+        { x: 0.18, z: -0.63 },
       ],
     },
   ],
   regions: [
-    { id: 'central', name: 'The Central Dominance', at: { x: 0.0, z: 0.12 }, scale: 1.0 },
-    { id: 'northern', name: 'The Northern Dominance', at: { x: -0.05, z: -0.34 }, scale: 0.9 },
-    { id: 'western', name: 'The Western Dominance', at: { x: -0.5, z: 0.12 }, scale: 0.9 },
-    { id: 'eastern', name: 'The Eastern Dominance', at: { x: 0.5, z: 0.2 }, scale: 0.9 },
-    { id: 'southern', name: 'The Southern Dominance', at: { x: -0.05, z: 0.7 }, scale: 0.9 },
-    { id: 'terris', name: 'The Terris Dominance', at: { x: 0.0, z: -0.7 }, scale: 0.85 },
+    { id: 'central', name: 'The Central Dominance', at: { x: 0.14, z: 0.0 }, scale: 0.95 },
+    { id: 'terris', name: 'The Terris Dominance', at: { x: 0.15, z: -0.85 }, scale: 1.0 },
+    { id: 'northern', name: 'The Northern Dominance', at: { x: 0.5, z: -0.36 }, scale: 0.9 },
+    { id: 'western', name: 'The Western Dominance', at: { x: -0.28, z: -0.43 }, scale: 0.9 },
+    { id: 'farmost', name: 'The Farmost Dominance', at: { x: -0.66, z: -0.49 }, scale: 0.85 },
+    { id: 'southern', name: 'The Southern Dominance', at: { x: -0.3, z: 0.12 }, scale: 0.9 },
+    { id: 'eastern', name: 'The Eastern Dominance', at: { x: 0.6, z: 0.32 }, scale: 0.9 },
+    { id: 'crescent', name: 'The Crescent Dominance', at: { x: 0.88, z: -0.05 }, scale: 0.8 },
+    { id: 'remote', name: 'The Remote Dominance', at: { x: -0.38, z: 0.85 }, scale: 0.85 },
+    { id: 'southern-sea', name: 'The Southern Sea', at: { x: -0.3, z: 0.42 }, scale: 0.9 },
+    { id: 'southern-islands', name: 'The Southern Islands', at: { x: -0.82, z: 0.4 }, scale: 0.8 },
   ],
   elements: [
     {
@@ -356,7 +463,7 @@ export const mistborn: Story = {
             'atium — and on a rumoured metal that can kill a god. On the palace ' +
             'steps at Kredik Shaw, the immortal is at last brought down.',
           focus: { marker: 'pits-of-hathsin', distance: 40, pitch: 34 },
-          reveal: { markers: ['pits-of-hathsin'], routes: ['southern-road'], regions: ['southern'] },
+          reveal: { markers: ['pits-of-hathsin', 'tyrian', 'fellis'], regions: ['southern'] },
           highlight: { markers: ['pits-of-hathsin', 'luthadel'] },
         },
       ],
@@ -374,7 +481,7 @@ export const mistborn: Story = {
             'struggles to hold a young republic. Vin hunts a mist spirit through the ' +
             'city and chases the pull of the Well of Ascension.',
           focus: { marker: 'luthadel', distance: 46, pitch: 44 },
-          reveal: { markers: ['urteau', 'ashmount-kalling'], regions: ['northern'] },
+          reveal: { markers: ['urteau', 'kalling', 'arguois'], routes: ['northern-road'], regions: ['northern'] },
           highlight: { markers: ['luthadel'] },
         },
         {
@@ -406,12 +513,14 @@ export const mistborn: Story = {
           reveal: {
             markers: [
               'fadrex-city',
-              'ashmount-faleast',
-              'ashmount-doriel',
+              'tremredare',
+              'faleast',
+              'doriel',
               'terris-mountains',
               'tathingdwen',
+              'conventical-of-seran',
             ],
-            regions: ['western', 'terris'],
+            regions: ['western', 'terris', 'eastern'],
           },
           highlight: { markers: ['fadrex-city'] },
         },
