@@ -27,7 +27,7 @@ export const harryPotter: Story = {
     'story to follow Harry from the cupboard under the stairs to the Battle of ' +
     'Hogwarts, or open any place to read what happens there.',
   surfaceName: 'Britain',
-  ambient: { trees: 0.6, birds: 6, fish: 3 },
+  ambient: { trees: 0.6, birds: 7, birdKind: 'owl', fish: 3 },
   terrain: {
     seed: 'britain-dem',
     heightmap: britainHeight,
