@@ -10,6 +10,7 @@ const WORLDS = [
   { id: 'musketeers', title: "The d'Artagnan Romances" },
   { id: 'harry-potter', title: 'Harry Potter' },
   { id: 'indiana-jones', title: 'The Adventures of Indiana Jones' },
+  { id: 'mistborn', title: 'Mistborn' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -118,6 +119,17 @@ test('climbs Valdurn into the sky realms and down to the deeps', async ({ page }
   await page.waitForTimeout(1400)
   await expect(page.getByRole('button', { name: /The Deep Forge/ }).first()).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('crosses Mistborn between its two eras', async ({ page }) => {
+  await selectWorld(page, 'mistborn')
+  // Era 1 (the Final Empire) is the surface.
+  await expect(page.getByRole('button', { name: /Luthadel/ }).first()).toBeVisible()
+  // The level switcher crosses to Era 2 (the Elendel Basin).
+  await page.getByRole('button', { name: 'The Elendel Basin', exact: true }).click()
+  await page.waitForTimeout(1400)
+  await expect(page.getByRole('button', { name: /Elendel/ }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: /New Seran/ }).first()).toBeVisible()
 })
 
 test('filters the atlas to a single book/film', async ({ page }) => {
