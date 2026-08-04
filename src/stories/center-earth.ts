@@ -31,7 +31,7 @@ export const centerEarth: Story = {
     seed: 'iceland-7',
     seaLevel: 0.32,
     islandFalloff: 0.14,
-    heightScale: 26,
+    heightScale: 18,
     frequency: 1.8,
     rivers: 3,
     biomes: [

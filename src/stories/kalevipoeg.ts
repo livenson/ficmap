@@ -41,7 +41,9 @@ export const kalevipoeg: Story = {
     seed: 'kalev-9', // unused: heightmap takes precedence
     heightmap: estoniaHeight,
     seaLevel: 0.18, // 0 m sits at this normalized height in the DEM
-    heightScale: 46, // Estonia is flat, so exaggerate the relief
+    // Estonia is genuinely flat (its high point is ~318 m), so keep the relief
+    // gentle — a light exaggeration for legibility, not mountains.
+    heightScale: 13,
     rivers: 6,
     biomes: [
       { maxHeight: 0.18, color: '#2c5a74', name: 'Baltic Sea' },
@@ -118,6 +120,44 @@ export const kalevipoeg: Story = {
       kind: 'forest',
       at: { x: 0.29, z: 0.08 },
       description: 'A misted lake of the inland forests, haunt of spirits and song.',
+    },
+    {
+      id: 'ulemiste',
+      name: 'Lake Ülemiste',
+      kind: 'landmark',
+      at: { x: -0.05, z: -0.13 },
+      description:
+        'The lake above Lindanisa, welled up (they say) from Linda’s tears as ' +
+        'she mourned old Kalev — home of the Old Man of the Lake, who each ' +
+        'winter asks whether the city is finished yet.',
+    },
+    {
+      id: 'saarepiiga',
+      name: "The Island Maiden's Isle",
+      kind: 'danger',
+      at: { x: -0.62, z: 0.02 },
+      description:
+        'The western isle where the young hero woos a maiden — who, fearing ' +
+        'the two of them kin, casts herself into the sea rather than learn the ' +
+        'truth. His first sorrow.',
+    },
+    {
+      id: 'tuuslar',
+      name: "Tuuslar's Shore",
+      kind: 'danger',
+      at: { x: 0.03, z: -0.82 },
+      description:
+        'The landing of the Finnish sorcerer Tuuslar, who carried off the widow ' +
+        'Linda — and against whom the hero first crosses the gulf in wrath.',
+    },
+    {
+      id: 'kikerpara',
+      name: 'The Bogs of Kikerpära',
+      kind: 'forest',
+      at: { x: 0.2, z: 0.42 },
+      description:
+        'Treacherous mire and heath of the inland south, where paths mislead ' +
+        'and sorcery lingers over the still water.',
     },
     {
       id: 'deep-gate',
@@ -362,7 +402,7 @@ export const kalevipoeg: Story = {
             'youngest grows the mightiest — Kalevipoeg, the giant heir.',
           focus: { marker: 'kalev-barrow', distance: 34, pitch: 34 },
           reveal: {
-            markers: ['kalev-barrow', 'lindanisa'],
+            markers: ['kalev-barrow', 'lindanisa', 'ulemiste'],
             regions: ['homeland'],
           },
           highlight: { markers: ['kalev-barrow'] },
@@ -384,7 +424,7 @@ export const kalevipoeg: Story = {
             'Needing a blade to match his strength, the hero swims the gulf to ' +
             'Finland, to the hall of the great smith who alone can forge it.',
           focus: { marker: 'finland', distance: 40, pitch: 32, heading: -20 },
-          reveal: { markers: ['finland', 'peipus'], routes: ['sword-quest'] },
+          reveal: { markers: ['finland', 'peipus', 'tuuslar', 'saarepiiga'], routes: ['sword-quest'] },
           highlight: { markers: ['finland'], routes: ['sword-quest'] },
         },
         {

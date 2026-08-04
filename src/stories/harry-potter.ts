@@ -33,7 +33,8 @@ export const harryPotter: Story = {
     heightmap: britainHeight,
     aspect: 10 / 9,
     seaLevel: 0.0091, // 0 m in the capped (−10..1300 m) DEM
-    heightScale: 16,
+    // Gentle relief so the Highlands don't obscure the routes.
+    heightScale: 10,
     rivers: 4,
     biomes: [
       { maxHeight: 0.0091, color: '#2c5c7a', name: 'The Sea' },

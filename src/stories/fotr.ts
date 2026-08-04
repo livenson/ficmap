@@ -22,6 +22,7 @@ export const fotr: Story = {
     seed: 'middle-earth-2',
     seaLevel: 0.3,
     islandFalloff: 0.2,
+    heightScale: 16,
     rivers: 6,
     biomes: [
       { maxHeight: 0.35, color: '#2c6e49', name: 'Plains' },
