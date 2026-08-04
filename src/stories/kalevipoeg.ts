@@ -194,8 +194,10 @@ export const kalevipoeg: Story = {
         seaLevel: 0.3,
         heightScale: 16,
         octaves: 4,
-        rivers: 4,
-        riverColor: '#ff6a1a',
+        // No procedural rivers here: on this calm basin they render as short
+        // stray stubs that read like broken routes. The Hero's Road is the
+        // only line the eye should follow; molten pools give the lava mood.
+        rivers: 0,
         sky: 'dark',
         waterColor: '#3a0d0a',
         biomes: [
@@ -224,7 +226,7 @@ export const kalevipoeg: Story = {
           id: 'the-binding',
           name: 'The Binding Stone',
           kind: 'ruin',
-          at: { x: -0.22, z: -0.68 },
+          at: { x: -0.18, z: -0.64 },
           description:
             'Just within the gates, the rock to which the gods later fasten ' +
             'the fallen hero’s hand, that he may guard Põrgu’s threshold until ' +
@@ -234,7 +236,7 @@ export const kalevipoeg: Story = {
           id: 'the-cauldron',
           name: 'The Great Cauldron',
           kind: 'landmark',
-          at: { x: -0.34, z: -0.26 },
+          at: { x: -0.32, z: -0.4 },
           description:
             'Põrgu’s vast kettle, forever boiling. The road down into the ' +
             'deeps runs past its rim.',
@@ -243,7 +245,7 @@ export const kalevipoeg: Story = {
           id: 'fire-river',
           name: 'The River of Fire',
           kind: 'danger',
-          at: { x: 0.3, z: -0.24 },
+          at: { x: 0.22, z: -0.16 },
           description:
             'A molten stream the hero must ford on his way in toward Sarvik’s ' +
             'hall.',
@@ -252,7 +254,7 @@ export const kalevipoeg: Story = {
           id: 'sarvik-hall',
           name: "Sarvik's Hall",
           kind: 'danger',
-          at: { x: 0.0, z: 0.04 },
+          at: { x: 0.0, z: 0.06 },
           description:
             'The seat of Sarvik the Horned, lord of the underworld, in the ' +
             'deepest part of Põrgu. Here the hero wrestles him, binds him, and ' +
@@ -262,7 +264,7 @@ export const kalevipoeg: Story = {
           id: 'maidens-cells',
           name: "The Maidens' Cells",
           kind: 'ruin',
-          at: { x: -0.36, z: 0.24 },
+          at: { x: -0.28, z: 0.32 },
           description:
             'Where Sarvik keeps captive maidens. The hero strikes off their ' +
             'chains and leads them up toward the light.',
@@ -271,7 +273,7 @@ export const kalevipoeg: Story = {
           id: 'the-hoard',
           name: 'The Hoard',
           kind: 'landmark',
-          at: { x: 0.36, z: 0.2 },
+          at: { x: 0.28, z: 0.54 },
           description:
             'The demon’s heaped gold, which the hero carries up out of Põrgu.',
         },
@@ -292,23 +294,20 @@ export const kalevipoeg: Story = {
           name: 'The Hero’s Road through Põrgu',
           color: '#ffb24a',
           style: 'solid',
-          // A winding descent, not a ruled line: it bends off the Gates past
-          // the Binding Stone and the cauldron's rim, threads the low ground
-          // toward Sarvik's hall in the deeps, then wanders past the hoard and
-          // the maidens' cells before climbing to the Cleft. (Draped onto the
-          // terrain, so it also rises and dips with the crags.)
+          // The road runs THROUGH every stop in order, so each place sits on
+          // the trail: Gates → Binding Stone → Great Cauldron → ford the River
+          // of Fire → Sarvik's Hall (the deeps) → Maidens' Cells → the Hoard →
+          // Cleft. Splined and draped onto the terrain, so it winds and also
+          // rises and dips with the crags.
           points: [
-            { x: 0.0, z: -0.82 },
-            { x: -0.14, z: -0.66 },
-            { x: -0.29, z: -0.42 },
-            { x: -0.18, z: -0.18 },
-            { x: 0.03, z: -0.02 },
-            { x: 0.0, z: 0.06 },
-            { x: 0.2, z: 0.22 },
-            { x: 0.08, z: 0.46 },
-            { x: -0.14, z: 0.6 },
-            { x: -0.04, z: 0.74 },
-            { x: 0.0, z: 0.82 },
+            { x: 0.0, z: -0.82 }, // Gates (entrance)
+            { x: -0.18, z: -0.64 }, // Binding Stone
+            { x: -0.32, z: -0.4 }, // Great Cauldron
+            { x: 0.22, z: -0.16 }, // ford the River of Fire
+            { x: 0.0, z: 0.06 }, // Sarvik's Hall
+            { x: -0.28, z: 0.32 }, // Maidens' Cells
+            { x: 0.28, z: 0.54 }, // the Hoard
+            { x: 0.0, z: 0.82 }, // Cleft (exit)
           ],
         },
       ],
