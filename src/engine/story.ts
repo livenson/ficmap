@@ -122,3 +122,46 @@ export function resolveHighlight(
 export function isVisible(set: VisibleSet, id: string): boolean {
   return set === null || set.has(id)
 }
+
+/** The places, routes and regions one book (or film) touches across its chapters. */
+export interface BookScope {
+  index: number
+  id: string
+  title: string
+  markerIds: Set<string>
+  routeIds: Set<string>
+  regionIds: Set<string>
+}
+
+/**
+ * For a multi-book world (e.g. a film series), work out which places, routes
+ * and regions each book brings onto the map — the union of everything its
+ * chapters focus, highlight or reveal. Lets the UI filter the atlas down to a
+ * single book/film so its route and stops read on their own.
+ */
+export function bookScopes(story: Story): BookScope[] {
+  const flat = flattenChapters(story)
+  const byBook = new Map<number, BookScope>()
+  for (const f of flat) {
+    let sc = byBook.get(f.bookIndex)
+    if (!sc) {
+      sc = {
+        index: f.bookIndex,
+        id: f.bookId,
+        title: f.bookTitle,
+        markerIds: new Set(),
+        routeIds: new Set(),
+        regionIds: new Set(),
+      }
+      byBook.set(f.bookIndex, sc)
+    }
+    const ch = f.chapter
+    if (ch.focus?.marker) sc.markerIds.add(ch.focus.marker)
+    ch.highlight?.markers?.forEach((id) => sc!.markerIds.add(id))
+    ch.highlight?.routes?.forEach((id) => sc!.routeIds.add(id))
+    ch.reveal?.markers?.forEach((id) => sc!.markerIds.add(id))
+    ch.reveal?.routes?.forEach((id) => sc!.routeIds.add(id))
+    ch.reveal?.regions?.forEach((id) => sc!.regionIds.add(id))
+  }
+  return [...byBook.values()].sort((a, b) => a.index - b.index)
+}

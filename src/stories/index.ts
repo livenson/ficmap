@@ -1,6 +1,5 @@
 import type { Story } from '../types'
 import { valdurn } from './valdurn'
-import { emberfall } from './emberfall'
 import { kalevipoeg } from './kalevipoeg'
 import { fotr } from './fotr'
 import { centerEarth } from './center-earth'
@@ -17,7 +16,6 @@ import { indianaJones } from './indiana-jones'
  */
 export const stories: Story[] = [
   valdurn,
-  emberfall,
   kalevipoeg,
   fotr,
   centerEarth,

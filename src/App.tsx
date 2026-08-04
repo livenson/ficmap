@@ -8,7 +8,8 @@ import { ElementDetail } from './ui/ElementDetail'
 import { FloorSwitcher } from './ui/FloorSwitcher'
 import { Legend } from './ui/Legend'
 import { buildPlaceReferences } from './engine/references'
-import { flattenChapters } from './engine/story'
+import { flattenChapters, bookScopes } from './engine/story'
+import { BookFilter } from './ui/BookFilter'
 import { getLevels, getLevel, allMarkers, SURFACE_ID } from './engine/levels'
 import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
@@ -118,11 +119,30 @@ export default function App() {
   // Which map level (floor) is displayed.
   const [levelId, setLevelId] = useState<string>(initial.levelId)
 
+  // Filter the atlas to a single book/film (null = all). Reset when the world
+  // changes or the tour starts (the tour drives its own book).
+  const [bookFilter, setBookFilter] = useState<number | null>(null)
+
   const story = getStory(storyId)
   const flat = useMemo(() => flattenChapters(story), [story])
+  const scopes = useMemo(() => bookScopes(story), [story])
   const levels = useMemo(() => getLevels(story), [story])
-  const activeLevel = getLevel(story, levelId)
+  const activeLevelRaw = getLevel(story, levelId)
   const inStory = chapterIndex != null
+
+  // In free exploration, a book filter pares the level down to that book's own
+  // places, routes and regions. The tour ignores it (it reveals its own).
+  const activeLevel = useMemo(() => {
+    if (inStory || bookFilter == null) return activeLevelRaw
+    const sc = scopes.find((s) => s.index === bookFilter)
+    if (!sc) return activeLevelRaw
+    return {
+      ...activeLevelRaw,
+      markers: activeLevelRaw.markers.filter((m) => sc.markerIds.has(m.id)),
+      routes: activeLevelRaw.routes.filter((r) => sc.routeIds.has(r.id)),
+      regions: activeLevelRaw.regions.filter((r) => sc.regionIds.has(r.id)),
+    }
+  }, [activeLevelRaw, inStory, bookFilter, scopes])
 
   const selected = useMemo(
     () => allMarkers(story).find((m) => m.id === selectedId) ?? null,
@@ -132,8 +152,13 @@ export default function App() {
   // A chapter can play on a deeper level; entering it switches the floor.
   useEffect(() => {
     if (chapterIndex == null) return
-    const chapterLevel = flat[chapterIndex]?.chapter.level ?? SURFACE_ID
-    setLevelId(chapterLevel)
+    const ch = flat[chapterIndex]?.chapter
+    setLevelId(ch?.level ?? SURFACE_ID)
+    // If a place popup is open during the tour, keep it in sync with the beat —
+    // follow the chapter's focused place as you step from one point to the next,
+    // and close it on a beat that focuses no particular place (rather than
+    // leaving a stale card stuck on the last place you clicked).
+    setSelectedId((cur) => (cur == null ? cur : ch?.focus?.marker ?? null))
   }, [chapterIndex, flat])
   const selectedElement = useMemo(
     () => story.elements?.find((e) => e.id === selectedElementId) ?? null,
@@ -158,7 +183,15 @@ export default function App() {
     setSelectedElementId(null)
     setChapterIndex(null)
     setLevelId(SURFACE_ID)
+    setBookFilter(null)
     writeWorldToUrl(id)
+  }
+
+  // Filter to a book/film; a place no longer on the map loses its open card.
+  const pickBook = (index: number | null) => {
+    setBookFilter(index)
+    setSelectedId(null)
+    setSelectedElementId(null)
   }
 
   const selectFloor = (id: string) => {
@@ -294,6 +327,9 @@ export default function App() {
           />
           <Legend terrain={activeLevel.terrain} />
           <FloorSwitcher levels={levels} activeId={levelId} onSelect={selectFloor} />
+          {!inStory && (
+            <BookFilter scopes={scopes} value={bookFilter} onChange={pickBook} />
+          )}
 
           {/* In story mode the detail shows as an overlay so the tour panel
               stays put. In free mode the InfoPanel handles it. */}
