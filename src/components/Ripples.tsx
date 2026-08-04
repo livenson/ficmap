@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
-import { WORLD_HALF, mapToWorld } from '../engine/terrain'
+import { WORLD_HALF, aspectOf, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -30,11 +30,15 @@ export function Ripples({ field, terrain }: Props) {
       for (let i = 0; i < 30; i++) {
         const mx = (Math.random() * 2 - 1) * 0.95
         const mz = (Math.random() * 2 - 1) * 0.95
-        if (field.at(mx, mz) <= seaLevel) return [mapToWorld(mx), mapToWorld(mz)] as const
+        if (field.at(mx, mz) <= seaLevel)
+          return [mapToWorldX(mx, terrain), mapToWorld(mz)] as const
       }
-      return [(Math.random() * 2 - 1) * WORLD_HALF, (Math.random() * 2 - 1) * WORLD_HALF] as const
+      return [
+        (Math.random() * 2 - 1) * WORLD_HALF * aspectOf(terrain),
+        (Math.random() * 2 - 1) * WORLD_HALF,
+      ] as const
     }
-  }, [field, seaLevel])
+  }, [field, terrain, seaLevel])
 
   const drops = useMemo(
     () =>

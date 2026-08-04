@@ -1,6 +1,6 @@
 import alea from 'alea'
 import type { HeightField } from './noise'
-import { WORLD_HALF, elevationAt } from './terrain'
+import { WORLD_HALF, aspectOf, elevationAt } from './terrain'
 import type { TerrainConfig } from '../types'
 
 export interface TreeInstance {
@@ -30,6 +30,7 @@ export function scatterTrees(
   const span = treeLineHigh - treeLineLow
 
   const rng = alea(`${terrain.seed}:flora`)
+  const aspect = aspectOf(terrain)
   const target = Math.round(density * 2600)
   const out: TreeInstance[] = []
   let tries = 0
@@ -46,7 +47,7 @@ export function scatterTrees(
     if (rng() > 0.25 + band * 0.75) continue
 
     out.push({
-      x: mx * WORLD_HALF,
+      x: mx * WORLD_HALF * aspect,
       y: elevationAt(field, terrain, mx, mz),
       z: mz * WORLD_HALF,
       scale: 0.55 + rng() * 0.9,

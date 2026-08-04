@@ -1,6 +1,6 @@
 import { Html } from '@react-three/drei'
 import type { HeightField } from '../engine/noise'
-import { elevationAt, mapToWorld } from '../engine/terrain'
+import { elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { RegionLabel, TerrainConfig } from '../types'
 
 interface Props {
@@ -14,7 +14,7 @@ export function Regions({ regions, field, terrain }: Props) {
   return (
     <>
       {regions.map((r) => {
-        const wx = mapToWorld(r.at.x)
+        const wx = mapToWorldX(r.at.x, terrain)
         const wz = mapToWorld(r.at.z)
         const wy = elevationAt(field, terrain, r.at.x, r.at.z) + 2
         return (

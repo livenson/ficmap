@@ -1,16 +1,20 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { WORLD_SIZE } from '../engine/terrain'
+import { WORLD_SIZE, WORLD_HALF } from '../engine/terrain'
 import type { Ambient } from '../types'
 
 interface Props {
   ambient: Ambient
+  /** World aspect: spreads the flocks across a wider-than-square world. */
+  aspect?: number
 }
 
 interface Creature {
   kind: 'bird' | 'dragon'
   radius: number
+  /** X center the creature circles around (spread across the world width). */
+  cx: number
   height: number
   speed: number
   phase: number
@@ -29,16 +33,21 @@ const GOLDEN = 2.399963 // spread creatures around the sky evenly
  * deterministic. 3D-only; they read as life over the terrain, most visible as
  * you tilt and zoom.
  */
-export function Wildlife({ ambient }: Props) {
+export function Wildlife({ ambient, aspect = 1 }: Props) {
   const birds = ambient.birds ?? 6
   const dragons = ambient.dragons ?? 0
 
   const creatures = useMemo<Creature[]>(() => {
     const list: Creature[] = []
+    // Spread flock centers across the world width so a wide (non-square) world
+    // has birds everywhere, not only over its middle.
+    const spread = (i: number) =>
+      aspect <= 1 ? 0 : (((i * 0.61803) % 1) * 2 - 1) * WORLD_HALF * (aspect - 0.3)
     for (let i = 0; i < birds; i++) {
       list.push({
         kind: 'bird',
         radius: WORLD_SIZE * (0.18 + (i % 4) * 0.09),
+        cx: spread(i),
         height: 26 + (i % 5) * 5,
         speed: 0.22 + (i % 3) * 0.06,
         phase: i * GOLDEN,
@@ -52,6 +61,7 @@ export function Wildlife({ ambient }: Props) {
       list.push({
         kind: 'dragon',
         radius: WORLD_SIZE * (0.14 + (i % 2) * 0.12),
+        cx: spread(i + 3),
         height: 34 + i * 6,
         speed: 0.12 + (i % 2) * 0.04,
         phase: i * GOLDEN + 1.2,
@@ -62,7 +72,7 @@ export function Wildlife({ ambient }: Props) {
       })
     }
     return list
-  }, [birds, dragons])
+  }, [birds, dragons, aspect])
 
   const groups = useRef<THREE.Group[]>([])
   const inners = useRef<THREE.Group[]>([])
@@ -75,7 +85,7 @@ export function Wildlife({ ambient }: Props) {
       const g = groups.current[i]
       if (!g) return
       const theta = t * c.speed * c.dir + c.phase
-      const px = Math.cos(theta) * c.radius
+      const px = c.cx + Math.cos(theta) * c.radius
       const pz = Math.sin(theta) * c.radius
       // Gentle bob so flight feels alive.
       const py = c.height + Math.sin(t * 0.8 + c.phase) * 2

@@ -39,6 +39,10 @@ const PRESETS = {
     w: 512,
     h: 256,
     capM: 3500,
+    // Flatten ALL ocean to one shallow depth so the sea reads as a single
+    // even colour (the biome shader darkens by depth, and the low-res DEM's
+    // real bathymetry would otherwise blotch the sea seen from straight down).
+    flatOceanM: -6,
     out: '../src/assets/world-height.png',
   },
 }
@@ -110,8 +114,10 @@ for (let j = 0; j < H; j++)
     const lat = BBOX.latMax - (j / (H - 1)) * (BBOX.latMax - BBOX.latMin)
     const gpx = ((lon + 180) / 360) * worldPx
     const gpy = ((1 - Math.asinh(Math.tan((lat * Math.PI) / 180)) / Math.PI) / 2) * worldPx
-    let m = Math.max(sample(gpx - TX0 * TS, gpy - TY0 * TS), -60)
+    let m = Math.max(sample(gpx - TX0 * TS, gpy - TY0 * TS), preset.floorM ?? -60)
     if (preset.capM) m = Math.min(m, preset.capM)
+    // Optionally flatten the whole sea to one depth for an even ocean colour.
+    if (preset.flatOceanM != null && m < 0) m = preset.flatOceanM
     out[j * W + i] = m
     if (m < mn) mn = m
     if (m > mx) mx = m

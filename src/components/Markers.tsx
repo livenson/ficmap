@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import type { HeightField } from '../engine/noise'
-import { elevationAt, mapToWorld } from '../engine/terrain'
+import { elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { Marker, MarkerKind, TerrainConfig } from '../types'
 
 interface Props {
@@ -74,7 +74,7 @@ export function Markers({
   return (
     <>
       {markers.map((m) => {
-        const wx = mapToWorld(m.at.x)
+        const wx = mapToWorldX(m.at.x, terrain)
         const wz = mapToWorld(m.at.z)
         const wy = elevationAt(field, terrain, m.at.x, m.at.z)
         const s = STYLE[m.kind]

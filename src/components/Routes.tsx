@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { CatmullRomCurve3, Vector3 } from 'three'
 import { Line } from '@react-three/drei'
 import type { HeightField } from '../engine/noise'
-import { elevationAt, mapToWorld } from '../engine/terrain'
+import { elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { Route, TerrainConfig } from '../types'
 
 interface Props {
@@ -56,7 +56,7 @@ function RouteLine({
       return route.points.map(
         (p) =>
           new Vector3(
-            mapToWorld(p.x),
+            mapToWorldX(p.x, terrain),
             elevationAt(field, terrain, p.x, p.z) + 0.5,
             mapToWorld(p.z),
           ),
@@ -71,7 +71,7 @@ function RouteLine({
       const p = curve.getPoint(i / n)
       out.push(
         new Vector3(
-          mapToWorld(p.x),
+          mapToWorldX(p.x, terrain),
           elevationAt(field, terrain, p.x, p.z) + 0.5,
           mapToWorld(p.z),
         ),
