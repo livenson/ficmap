@@ -63,8 +63,12 @@ export interface TerrainConfig {
   rivers?: number
   /** River line color (default a river blue; e.g. lava-orange for ash worlds). */
   riverColor?: string
-  /** Sky mood. 'day' (default) draws a sky + daylight; 'dark' suits underworlds. */
-  sky?: 'day' | 'dark'
+  /**
+   * Sky mood. 'day' (default) draws a sky + daylight; 'dark' is a warm
+   * hellfire underworld (Põrgu, magma caverns); 'cavern' is a cool,
+   * phosphorescent underground (an underground sea, ice caves).
+   */
+  sky?: 'day' | 'dark' | 'cavern'
   /** Color of the water/sea plane (default a sea blue). */
   waterColor?: string
 }

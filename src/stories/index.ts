@@ -3,6 +3,9 @@ import { valdurn } from './valdurn'
 import { emberfall } from './emberfall'
 import { kalevipoeg } from './kalevipoeg'
 import { fotr } from './fotr'
+import { centerEarth } from './center-earth'
+import { verne } from './verne'
+import { musketeers } from './musketeers'
 
 /**
  * The atlas registry. To add a world:
@@ -10,7 +13,15 @@ import { fotr } from './fotr'
  *   2. Import it here and add it to the array below.
  * That's the whole extension surface — no engine changes required.
  */
-export const stories: Story[] = [valdurn, emberfall, kalevipoeg, fotr]
+export const stories: Story[] = [
+  valdurn,
+  emberfall,
+  kalevipoeg,
+  fotr,
+  centerEarth,
+  verne,
+  musketeers,
+]
 
 export function getStory(id: string | null | undefined): Story {
   return stories.find((s) => s.id === id) ?? stories[0]

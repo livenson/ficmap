@@ -154,13 +154,22 @@ the **Kalevipoeg** sample and you'll see it surface in both *Wars & Wanderings*
 and *Põrgu & the End*. `chapters` and `books` are interchangeable; a plain
 `chapters` run is just a single implicit book.
 
+This shines when several works share one geography. **The Extraordinary
+Voyages** puts four Jules Verne novels (*Around the World in Eighty Days*,
+*Twenty Thousand Leagues*, *The Mysterious Island*, *From the Earth to the
+Moon*) on one world atlas as four books; **The d'Artagnan Romances** does the
+same for Dumas's three Musketeers novels over France and England.
+
 ### Map levels (floors)
 
 A world can have levels below the surface — an underworld, a dungeon, a sky
 realm. Add `levels` (each with its own `terrain`, `markers`, etc.) and a **floor
 switcher** appears. A chapter's `level` id makes the guided tour **descend and
 resurface** automatically. Try **Kalevipoeg** → descend into **Põrgu**, or play
-Book III and watch the tour drop below and climb back.
+Book III and watch the tour drop below and climb back. **Journey to the Center
+of the Earth** stacks three subfloors — a volcanic chimney, the Lidenbrock Sea,
+and the deep caverns — each with its own `sky` mood (`'dark'` warm hellfire,
+`'cavern'` cool phosphorescence).
 
 ```ts
 levels: [{ id: 'porgu', title: 'Põrgu', terrain: { /* dark, sky: 'dark' */ }, markers: [...] }],
