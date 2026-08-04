@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Story } from '../types'
+import { useT } from '../i18n'
 
 interface Props {
   stories: Story[]
@@ -15,6 +16,7 @@ interface Props {
 export function WorldPicker({ stories, currentId, onPick }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const t = useT()
   const current = stories.find((s) => s.id === currentId) ?? stories[0]
 
   // Close on outside click or Escape.
@@ -38,7 +40,7 @@ export function WorldPicker({ stories, currentId, onPick }: Props) {
 
   return (
     <div className="worldpicker" ref={ref}>
-      <span className="toolbar__caption">World</span>
+      <span className="toolbar__caption">{t('world')}</span>
       <button
         className="worldpicker__button"
         aria-haspopup="listbox"

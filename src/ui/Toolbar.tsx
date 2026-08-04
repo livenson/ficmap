@@ -2,6 +2,7 @@ import type { ViewMode } from '../components/MapScene'
 import type { Story } from '../types'
 import { LayersMenu, type Layers } from './LayersMenu'
 import { WorldPicker } from './WorldPicker'
+import { LANGS, useT, type Lang } from '../i18n'
 
 interface Props {
   stories: Story[]
@@ -15,6 +16,8 @@ interface Props {
   inStory: boolean
   onPlayStory: () => void
   onExitStory: () => void
+  lang: Lang
+  onLang: (l: Lang) => void
 }
 
 export function Toolbar({
@@ -29,7 +32,10 @@ export function Toolbar({
   inStory,
   onPlayStory,
   onExitStory,
+  lang,
+  onLang,
 }: Props) {
+  const t = useT()
   return (
     <header className="toolbar">
       <div className="toolbar__brand">
@@ -43,18 +49,31 @@ export function Toolbar({
         <button
           className={`toolbar__story ${inStory ? 'is-active' : ''}`}
           onClick={inStory ? onExitStory : onPlayStory}
-          aria-label={inStory ? 'Exit story' : 'Play story'}
+          aria-label={inStory ? t('exitStory') : t('playStory')}
         >
           <span className="toolbar__story-icon">{inStory ? '✕' : '▶'}</span>
           <span className="toolbar__story-text">
-            {inStory ? 'Exit story' : 'Play story'}
+            {inStory ? t('exitStory') : t('playStory')}
           </span>
         </button>
       )}
 
       <div className="toolbar__spacer" />
 
-      <div className="toolbar__toggle" role="tablist" aria-label="View mode">
+      <div className="toolbar__toggle" role="group" aria-label={t('language')}>
+        {LANGS.map((l) => (
+          <button
+            key={l.code}
+            className={lang === l.code ? 'is-active' : ''}
+            onClick={() => onLang(l.code)}
+            aria-pressed={lang === l.code}
+          >
+            {l.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="toolbar__toggle" role="tablist" aria-label={t('viewMode')}>
         <button
           className={mode === '2d' ? 'is-active' : ''}
           onClick={() => onMode('2d')}

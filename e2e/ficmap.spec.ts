@@ -115,6 +115,27 @@ test('deep-links a world via the ?world= query param', async ({ page }) => {
   await expect(page).toHaveURL(/world=fotr/)
 })
 
+test('deep-links the view mode via the ?view= query param', async ({ page }) => {
+  await page.goto('/?view=2d')
+  await expect(page.getByRole('tab', { name: '2D' })).toHaveAttribute('aria-selected', 'true')
+  // Switching to 3D updates the URL; 3D is the default so the param clears.
+  await page.getByRole('tab', { name: '3D' }).click()
+  await expect(page).not.toHaveURL(/view=/)
+})
+
+test('switches UI language to Estonian', async ({ page }) => {
+  await page.goto('/?lang=et')
+  // The world-picker caption and layers button are translated…
+  await expect(page.locator('.worldpicker .toolbar__caption')).toHaveText('Maailm')
+  await expect(page.locator('.layers__text')).toHaveText('Kihid')
+  // …but a world's own content is not.
+  await expect(page.getByRole('heading', { name: 'The Realm of Valdurn' })).toBeVisible()
+  // Toggling back to English updates the labels and drops the param.
+  await page.getByRole('button', { name: 'EN', exact: true }).click()
+  await expect(page.locator('.layers__text')).toHaveText('Layers')
+  await expect(page).not.toHaveURL(/lang=/)
+})
+
 test('deep-links a subfloor via the ?floor= query param', async ({ page }) => {
   await page.goto('/?world=center-earth&floor=lidenbrock-sea')
   // The named floor is active on load and its markers are shown.

@@ -13,6 +13,35 @@ import { getLevels, getLevel, allMarkers, SURFACE_ID } from './engine/levels'
 import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
 import type { Story } from './types'
+import { LangProvider, translate, type Lang } from './i18n'
+
+/** URL query key for the view mode, e.g. `?view=2d`. */
+const VIEW_PARAM = 'view'
+function viewFromUrl(): ViewMode {
+  if (typeof window === 'undefined') return '3d'
+  return new URLSearchParams(window.location.search).get(VIEW_PARAM) === '2d' ? '2d' : '3d'
+}
+function writeViewToUrl(mode: ViewMode) {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (mode === '3d') url.searchParams.delete(VIEW_PARAM)
+  else url.searchParams.set(VIEW_PARAM, mode)
+  window.history.replaceState(null, '', url)
+}
+
+/** URL query key for the UI language, e.g. `?lang=et`. */
+const LANG_PARAM = 'lang'
+function langFromUrl(): Lang {
+  if (typeof window === 'undefined') return 'en'
+  return new URLSearchParams(window.location.search).get(LANG_PARAM) === 'et' ? 'et' : 'en'
+}
+function writeLangToUrl(lang: Lang) {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (lang === 'en') url.searchParams.delete(LANG_PARAM)
+  else url.searchParams.set(LANG_PARAM, lang)
+  window.history.replaceState(null, '', url)
+}
 
 /** URL query key for deep-linking a world, e.g. `?world=kalevipoeg`. */
 const WORLD_PARAM = 'world'
@@ -63,7 +92,16 @@ export default function App() {
     return { storyId: s.id, levelId: floorFromUrl(s) ?? SURFACE_ID }
   }, [])
   const [storyId, setStoryId] = useState(initial.storyId)
-  const [mode, setMode] = useState<ViewMode>('3d')
+  const [lang, setLang] = useState<Lang>(() => langFromUrl())
+  const pickLang = (l: Lang) => {
+    setLang(l)
+    writeLangToUrl(l)
+  }
+  const [mode, setModeState] = useState<ViewMode>(() => viewFromUrl())
+  const setMode = (m: ViewMode) => {
+    setModeState(m)
+    writeViewToUrl(m)
+  }
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
   // Toggleable map detail layers (strip back to a clean map).
@@ -194,6 +232,7 @@ export default function App() {
   ) : null
 
   return (
+    <LangProvider lang={lang}>
     <div className="app">
       <Toolbar
         stories={stories}
@@ -207,6 +246,8 @@ export default function App() {
         inStory={inStory}
         onPlayStory={startStory}
         onExitStory={exitStory}
+        lang={lang}
+        onLang={pickLang}
       />
 
       <div className="stage">
@@ -261,11 +302,13 @@ export default function App() {
           )}
 
           <div className="hint">
-            drag to pan · scroll to zoom{mode === '3d' ? ' · right-drag to orbit' : ''}
-            {inStory ? ' · ← → chapters' : ''}
+            {translate('hintPan', lang)} · {translate('hintZoom', lang)}
+            {mode === '3d' ? ` · ${translate('hintOrbit', lang)}` : ''}
+            {inStory ? ` · ${translate('hintChapters', lang)}` : ''}
           </div>
         </div>
       </div>
     </div>
+    </LangProvider>
   )
 }

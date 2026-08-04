@@ -2,6 +2,7 @@ import type { Story, Marker, StoryElement } from '../types'
 import type { PlaceReference } from '../engine/references'
 import { PlaceDetail } from './PlaceDetail'
 import { ElementDetail } from './ElementDetail'
+import { useT } from '../i18n'
 
 interface Props {
   story: Story
@@ -35,6 +36,7 @@ export function InfoPanel({
   onSelectElement,
   onJumpToChapter,
 }: Props) {
+  const t = useT()
   const elements = story.elements ?? []
 
   return (
@@ -42,7 +44,7 @@ export function InfoPanel({
       {selectedElement ? (
         <div className="panel__detail">
           <button className="panel__back" onClick={onClose}>
-            ‹ Back to {story.title}
+            ‹ {t('backTo')} {story.title}
           </button>
           <ElementDetail
             element={selectedElement}
@@ -54,7 +56,7 @@ export function InfoPanel({
       ) : selected ? (
         <div className="panel__detail">
           <button className="panel__back" onClick={onClose}>
-            ‹ Back to {story.title}
+            ‹ {t('backTo')} {story.title}
           </button>
           <PlaceDetail
             marker={selected}
@@ -72,7 +74,7 @@ export function InfoPanel({
 
       {elements.length > 0 && (
         <div className="panel__gazetteer">
-          <h3 className="panel__section">Artifacts</h3>
+          <h3 className="panel__section">{t('artifacts')}</h3>
           <ul>
             {elements.map((e) => (
               <li key={e.id}>
@@ -83,7 +85,7 @@ export function InfoPanel({
                   <span>
                     <span className="element__glyph">{e.glyph ?? '◆'}</span> {e.name}
                   </span>
-                  <span className="panel__gazetteer-kind">track</span>
+                  <span className="panel__gazetteer-kind">{t('track')}</span>
                 </button>
               </li>
             ))}
@@ -93,7 +95,7 @@ export function InfoPanel({
 
       {markers.length > 0 && (
         <div className="panel__gazetteer">
-          <h3 className="panel__section">Places</h3>
+          <h3 className="panel__section">{t('places')}</h3>
           <ul>
             {markers.map((m) => (
               <li key={m.id}>
