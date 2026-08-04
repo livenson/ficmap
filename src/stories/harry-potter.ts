@@ -166,6 +166,44 @@ export const harryPotter: Story = {
         'Bill and Fleur’s cottage on a lonely Cornish beach — a refuge, and the ' +
         'place where Dobby is laid to rest.',
     },
+    {
+      id: 'shrieking-shack',
+      name: 'The Shrieking Shack',
+      kind: 'danger',
+      at: { x: -0.33, z: -0.43 }, // edge of Hogsmeade
+      description:
+        'The most haunted building in Britain, at the edge of Hogsmeade — reached ' +
+        'by a tunnel under the Whomping Willow, and where Sirius Black’s innocence ' +
+        'is finally uncovered.',
+    },
+    {
+      id: 'quidditch-world-cup',
+      name: 'The Quidditch World Cup',
+      kind: 'landmark',
+      at: { x: 0.12, z: 0.48 }, // a raised moorland stadium
+      description:
+        'A vast stadium raised by magic on a lonely moor for the Cup final — where, ' +
+        'after the match, Death Eaters riot and the Dark Mark is cast into the sky ' +
+        'for the first time in years.',
+    },
+    {
+      id: 'grimmauld-place',
+      name: '12 Grimmauld Place',
+      kind: 'town',
+      at: { x: 0.57, z: 0.66 }, // hidden in London
+      description:
+        'The hidden London townhouse of the Blacks, made the headquarters of the ' +
+        'Order of the Phoenix — kept secret behind a Fidelius Charm.',
+    },
+    {
+      id: 'sea-cave',
+      name: 'The Sea Cave',
+      kind: 'danger',
+      at: { x: -0.52, z: 0.9 }, // a cliff cave over the sea
+      description:
+        'A cave in a cliff over black water — where the Dark Lord hid a locket ' +
+        'among the Inferi, and Dumbledore drank the potion that guarded it.',
+    },
   ],
   routes: [
     {
@@ -209,9 +247,9 @@ export const harryPotter: Story = {
         'Gryffindor in need — and, having taken in basilisk venom, can destroy ' +
         'a Horcrux. Track it from the school to the hunt and back to the battle.',
       journey: [
-        { marker: 'hogwarts', sinceChapter: 0, note: 'Drawn from the Sorting Hat in the Chamber.' },
-        { marker: 'forbidden-forest', sinceChapter: 4, note: 'Recovered from a frozen forest pool.' },
-        { marker: 'hogwarts', sinceChapter: 5, note: 'Back for the last Horcruxes and the battle.' },
+        { marker: 'hogwarts', sinceChapter: 3, note: 'Drawn from the Sorting Hat in the Chamber.' },
+        { marker: 'forbidden-forest', sinceChapter: 8, note: 'Recovered from a frozen forest pool.' },
+        { marker: 'hogwarts', sinceChapter: 10, note: 'Back for the last Horcruxes and the battle.' },
       ],
     },
   ],
@@ -257,6 +295,110 @@ export const harryPotter: Story = {
             regions: ['scotland'],
           },
           highlight: { markers: ['hogwarts'], routes: ['hogwarts-express'] },
+        },
+      ],
+    },
+    {
+      id: 'chamber-of-secrets',
+      title: 'The Chamber of Secrets',
+      subtitle: "The heir of Slytherin",
+      chapters: [
+        {
+          id: 'chamber',
+          title: 'The Chamber of Secrets',
+          narration:
+            'A flying car, a voice in the walls, and students turned to stone. ' +
+            'Deep beneath the school Harry finds the hidden Chamber, and with the ' +
+            'Sword of Gryffindor kills the basilisk and destroys the diary of Tom ' +
+            'Riddle — the first Horcrux, though no one yet knows the word.',
+          focus: { marker: 'hogwarts', distance: 30, pitch: 36 },
+          reveal: { markers: ['forbidden-forest'], regions: ['scotland'] },
+          highlight: { markers: ['hogwarts', 'forbidden-forest'] },
+        },
+      ],
+    },
+    {
+      id: 'prisoner-of-azkaban',
+      title: 'The Prisoner of Azkaban',
+      subtitle: 'The escaped man',
+      chapters: [
+        {
+          id: 'prisoner',
+          title: 'The Shrieking Shack',
+          narration:
+            'Sirius Black breaks out of Azkaban and Dementors ring the school. In ' +
+            'the Shrieking Shack the truth turns inside out — Harry’s godfather is ' +
+            'innocent, the real traitor a rat — and a turn of time saves two lives.',
+          focus: { marker: 'shrieking-shack', distance: 22, pitch: 34 },
+          reveal: { markers: ['shrieking-shack', 'azkaban'], regions: ['north-sea'] },
+          highlight: { markers: ['shrieking-shack', 'azkaban'] },
+        },
+      ],
+    },
+    {
+      id: 'goblet-of-fire',
+      title: 'The Goblet of Fire',
+      subtitle: 'The Triwizard Tournament',
+      chapters: [
+        {
+          id: 'world-cup',
+          title: 'The Quidditch World Cup',
+          narration:
+            'A night at the Cup final ends with the Dark Mark burning overhead. At ' +
+            'school an ancient tournament names Harry a champion against his will — ' +
+            'three tasks that lead, at the last, to a portkey and a graveyard.',
+          focus: { marker: 'quidditch-world-cup', distance: 26, pitch: 36 },
+          reveal: { markers: ['quidditch-world-cup'] },
+          highlight: { markers: ['quidditch-world-cup'] },
+        },
+        {
+          id: 'graveyard',
+          title: 'The Little Hangleton Graveyard',
+          narration:
+            'The cup is a trap. In the Riddle graveyard, with bone, flesh, and ' +
+            'blood, the Dark Lord takes shape again — and Harry barely escapes to ' +
+            'carry the warning home.',
+          focus: { marker: 'little-hangleton', distance: 24, pitch: 34 },
+          reveal: { markers: ['little-hangleton'] },
+          highlight: { markers: ['little-hangleton'] },
+        },
+      ],
+    },
+    {
+      id: 'order-of-the-phoenix',
+      title: 'The Order of the Phoenix',
+      subtitle: 'The Ministry falls silent',
+      chapters: [
+        {
+          id: 'order',
+          title: 'The Department of Mysteries',
+          narration:
+            'Denied and watched, Harry and his friends form the Order’s hidden ' +
+            'headquarters at Grimmauld Place and a secret army at school — and are ' +
+            'lured to the Department of Mysteries deep beneath the Ministry, where ' +
+            'a prophecy shatters and a godfather falls.',
+          focus: { marker: 'ministry', distance: 24, pitch: 34 },
+          reveal: { markers: ['grimmauld-place', 'ministry'], regions: ['the-south'] },
+          highlight: { markers: ['ministry', 'grimmauld-place'] },
+        },
+      ],
+    },
+    {
+      id: 'half-blood-prince',
+      title: 'The Half-Blood Prince',
+      subtitle: 'The memory and the cave',
+      chapters: [
+        {
+          id: 'the-cave',
+          title: 'The Cave',
+          narration:
+            'Through borrowed memories the shape of the Dark Lord’s secret comes ' +
+            'clear: his soul split and hidden. Across black water in a sea cave, ' +
+            'Harry and Dumbledore take a locket at terrible cost — and on the ' +
+            'Astronomy Tower, the headmaster falls.',
+          focus: { marker: 'sea-cave', distance: 24, pitch: 34 },
+          reveal: { markers: ['sea-cave'], regions: ['west-country'] },
+          highlight: { markers: ['sea-cave', 'hogwarts'] },
         },
       ],
     },

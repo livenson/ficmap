@@ -16,9 +16,11 @@ export const valdurn: Story = {
   epoch: 'Demo world',
   intro:
     'Once a single crown united the Vale, the Ashen Reach and the fenlands of ' +
-    'the west. Now three powers watch the roads between them. Pan and zoom to ' +
-    'explore — click any marker to read its tale, and toggle 2D/3D from the ' +
-    'top bar.',
+    'the west; now three powers watch the roads between them. But the realm runs ' +
+    'deeper than its map — beneath it lie the Vault of Kings and the Deep Forge, ' +
+    'above it float the Cloudward Reach and the Empyrean. Press ▶ Play story to ' +
+    'ride the crown down to the forge and up to the Throne of Dawn, or use the ' +
+    'floor switcher to climb the levels yourself.',
   surfaceName: 'Valdurn',
   ambient: { trees: 0.75, treeKind: 'broadleaf', birds: 7, fish: 4 },
   terrain: {
@@ -572,101 +574,175 @@ export const valdurn: Story = {
       name: 'The Crown of Valdurn',
       glyph: '♔',
       description:
-        'The crown that once bound the whole realm. Follow where it goes — ' +
-        'from the old seat, to the field where it was lost, to the sea.',
+        'The one crown that once bound every dominion under a single hand. Follow ' +
+        'it up the whole shaft of the world — forged in the deep, worn in the ' +
+        'vale, listed in the market of the clouds, and set at last on the Throne ' +
+        'of Dawn.',
       journey: [
         {
+          marker: 'the-deep-forge',
+          sinceChapter: 3,
+          note: 'Forged in the Deep Forge from a star-fallen ingot.',
+        },
+        {
           marker: 'caer-valdurn',
-          sinceChapter: 0,
-          note: 'Worn at Caer Valdurn, seat of the united crown.',
-        },
-        {
-          marker: 'ashen-field',
           sinceChapter: 4,
-          note: 'Lost on the Ashen Field, where the crown fell.',
+          note: 'Borne up and worn again at the seat of the united crown.',
         },
         {
-          marker: 'sunken-crown',
+          marker: 'hall-of-ancestors',
           sinceChapter: 5,
-          note: 'Gone into the sea off the Drowned Coast.',
+          note: 'Listed among the honoured works in the market of the clouds.',
+        },
+        {
+          marker: 'throne-of-dawn',
+          sinceChapter: 6,
+          note: 'Set on the Throne of Dawn, from which all dominions are one.',
         },
       ],
     },
   ],
+  // A tour down the whole shaft of the world and back up — surface, then the
+  // Vault and the Deep below, then the Cloudward Reach and the Empyrean above —
+  // so the story spans every floor. Its through-line is (with a wink) the tale
+  // of a realm that forgot it was once provisioned from a single seat: the
+  // Crown of Valdurn is one control-plane to broker every quarrelling dominion.
   chapters: [
     {
       id: 'divided',
       title: 'A Realm Divided',
       narration:
-        'One crown once bound the whole of this land. Its heartlands still ' +
-        'carry the old names — the Vale, the Reach, the Fens, and the ' +
-        'drowned southern shore — but no single hand rules them now.',
+        'One crown once bound the whole of this land — the Vale, the Ashen ' +
+        'Reach, the fenlands and the drowned shore, each now a realm unto ' +
+        'itself, watching the roads between. No single hand brokers their trade ' +
+        'or counts their tithes; every dominion hoards its own, and has forgotten ' +
+        'that they were once, all of them, provisioned from one seat.',
       focus: { at: { x: 0, z: 0.15 }, distance: 135, pitch: 52 },
       reveal: {
-        markers: ['caer-valdurn'],
+        markers: ['caer-valdurn', 'thornhold', 'greywatch'],
         regions: ['vale', 'reach', 'fens', 'coast'],
       },
+      highlight: { markers: ['caer-valdurn'] },
     },
     {
       id: 'old-seat',
       title: 'The Old Seat',
       narration:
-        'In the southern peaks stands Caer Valdurn, the seat of the united ' +
-        'crown. Its bells have not rung for a coronation in three generations, ' +
-        'and its halls keep only ghosts and cartographers.',
+        'In the southern peaks stands Caer Valdurn, the seat of the crown that ' +
+        'once governed every dominion as one — a single throne from which to see ' +
+        'the whole realm and order it. Its bells have not rung in three ' +
+        'generations; its ledgers gather dust, and the roads it kept open have ' +
+        'gone to ruin.',
       focus: { marker: 'caer-valdurn', distance: 34, pitch: 30, heading: 15 },
-      reveal: { markers: ['duskwater'] },
+      reveal: { markers: ['duskwater', 'saltmere', 'ashford'] },
       highlight: { markers: ['caer-valdurn'] },
     },
     {
-      id: 'rival',
-      title: 'The Eastern Rival',
+      id: 'the-vault',
+      title: 'The Vault of Kings',
+      level: 'vault-of-kings',
       narration:
-        'Across the Ashen Reach rises Thornhold, grown rich on eastern ore and ' +
-        'the deep-water trade of Saltmere. Its lords have not knelt in living ' +
-        'memory, and they watch the western roads with open envy.',
-      focus: { marker: 'thornhold', distance: 40, pitch: 34, heading: -25 },
-      reveal: { markers: ['thornhold', 'saltmere'] },
-      highlight: { markers: ['thornhold', 'saltmere'] },
+        'Down the stair beneath the throne-room lie the royal vaults, where ' +
+        'every crowned king is written into stone and every reign tallied to the ' +
+        'last coin. This is the realm’s long ledger — nothing is forged or ' +
+        'granted above that is not, in the end, recorded here in the dark.',
+      focus: { marker: 'hall-of-crowns', distance: 40, pitch: 40 },
+      reveal: {
+        markers: [
+          'the-stair-down',
+          'hall-of-crowns',
+          'tomb-of-the-first-king',
+          'the-ossuary',
+          'the-mere-of-reflection',
+          'the-deeper-stair',
+        ],
+        routes: ['the-procession'],
+        regions: ['royal-vaults', 'the-deep-stair'],
+      },
+      highlight: { markers: ['hall-of-crowns'] },
     },
     {
-      id: 'kings-road',
-      title: "The King's Road",
+      id: 'the-forge',
+      title: 'The Deep Forge',
+      level: 'sunless-deep',
       narration:
-        'Between them runs the old royal road, from the fog-bound harbor of ' +
-        'Duskwater through Ashford’s neutral markets to the eastern seat. ' +
-        'Whoever holds the road holds the realm — and no one holds it.',
-      focus: { at: { x: 0.0, z: 0.25 }, distance: 100, pitch: 46 },
+        'Deeper still, at the molten root of the world, burns the first fire — ' +
+        'the Deep Forge, where the Crown of Valdurn itself was beaten from a ' +
+        'single star-fallen ingot before ever it was worth killing for. Every ' +
+        'wonder the realm has worn was provisioned here, in heat and iron, out of ' +
+        'the raw stuff of the deep.',
+      focus: { marker: 'the-deep-forge', distance: 42, pitch: 36 },
       reveal: {
-        markers: ['greywatch', 'ashford', 'emberpeak'],
+        markers: [
+          'the-molten-root',
+          'the-deep-forge',
+          'the-river-of-flame',
+          'the-chained-thing',
+          'the-last-door',
+        ],
+        routes: ['the-descent'],
+        regions: ['the-deep', 'molten-roots'],
+      },
+      highlight: { markers: ['the-deep-forge'] },
+    },
+    {
+      id: 'roads-reopened',
+      title: 'The Roads Reopened',
+      narration:
+        'Bring the forged crown up into the daylight and the realm remembers ' +
+        'itself. The King’s Road runs again from the western harbour to the ' +
+        'eastern seat; Ashford’s markets answer to one measure; and the three ' +
+        'watching powers trade, for once, under a single crown — a self-service ' +
+        'peace, each fief drawing what it needs and no more.',
+      focus: { at: { x: 0.0, z: 0.2 }, distance: 120, pitch: 48 },
+      reveal: {
+        markers: ['emberpeak', 'hollowfen', 'ashen-field', 'sunken-crown'],
         routes: ['kings-road'],
       },
       highlight: { routes: ['kings-road'] },
     },
     {
-      id: 'long-march',
-      title: 'The Long March',
+      id: 'cloudward',
+      title: 'The Cloudward Reach',
+      level: 'cloudward',
       narration:
-        'When the crown was last contested, the royal army marched from ' +
-        'Duskwater through the whispering dark of Hollowfen — and met its end ' +
-        'on the Ashen Field, where ten thousand fell and no side claimed a win.',
-      focus: { at: { x: -0.1, z: -0.15 }, distance: 90, pitch: 44 },
+        'Above the mortal air floats the lower heaven, a sea of cloud strung ' +
+        'with isles — the great catalogue of the realm, where every honoured work ' +
+        'is listed and offered, and the ancestor-kings sit at one long table over ' +
+        'the whole divided land. Here the wares of every dominion are gathered ' +
+        'into one bright market.',
+      focus: { marker: 'hall-of-ancestors', distance: 40, pitch: 34 },
       reveal: {
-        markers: ['hollowfen', 'north-spur', 'ashen-field'],
-        routes: ['the-long-march'],
+        markers: [
+          'gate-of-clouds',
+          'hall-of-ancestors',
+          'fountain-of-souls',
+          'gardens-of-dawn',
+          'the-watchtower',
+          'the-ascent-stair',
+        ],
+        routes: ['bright-road'],
+        regions: ['lower-heaven', 'cloud-sea'],
       },
-      highlight: { routes: ['the-long-march'], markers: ['ashen-field'] },
+      highlight: { markers: ['hall-of-ancestors'] },
     },
     {
-      id: 'drowned-coast',
-      title: 'The Drowned Coast',
+      id: 'throne-of-dawn',
+      title: 'The Throne of Dawn',
+      level: 'empyrean',
       narration:
-        'And in the south, beneath the tide, lies the Sunken Crown — the first ' +
-        'capital, lost to the sea. At low water its towers still break the ' +
-        'surface, a reminder of how far a crown can fall.',
-      focus: { marker: 'sunken-crown', distance: 30, pitch: 26, heading: 5 },
-      reveal: { markers: ['sunken-crown', 'ravenfell'] },
-      highlight: { markers: ['sunken-crown'] },
+        'Highest of all, alone in an endless cloud-sea, stands the Throne of ' +
+        'Dawn — the seat from which the whole realm was first dreamed and could, ' +
+        'if any sat it, be governed as one. From here every dominion, deep forge ' +
+        'to drowned coast to floating market, answers to a single crown. The ' +
+        'realm was never truly divided; it only wanted for a hand to hold them all.',
+      focus: { marker: 'throne-of-dawn', distance: 40, pitch: 34 },
+      reveal: {
+        markers: ['throne-of-dawn', 'well-of-stars', 'the-choir', 'the-last-gate'],
+        routes: ['path-of-light'],
+        regions: ['empyrean-heart', 'beyond-cloud'],
+      },
+      highlight: { markers: ['throne-of-dawn'] },
     },
   ],
 }
