@@ -6,6 +6,7 @@ import { fotr } from './fotr'
 import { centerEarth } from './center-earth'
 import { verne } from './verne'
 import { musketeers } from './musketeers'
+import { harryPotter } from './harry-potter'
 
 /**
  * The atlas registry. To add a world:
@@ -21,6 +22,7 @@ export const stories: Story[] = [
   centerEarth,
   verne,
   musketeers,
+  harryPotter,
 ]
 
 export function getStory(id: string | null | undefined): Story {
