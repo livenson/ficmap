@@ -24,6 +24,7 @@ const PRESETS = {
   estonia: {
     z: 7,
     bbox: { lonMin: 21.5, lonMax: 28.9, latMin: 57.3, latMax: 60.75 },
+    lakes: true,
     out: '../src/assets/estonia-height.png',
   },
   france: {
@@ -31,6 +32,7 @@ const PRESETS = {
     bbox: { lonMin: -6, lonMax: 6, latMin: 42, latMax: 53 },
     // Cap the Alps so lowland France keeps dynamic range (nicer relief).
     capM: 1500,
+    lakes: true,
     out: '../src/assets/france-height.png',
   },
   britain: {
@@ -38,6 +40,7 @@ const PRESETS = {
     bbox: { lonMin: -8, lonMax: 2, latMin: 50, latMax: 59 },
     capM: 1300,
     flatOceanM: -10,
+    lakes: true,
     out: '../src/assets/britain-height.png',
   },
   world: {
@@ -64,6 +67,74 @@ const BBOX = preset.bbox
 const W = preset.w ?? 256
 const H = preset.h ?? 256
 const OUT = new URL(preset.out, import.meta.url)
+
+// Depth (metres) to carve real lake bodies to, so they render as inland water.
+const LAKE_M = -4
+const LAKES_URL =
+  'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_lakes.geojson'
+
+/**
+ * Fetch Natural Earth lake polygons that overlap the bbox and pre-compute each
+ * ring's bounding box for a fast reject. Returns polygons as {rings, bb}, where
+ * rings[0] is the outer ring and the rest are holes (islands).
+ */
+async function loadLakes(bbox) {
+  const gj = await (await fetch(LAKES_URL)).json()
+  const polys = []
+  const overlaps = (bb) =>
+    bb[0] <= bbox.lonMax && bb[2] >= bbox.lonMin && bb[1] <= bbox.latMax && bb[3] >= bbox.latMin
+  const ringBB = (ring) => {
+    let a = [Infinity, Infinity, -Infinity, -Infinity]
+    for (const [x, y] of ring) {
+      if (x < a[0]) a[0] = x
+      if (y < a[1]) a[1] = y
+      if (x > a[2]) a[2] = x
+      if (y > a[3]) a[3] = y
+    }
+    return a
+  }
+  for (const f of gj.features) {
+    const g = f.geometry
+    if (!g) continue
+    const parts = g.type === 'MultiPolygon' ? g.coordinates : g.type === 'Polygon' ? [g.coordinates] : []
+    for (const rings of parts) {
+      const bb = ringBB(rings[0])
+      if (overlaps(bb)) polys.push({ rings, bb })
+    }
+  }
+  return polys
+}
+
+function pointInRing(lon, lat, ring) {
+  let inside = false
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0],
+      yi = ring[i][1],
+      xj = ring[j][0],
+      yj = ring[j][1]
+    if (yi > lat !== yj > lat && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside
+  }
+  return inside
+}
+
+function inLake(lon, lat, polys) {
+  for (const p of polys) {
+    const bb = p.bb
+    if (lon < bb[0] || lon > bb[2] || lat < bb[1] || lat > bb[3]) continue
+    if (!pointInRing(lon, lat, p.rings[0])) continue
+    let hole = false
+    for (let h = 1; h < p.rings.length; h++)
+      if (pointInRing(lon, lat, p.rings[h])) {
+        hole = true
+        break
+      }
+    if (!hole) return true
+  }
+  return false
+}
+
+const lakePolys = preset.lakes ? await loadLakes(BBOX) : null
+if (lakePolys) console.log(`carving ${lakePolys.length} lake polygons`)
 
 const TS = 256
 const lon2tx = (lon) => Math.floor(((lon + 180) / 360) * 2 ** Z)
@@ -125,6 +196,8 @@ for (let j = 0; j < H; j++)
     if (preset.capM) m = Math.min(m, preset.capM)
     // Optionally flatten the whole sea to one depth for an even ocean colour.
     if (preset.flatOceanM != null && m < 0) m = preset.flatOceanM
+    // Carve real inland lakes below sea level so they render as water.
+    if (lakePolys && m > LAKE_M && inLake(lon, lat, lakePolys)) m = LAKE_M
     out[j * W + i] = m
     if (m < mn) mn = m
     if (m > mx) mx = m
