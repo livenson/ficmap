@@ -8,10 +8,14 @@ interface Props {
   ambient: Ambient
   /** World aspect: spreads the flocks across a wider-than-square world. */
   aspect?: number
+  /** In a sky realm, the "birds" are rendered as glowing angels instead. */
+  heaven?: boolean
 }
 
+type CreatureType = 'bird' | 'dragon' | 'angel'
+
 interface Creature {
-  kind: 'bird' | 'dragon'
+  type: CreatureType
   radius: number
   /** X center the creature circles around (spread across the world width). */
   cx: number
@@ -27,39 +31,42 @@ interface Creature {
 const GOLDEN = 2.399963 // spread creatures around the sky evenly
 
 /**
- * Ambient flying creatures that circle slowly over the world — small dark
- * birds, and (for fierier worlds) larger dragons. Each is a lightweight
- * silhouette with flapping wings, animated from the render clock so it stays
- * deterministic. 3D-only; they read as life over the terrain, most visible as
- * you tilt and zoom.
+ * Ambient flying creatures that circle slowly over the world:
+ *  - small dark birds over ordinary lands,
+ *  - glowing angels over a sky realm (the heaven floors),
+ *  - and fiery, membrane-winged dragons over the fierier worlds (Põrgu, the
+ *    Sunless Deep).
+ * Each is a lightweight model with flapping wings, animated from the render
+ * clock so it stays deterministic. 3D-only; they read as life over the terrain,
+ * most visible as you tilt and zoom.
  */
-export function Wildlife({ ambient, aspect = 1 }: Props) {
+export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
   const birds = ambient.birds ?? 6
   const dragons = ambient.dragons ?? 0
 
   const creatures = useMemo<Creature[]>(() => {
     const list: Creature[] = []
     // Spread flock centers across the world width so a wide (non-square) world
-    // has birds everywhere, not only over its middle.
+    // has creatures everywhere, not only over its middle.
     const spread = (i: number) =>
       aspect <= 1 ? 0 : (((i * 0.61803) % 1) * 2 - 1) * WORLD_HALF * (aspect - 0.3)
     for (let i = 0; i < birds; i++) {
       list.push({
-        kind: 'bird',
+        type: heaven ? 'angel' : 'bird',
         radius: WORLD_SIZE * (0.18 + (i % 4) * 0.09),
         cx: spread(i),
         height: 26 + (i % 5) * 5,
-        speed: 0.22 + (i % 3) * 0.06,
+        speed: heaven ? 0.14 + (i % 3) * 0.04 : 0.22 + (i % 3) * 0.06,
         phase: i * GOLDEN,
         dir: i % 2 === 0 ? 1 : -1,
-        size: 0.9 + (i % 3) * 0.25,
-        flap: 5 + (i % 3),
-        color: '#1c242c',
+        size: heaven ? 1.5 + (i % 3) * 0.3 : 0.9 + (i % 3) * 0.25,
+        flap: heaven ? 3 + (i % 2) : 5 + (i % 3),
+        color: heaven ? '#fff6e2' : '#1c242c',
       })
     }
     for (let i = 0; i < dragons; i++) {
       list.push({
-        kind: 'dragon',
+        type: 'dragon',
         radius: WORLD_SIZE * (0.14 + (i % 2) * 0.12),
         cx: spread(i + 3),
         // Fly lower than the birds so they sweep in view over the crags.
@@ -67,21 +74,19 @@ export function Wildlife({ ambient, aspect = 1 }: Props) {
         speed: 0.12 + (i % 2) * 0.04,
         phase: i * GOLDEN + 1.2,
         dir: i % 2 === 0 ? -1 : 1,
-        size: 3.2 + (i % 2) * 0.8,
-        flap: 1.8 + i * 0.3,
-        // A glowing ember tone: unlit (MeshBasic) and bright, so the beasts read
-        // against a dark hellscape and catch the bloom instead of vanishing into
-        // the red gloom the way a dim maroon did.
-        color: '#ff7a33',
+        size: 3.4 + (i % 2) * 0.9,
+        flap: 1.6 + i * 0.25,
+        color: '#c2431c',
       })
     }
     return list
-  }, [birds, dragons, aspect])
+  }, [birds, dragons, aspect, heaven])
 
   const groups = useRef<THREE.Group[]>([])
   const inners = useRef<THREE.Group[]>([])
   const wings = useRef<{ l: THREE.Object3D; r: THREE.Object3D }[]>([])
-  const tails = useMemo(() => ({ bird: makeTail(false), dragon: makeTail(true) }), [])
+  const membrane = useMemo(makeMembraneTexture, [])
+  const scales = useMemo(makeScaleTexture, [])
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
@@ -99,18 +104,18 @@ export function Wildlife({ ambient, aspect = 1 }: Props) {
       const vz = Math.cos(theta) * c.dir
       g.rotation.y = Math.atan2(vx, vz)
 
-      // Bank into the turn and pitch gently with the bob.
+      // Bank into the turn and pitch gently with the bob. Angels stay upright.
       const inner = inners.current[i]
       if (inner) {
-        inner.rotation.z = -c.dir * 0.32
+        inner.rotation.z = c.type === 'angel' ? 0 : -c.dir * 0.32
         inner.rotation.x = Math.sin(t * 0.8 + c.phase) * 0.06
       }
 
       const w = wings.current[i]
       if (w) {
-        // Flap-then-glide: amplitude waxes and wanes so birds soar between beats.
+        // Flap-then-glide: amplitude waxes and wanes so fliers soar between beats.
         const glide = 0.3 + 0.7 * Math.max(0, Math.sin(t * 0.5 + c.phase * 1.3))
-        const amp = c.kind === 'dragon' ? 0.5 : 0.85
+        const amp = c.type === 'dragon' ? 0.5 : c.type === 'angel' ? 0.4 : 0.85
         const a = Math.sin(t * c.flap + c.phase) * amp * glide
         w.l.rotation.z = a
         w.r.rotation.z = -a
@@ -120,93 +125,215 @@ export function Wildlife({ ambient, aspect = 1 }: Props) {
 
   return (
     <>
-      {creatures.map((c, i) => {
-        const dragon = c.kind === 'dragon'
-        return (
+      {creatures.map((c, i) => (
+        <group
+          key={i}
+          ref={(el) => {
+            if (el) groups.current[i] = el
+          }}
+          scale={c.size}
+        >
+          {/* Banked body frame */}
           <group
-            key={i}
             ref={(el) => {
-              if (el) groups.current[i] = el
+              if (el) inners.current[i] = el
             }}
-            scale={c.size}
           >
-            {/* Banked body frame */}
+            <Body type={c.type} color={c.color} scales={scales} />
+            {/* left + right wings, hinged at the body */}
             <group
               ref={(el) => {
-                if (el) inners.current[i] = el
+                if (el) {
+                  wings.current[i] = wings.current[i] ?? ({} as any)
+                  wings.current[i].l = el
+                }
               }}
             >
-              {/* slim body */}
-              <mesh rotation-x={Math.PI / 2}>
-                <capsuleGeometry args={[0.1, dragon ? 1.6 : 0.7, 4, 8]} />
-                <meshBasicMaterial color={c.color} />
-              </mesh>
-              {/* tail fan */}
-              <mesh
-                geometry={dragon ? tails.dragon : tails.bird}
-                position={[0, 0, -(dragon ? 1.1 : 0.6)]}
-              >
-                <meshBasicMaterial color={c.color} side={THREE.DoubleSide} />
-              </mesh>
-              {/* wings */}
-              <group
-                ref={(el) => {
-                  if (el) {
-                    wings.current[i] = wings.current[i] ?? ({} as any)
-                    wings.current[i].l = el
-                  }
-                }}
-              >
-                <Wing color={c.color} dragon={dragon} side={1} />
-              </group>
-              <group
-                ref={(el) => {
-                  if (el) {
-                    wings.current[i] = wings.current[i] ?? ({} as any)
-                    wings.current[i].r = el
-                  }
-                }}
-              >
-                <Wing color={c.color} dragon={dragon} side={-1} />
-              </group>
+              <Wing type={c.type} color={c.color} side={1} membrane={membrane} />
+            </group>
+            <group
+              ref={(el) => {
+                if (el) {
+                  wings.current[i] = wings.current[i] ?? ({} as any)
+                  wings.current[i].r = el
+                }
+              }}
+            >
+              <Wing type={c.type} color={c.color} side={-1} membrane={membrane} />
             </group>
           </group>
-        )
-      })}
+        </group>
+      ))}
     </>
   )
 }
 
-/** A swept, tapered wing extending along ±X and hinged at the body. */
-function Wing({
+/** The body, head, tail (and, for angels, a halo) — varies by creature type. */
+function Body({
+  type,
   color,
-  dragon,
-  side,
+  scales,
 }: {
+  type: CreatureType
   color: string
-  dragon: boolean
-  side: 1 | -1
+  scales: THREE.Texture
 }) {
+  const tails = useMemo(() => ({ bird: makeTail(false), dragon: makeTail(true) }), [])
+
+  if (type === 'angel') {
+    return (
+      <group>
+        {/* flowing robe */}
+        <mesh position={[0, -0.1, -0.1]} rotation-x={Math.PI / 2}>
+          <coneGeometry args={[0.34, 1.5, 12, 1, true]} />
+          <meshBasicMaterial color={color} side={THREE.DoubleSide} />
+        </mesh>
+        {/* head */}
+        <mesh position={[0, 0.16, 0.34]}>
+          <sphereGeometry args={[0.16, 12, 12]} />
+          <meshBasicMaterial color="#fffaf0" />
+        </mesh>
+        {/* halo */}
+        <mesh position={[0, 0.42, 0.34]} rotation-x={Math.PI / 2}>
+          <torusGeometry args={[0.22, 0.03, 8, 20]} />
+          <meshBasicMaterial color="#ffe9a8" />
+        </mesh>
+      </group>
+    )
+  }
+
+  if (type === 'dragon') {
+    return (
+      <group>
+        {/* long sinuous body */}
+        <mesh rotation-x={Math.PI / 2}>
+          <capsuleGeometry args={[0.16, 1.5, 6, 12]} />
+          <meshBasicMaterial color={color} map={scales} />
+        </mesh>
+        {/* neck + head reaching forward */}
+        <mesh position={[0, 0.04, 1.15]} rotation-x={Math.PI / 2}>
+          <coneGeometry args={[0.16, 0.9, 10]} />
+          <meshBasicMaterial color={color} map={scales} />
+        </mesh>
+        <mesh position={[0, 0.06, 1.62]}>
+          <coneGeometry args={[0.14, 0.42, 8]} />
+          <meshBasicMaterial color="#ff8a3a" />
+        </mesh>
+        {/* two swept-back horns */}
+        <mesh position={[0.07, 0.16, 1.66]} rotation={[0.5, 0, 0.3]}>
+          <coneGeometry args={[0.03, 0.28, 6]} />
+          <meshBasicMaterial color="#ffd27a" />
+        </mesh>
+        <mesh position={[-0.07, 0.16, 1.66]} rotation={[0.5, 0, -0.3]}>
+          <coneGeometry args={[0.03, 0.28, 6]} />
+          <meshBasicMaterial color="#ffd27a" />
+        </mesh>
+        {/* glowing eyes */}
+        <mesh position={[0.07, 0.08, 1.78]}>
+          <sphereGeometry args={[0.035, 6, 6]} />
+          <meshBasicMaterial color="#fff2c8" />
+        </mesh>
+        <mesh position={[-0.07, 0.08, 1.78]}>
+          <sphereGeometry args={[0.035, 6, 6]} />
+          <meshBasicMaterial color="#fff2c8" />
+        </mesh>
+        {/* long tail tapering back to a barb */}
+        <mesh position={[0, 0, -1.35]} rotation-x={-Math.PI / 2}>
+          <coneGeometry args={[0.13, 1.6, 8]} />
+          <meshBasicMaterial color={color} map={scales} />
+        </mesh>
+        <mesh position={[0, 0, -2.2]} rotation-x={Math.PI}>
+          <coneGeometry args={[0.11, 0.34, 4]} />
+          <meshBasicMaterial color="#ff8a3a" />
+        </mesh>
+        {/* a ridge of bright back-spines */}
+        {[-0.8, -0.4, 0, 0.4, 0.8].map((z, k) => (
+          <mesh key={k} position={[0, 0.16, z]} rotation-x={-0.2}>
+            <coneGeometry args={[0.05, 0.26, 4]} />
+            <meshBasicMaterial color="#ffb24a" />
+          </mesh>
+        ))}
+      </group>
+    )
+  }
+
+  // ordinary bird
+  return (
+    <group>
+      <mesh rotation-x={Math.PI / 2}>
+        <capsuleGeometry args={[0.1, 0.7, 4, 8]} />
+        <meshBasicMaterial color={color} />
+      </mesh>
+      <mesh geometry={tails.bird} position={[0, 0, -0.6]}>
+        <meshBasicMaterial color={color} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  )
+}
+
+/** A wing, hinged at the body — feathered for birds/angels, membrane for dragons. */
+function Wing({
+  type,
+  color,
+  side,
+  membrane,
+}: {
+  type: CreatureType
+  color: string
+  side: 1 | -1
+  membrane: THREE.Texture
+}) {
+  const dragon = type === 'dragon'
+  const angel = type === 'angel'
+
   const geo = useMemo(() => {
-    const sx = dragon ? 1.55 : 1
-    const cF = (dragon ? 0.5 : 0.32) // chord at root, front
-    const cB = (dragon ? 0.9 : 0.55) // chord at root, back
+    const sx = dragon ? 1.75 : angel ? 1.5 : 1
+    const cF = dragon ? 0.5 : 0.32 // chord at root, front
+    const cB = dragon ? 1.0 : 0.55 // chord at root, back
     const rf = [0, 0, cF]
     const rb = [0, 0, -cB]
     const mid = [side * 0.9 * sx, 0.04, -0.06]
-    const tip = [side * 1.75 * sx, 0.08, -0.5]
+    const tip = [side * 1.85 * sx, 0.08, -0.5]
     const g = new THREE.BufferGeometry()
     // Two triangles: a swept-back, tapered wing.
     g.setAttribute(
       'position',
-      new THREE.Float32BufferAttribute(
-        [...rf, ...mid, ...rb, ...rf, ...tip, ...mid],
-        3,
-      ),
+      new THREE.Float32BufferAttribute([...rf, ...mid, ...rb, ...rf, ...tip, ...mid], 3),
+    )
+    // UVs so the membrane texture (veins) maps root→tip.
+    g.setAttribute(
+      'uv',
+      new THREE.Float32BufferAttribute([0, 0, 0.6, 1, 0, 1, 0, 0, 1, 1, 0.6, 1], 2),
     )
     g.computeVertexNormals()
     return g
-  }, [dragon, side])
+  }, [dragon, angel, side])
+
+  if (dragon) {
+    return (
+      <group>
+        {/* translucent membrane */}
+        <mesh geometry={geo}>
+          <meshBasicMaterial
+            color="#ff8a3a"
+            map={membrane}
+            side={THREE.DoubleSide}
+            transparent
+            opacity={0.92}
+          />
+        </mesh>
+        {/* two finger-ribs along the arm */}
+        <mesh position={[side * 0.95, 0.04, -0.04]} rotation={[0, 0, side * 0.15]}>
+          <boxGeometry args={[1.9, 0.03, 0.03]} />
+          <meshBasicMaterial color="#a8331a" />
+        </mesh>
+        <mesh position={[side * 0.8, 0.04, -0.32]} rotation={[0, 0.3 * side, side * 0.1]}>
+          <boxGeometry args={[1.5, 0.03, 0.03]} />
+          <meshBasicMaterial color="#a8331a" />
+        </mesh>
+      </group>
+    )
+  }
 
   return (
     <mesh geometry={geo}>
@@ -226,4 +353,52 @@ function makeTail(dragon: boolean): THREE.BufferGeometry {
   )
   g.computeVertexNormals()
   return g
+}
+
+/** A fiery membrane texture: warm base with darker radial veins. */
+function makeMembraneTexture(): THREE.Texture {
+  const s = 128
+  const cv = document.createElement('canvas')
+  cv.width = cv.height = s
+  const ctx = cv.getContext('2d')!
+  const grad = ctx.createLinearGradient(0, 0, s, 0)
+  grad.addColorStop(0, '#c2431c')
+  grad.addColorStop(1, '#ff9a4a')
+  ctx.fillStyle = grad
+  ctx.fillRect(0, 0, s, s)
+  // Veins radiating from the wing root (left edge).
+  ctx.strokeStyle = 'rgba(90,20,10,0.75)'
+  ctx.lineWidth = 2
+  for (let k = 0; k < 6; k++) {
+    ctx.beginPath()
+    ctx.moveTo(0, s * 0.5)
+    ctx.lineTo(s, (s * k) / 5)
+    ctx.stroke()
+  }
+  const tex = new THREE.CanvasTexture(cv)
+  tex.needsUpdate = true
+  return tex
+}
+
+/** A scaly body texture: ember base speckled with darker scales. */
+function makeScaleTexture(): THREE.Texture {
+  const s = 64
+  const cv = document.createElement('canvas')
+  cv.width = cv.height = s
+  const ctx = cv.getContext('2d')!
+  ctx.fillStyle = '#b23c18'
+  ctx.fillRect(0, 0, s, s)
+  ctx.fillStyle = 'rgba(70,16,8,0.55)'
+  for (let y = 0; y < s; y += 6) {
+    for (let x = 0; x < s; x += 6) {
+      ctx.beginPath()
+      ctx.arc(x + (y % 12 === 0 ? 0 : 3), y, 2.2, 0, Math.PI)
+      ctx.fill()
+    }
+  }
+  const tex = new THREE.CanvasTexture(cv)
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+  tex.repeat.set(2, 3)
+  tex.needsUpdate = true
+  return tex
 }

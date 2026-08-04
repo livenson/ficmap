@@ -10,6 +10,7 @@ const WORLDS = [
   { id: 'verne-voyages', title: 'The Extraordinary Voyages' },
   { id: 'musketeers', title: "The d'Artagnan Romances" },
   { id: 'harry-potter', title: 'Harry Potter' },
+  { id: 'indiana-jones', title: 'The Adventures of Indiana Jones' },
 ]
 
 function trackErrors(page: Page): string[] {

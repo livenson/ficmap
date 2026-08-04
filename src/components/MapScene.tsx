@@ -183,7 +183,7 @@ export function MapScene({
       {mode === '3d' && layers.nature && (
         <>
           <Flora field={field} terrain={terrain} ambient={level.ambient} />
-          <Wildlife ambient={level.ambient} aspect={aspect} />
+          <Wildlife ambient={level.ambient} aspect={aspect} heaven={heaven} />
           {level.ambient.mosquitoes ? (
             <Mosquitoes swarms={level.ambient.mosquitoes} field={field} terrain={terrain} />
           ) : null}
@@ -412,7 +412,16 @@ function Cameras({
         makeDefault
         fov={is3d ? 50 : 28}
         // A hair of Z offset keeps the top-down view off the exact singularity.
-        position={is3d ? [0, 55 * w, 78 * w] : [0, 235 * w, 0.1]}
+        // Wide world maps (an equirectangular globe) are hard to read edge-on, so
+        // they start well overhead — nearly an atlas — while a square world keeps
+        // the lower, relief-revealing angle that shows off its terrain.
+        position={
+          is3d
+            ? aspect > 1.5
+              ? [0, 82 * w, 50 * w] // same distance as below, but ~59° overhead
+              : [0, 55 * w, 78 * w]
+            : [0, 235 * w, 0.1]
+        }
         // A larger near plane in the far top-down view restores depth precision,
         // so the water plane doesn't z-fight the near-flat ocean floor into a
         // shimmering band. Kept below the 2D min-zoom distance (40).
