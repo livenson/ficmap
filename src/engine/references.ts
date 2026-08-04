@@ -17,7 +17,7 @@ export interface PlaceReference {
   /** The sentence from the narration that mentions the place, if any. */
   snippet?: string
   /** How the link was found — for a small badge in the UI. */
-  via: 'focus' | 'highlight' | 'narration'
+  via: 'focus' | 'highlight' | 'narration' | 'appears'
 }
 
 /**
@@ -78,6 +78,11 @@ export function buildPlaceReferences(
       const hit = sentences.find((s) => re.test(s))
       if (hit) add(id, 'narration', hit.trim())
     }
+
+    // Finally, any place the chapter simply brings onto the map — so every
+    // mapped place lists at least the book/chapter it belongs to, even when it
+    // is only a backdrop the narration doesn't name outright.
+    ch.reveal?.markers?.forEach((id) => add(id, 'appears'))
   })
 
   return out

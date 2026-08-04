@@ -216,6 +216,7 @@ export function MapScene({
           showLabels={layers.labels}
           highlight={storyMode ? highlight.markers : null}
           controlsRef={controls}
+          is3d={mode === '3d'}
         />
       )}
       {layers.artifacts && (

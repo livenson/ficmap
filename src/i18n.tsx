@@ -49,6 +49,8 @@ const DICT: Dict = {
   hintZoom: { en: 'scroll to zoom', et: 'keri suumimiseks' },
   hintOrbit: { en: 'right-drag to orbit', et: 'parem-lohista pööramiseks' },
   hintChapters: { en: '← → chapters', et: '← → peatükid' },
+  filterByBook: { en: 'Filter', et: 'Filter' },
+  allBooks: { en: 'All', et: 'Kõik' },
 }
 
 export function translate(key: string, lang: Lang): string {

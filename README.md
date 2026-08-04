@@ -67,7 +67,7 @@ The Vite `base` is already set to `./` so assets resolve correctly under the
 
    ```ts
    import { myWorld } from './my-world'
-   export const stories: Story[] = [valdurn, emberfall, myWorld]
+   export const stories: Story[] = [valdurn, myWorld]
    ```
 
 That's the whole extension surface. No engine changes required.

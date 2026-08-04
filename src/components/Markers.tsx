@@ -16,6 +16,8 @@ interface Props {
   highlight: Set<string> | null
   /** Map controls, read for the current zoom level (label decluttering). */
   controlsRef: React.MutableRefObject<any>
+  /** 3D vs the flat 2D map (labels shrink with distance only in 3D). */
+  is3d: boolean
 }
 
 /** Icon + accent color per marker kind. */
@@ -69,6 +71,7 @@ export function Markers({
   showLabels,
   highlight,
   controlsRef,
+  is3d,
 }: Props) {
   const allowRank = useZoomRank(controlsRef)
   return (
@@ -92,7 +95,29 @@ export function Markers({
               <cylinderGeometry args={[0.06, 0.06, 2.8, 6]} />
               <meshStandardMaterial color="#00000055" transparent opacity={0.4} />
             </mesh>
-            <Html position={[0, 3, 0]} center distanceFactor={38} zIndexRange={[10, 0]}>
+            {/* An invisible sphere around the pin, so a click near the marker in
+                the scene selects it via raycasting — reliable in the flat 2D
+                view where the tiny HTML label is fiddly to hit. */}
+            <mesh
+              position={[0, 3, 0]}
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelect(m.id)
+              }}
+              onPointerOver={() => (document.body.style.cursor = 'pointer')}
+              onPointerOut={() => (document.body.style.cursor = 'auto')}
+            >
+              <sphereGeometry args={[2.6, 10, 10]} />
+              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+            </mesh>
+            {/* Labels shrink with distance only in 3D; in the flat 2D map they
+                stay a constant, readable, clickable size at any zoom. */}
+            <Html
+              position={[0, 3, 0]}
+              center
+              distanceFactor={is3d ? 38 : undefined}
+              zIndexRange={[10, 0]}
+            >
               <button
                 className={`marker ${selected ? 'marker--selected' : ''} ${
                   hot ? 'marker--hot' : ''

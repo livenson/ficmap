@@ -3,7 +3,6 @@ import { test, expect, type Page } from '@playwright/test'
 /** Every demo world, with the title its info panel shows. */
 const WORLDS = [
   { id: 'valdurn', title: 'The Realm of Valdurn' },
-  { id: 'emberfall', title: 'Emberfall' },
   { id: 'kalevipoeg', title: 'Kalevipoeg' },
   { id: 'fotr', title: 'The Fellowship of the Ring' },
   { id: 'center-earth', title: 'Journey to the Center of the Earth' },
@@ -119,6 +118,21 @@ test('climbs Valdurn into the sky realms and down to the deeps', async ({ page }
   await page.waitForTimeout(1400)
   await expect(page.getByRole('button', { name: /The Deep Forge/ }).first()).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('filters the atlas to a single book/film', async ({ page }) => {
+  await selectWorld(page, 'indiana-jones')
+  // Everything shows by default.
+  await expect(page.getByRole('button', { name: /Shanghai/ }).first()).toBeVisible()
+  // Filtering to one film pares the map down to just its places.
+  await page.getByRole('button', { name: 'The Last Crusade', exact: true }).click()
+  await page.waitForTimeout(600)
+  await expect(page.getByRole('button', { name: /Venice/ }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: /Shanghai/ })).toHaveCount(0)
+  // "All" restores the full atlas.
+  await page.getByRole('button', { name: 'All', exact: true }).click()
+  await page.waitForTimeout(400)
+  await expect(page.getByRole('button', { name: /Shanghai/ }).first()).toBeVisible()
 })
 
 test('deep-links a world via the ?world= query param', async ({ page }) => {
