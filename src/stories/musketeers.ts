@@ -32,7 +32,8 @@ export const musketeers: Story = {
     seed: 'france-dem',
     heightmap: franceHeight,
     seaLevel: 0.0385, // 0 m in the capped (−60..1500 m) DEM
-    heightScale: 14,
+    // Gentle relief so the Alps/Pyrenees don't wall off the routes.
+    heightScale: 9,
     rivers: 5,
     biomes: [
       { maxHeight: 0.0385, color: '#2f6b86', name: 'The Sea' },

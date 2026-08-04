@@ -25,7 +25,7 @@ export const valdurn: Story = {
     frequency: 1.4,
     islandFalloff: 0.25,
     seaLevel: 0.36,
-    heightScale: 24,
+    heightScale: 18,
     octaves: 5,
     rivers: 6,
     biomes: [
