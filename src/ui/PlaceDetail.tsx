@@ -1,5 +1,6 @@
 import type { Marker } from '../types'
 import type { PlaceReference } from '../engine/references'
+import { useT } from '../i18n'
 
 interface Props {
   marker: Marker
@@ -21,10 +22,11 @@ export function PlaceDetail({
   onJumpToChapter,
   onClose,
 }: Props) {
+  const t = useT()
   return (
     <div className="place">
       {onClose && (
-        <button className="place__close" onClick={onClose} aria-label="Close">
+        <button className="place__close" onClick={onClose} aria-label={t('close')}>
           ✕
         </button>
       )}
@@ -34,9 +36,9 @@ export function PlaceDetail({
       {marker.description && <p className="panel__body">{marker.description}</p>}
 
       <div className="place__refs">
-        <h3 className="panel__section">Mentioned in</h3>
+        <h3 className="panel__section">{t('mentionedIn')}</h3>
         {references.length === 0 ? (
-          <p className="place__none">Not referenced in the story yet.</p>
+          <p className="place__none">{t('notReferenced')}</p>
         ) : (
           <ul>
             {references.map((r) => (

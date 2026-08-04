@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useT } from '../i18n'
 
 export interface Layers {
   labels: boolean
@@ -12,11 +13,11 @@ interface Props {
   onToggle: (key: keyof Layers) => void
 }
 
-const ITEMS: { key: keyof Layers; label: string }[] = [
-  { key: 'labels', label: 'Labels' },
-  { key: 'nature', label: 'Trees & wildlife' },
-  { key: 'rivers', label: 'Rivers' },
-  { key: 'artifacts', label: 'Artifacts' },
+const ITEMS: { key: keyof Layers; tkey: string }[] = [
+  { key: 'labels', tkey: 'labels' },
+  { key: 'nature', tkey: 'treesWildlife' },
+  { key: 'rivers', tkey: 'rivers' },
+  { key: 'artifacts', tkey: 'artifacts' },
 ]
 
 /**
@@ -27,6 +28,7 @@ const ITEMS: { key: keyof Layers; label: string }[] = [
 export function LayersMenu({ layers, onToggle }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const t = useT()
 
   useEffect(() => {
     if (!open) return
@@ -46,10 +48,10 @@ export function LayersMenu({ layers, onToggle }: Props) {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="true"
         aria-expanded={open}
-        aria-label="Map layers"
+        aria-label={t('mapLayers')}
       >
         <span className="layers__icon">▦</span>
-        <span className="layers__text">Layers</span>
+        <span className="layers__text">{t('layers')}</span>
         <span className="layers__badge">{activeCount}</span>
       </button>
       {open && (
@@ -61,7 +63,7 @@ export function LayersMenu({ layers, onToggle }: Props) {
                 checked={layers[it.key]}
                 onChange={() => onToggle(it.key)}
               />
-              {it.label}
+              {t(it.tkey)}
             </label>
           ))}
         </div>

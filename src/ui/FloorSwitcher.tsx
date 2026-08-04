@@ -1,4 +1,5 @@
 import type { ResolvedLevel } from '../engine/levels'
+import { useT } from '../i18n'
 
 interface Props {
   levels: ResolvedLevel[]
@@ -14,7 +15,7 @@ interface Props {
 export function FloorSwitcher({ levels, activeId, onSelect }: Props) {
   if (levels.length < 2) return null
   return (
-    <div className="floors" role="group" aria-label="Map level">
+    <div className="floors" role="group" aria-label={useT()('mapLevel')}>
       {levels.map((l) => (
         <button
           key={l.id}

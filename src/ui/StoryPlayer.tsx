@@ -1,4 +1,5 @@
 import type { FlatChapter } from '../engine/story'
+import { useT } from '../i18n'
 
 interface Props {
   flat: FlatChapter[]
@@ -15,6 +16,7 @@ interface Props {
  * grouped under book headings.
  */
 export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Props) {
+  const t = useT()
   const current = flat[index]
   if (!current) return null
 
@@ -26,17 +28,17 @@ export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Pro
   return (
     <aside className="panel panel--story">
       <button className="panel__back" onClick={onExit}>
-        ✕ Exit story
+        ✕ {t('exitStory')}
       </button>
 
       <div className="story__meta">
         {multiBook && (
           <span className="story__book">
-            Book {current.bookIndex + 1} · {current.bookTitle}
+            {t('book')} {current.bookIndex + 1} · {current.bookTitle}
           </span>
         )}
         <span className="story__count">
-          Chapter {current.indexInBook + 1} / {inBook.length}
+          {t('chapter')} {current.indexInBook + 1} / {inBook.length}
         </span>
       </div>
       <h2 className="panel__title">{current.chapter.title}</h2>
@@ -44,13 +46,13 @@ export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Pro
 
       <div className="story__nav">
         <button onClick={onPrev} disabled={atStart} className="story__btn">
-          ‹ Prev
+          {t('prev')}
         </button>
         <button
           onClick={atEnd ? onExit : onNext}
           className="story__btn story__btn--primary"
         >
-          {atEnd ? 'Finish' : 'Next ›'}
+          {atEnd ? t('finish') : t('next')}
         </button>
       </div>
 
