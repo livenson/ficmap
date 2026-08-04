@@ -23,7 +23,9 @@ export const kalevipoeg: Story = {
     'The song of Kalev’s son — giant, king, and wanderer. One land, told in ' +
     'three books: his birth and the winning of the sword, his wars and ' +
     'voyages, and his end at the gates of Põrgu. Press ▶ Play story to follow ' +
-    'the whole saga, or use the floor switcher to descend into Põrgu below.',
+    'the whole saga, or use the floor switcher to descend into Põrgu below — ' +
+    'you enter at its Gates in the north and climb back out at the Cleft to ' +
+    'Daylight in the south, the road between them marked.',
   surfaceName: 'The Living Lands',
   ambient: {
     trees: 0.6,
@@ -121,8 +123,10 @@ export const kalevipoeg: Story = {
       kind: 'danger',
       at: { x: 0.37, z: 0.82 },
       description:
-        'The cavern-mouth where the hero descends into the underworld. Use the ' +
-        'floor switcher to follow him down into Põrgu.',
+        'The cavern-mouth in the daylight world: the way DOWN into hell. The ' +
+        'hero climbs from here to the Gates of Põrgu below. Use the floor ' +
+        'switcher to descend into Põrgu — you enter at its Gates and climb ' +
+        'back out at the Cleft to Daylight.',
     },
     {
       id: 'world-end',
@@ -179,24 +183,27 @@ export const kalevipoeg: Story = {
     {
       id: 'porgu',
       title: 'Põrgu',
-      subtitle: 'The underworld below',
+      subtitle: 'Hell below — in at the Gates (north), out to daylight (south)',
       terrain: {
-        seed: 'porgu-2',
-        frequency: 2.0,
-        islandFalloff: 0.32,
-        seaLevel: 0.42,
-        heightScale: 18,
-        octaves: 5,
+        // A broad, calm cinder-basin (low island falloff, few octaves) so the
+        // road from the Gates down to the exit reads clearly, rather than a
+        // blobby island lost in a black moat.
+        seed: 'porgu-3',
+        frequency: 1.6,
+        islandFalloff: 0.16,
+        seaLevel: 0.3,
+        heightScale: 16,
+        octaves: 4,
         rivers: 4,
         riverColor: '#ff6a1a',
         sky: 'dark',
         waterColor: '#3a0d0a',
         biomes: [
-          { maxHeight: 0.42, color: '#240a0a', name: 'Black Lake' },
-          { maxHeight: 0.5, color: '#3a1512', name: 'Ashen Shore' },
-          { maxHeight: 0.62, color: '#5a1f18', name: 'Cinder Floor' },
-          { maxHeight: 0.74, color: '#7a2a1a', name: 'Ember Rock' },
-          { maxHeight: 0.86, color: '#b04a22', name: 'Glowing Crags' },
+          { maxHeight: 0.3, color: '#240a0a', name: 'Molten Pools' },
+          { maxHeight: 0.4, color: '#3a1512', name: 'Ashen Shore' },
+          { maxHeight: 0.55, color: '#5a1f18', name: 'Cinder Floor' },
+          { maxHeight: 0.7, color: '#7a2a1a', name: 'Ember Rock' },
+          { maxHeight: 0.85, color: '#b04a22', name: 'Glowing Crags' },
           { maxHeight: 1.0, color: '#ffb24a', name: 'The Pyres' },
         ],
       },
@@ -206,37 +213,109 @@ export const kalevipoeg: Story = {
           id: 'porgu-gates',
           name: 'The Gates of Põrgu',
           kind: 'landmark',
-          at: { x: 0.0, z: -0.1 },
-          description: 'The iron gates the hero is later bound to guard.',
-        },
-        {
-          id: 'sarvik-hall',
-          name: "Sarvik's Hall",
-          kind: 'danger',
-          at: { x: -0.2, z: 0.15 },
+          at: { x: 0.0, z: -0.82 },
           description:
-            'The seat of Sarvik the Horned, lord of the underworld, whom the ' +
-            'hero wrestles and binds.',
-        },
-        {
-          id: 'the-hoard',
-          name: 'The Hoard',
-          kind: 'landmark',
-          at: { x: 0.25, z: 0.1 },
-          description: 'The demon’s treasure, carried up into the light.',
+            'THE ENTRANCE. The iron gates of hell, at the foot of the shaft ' +
+            'the hero climbs down from the Mouth of Põrgu in the daylight ' +
+            'world above. He passes them going in — and after his death is ' +
+            'set here to guard them.',
         },
         {
           id: 'the-binding',
           name: 'The Binding Stone',
           kind: 'ruin',
-          at: { x: -0.05, z: 0.35 },
+          at: { x: -0.22, z: -0.68 },
           description:
-            'Where the gods later fasten the fallen hero’s hand to the rock, ' +
-            'to guard the gates until his people are free.',
+            'Just within the gates, the rock to which the gods later fasten ' +
+            'the fallen hero’s hand, that he may guard Põrgu’s threshold until ' +
+            'his people are free again.',
+        },
+        {
+          id: 'the-cauldron',
+          name: 'The Great Cauldron',
+          kind: 'landmark',
+          at: { x: -0.34, z: -0.26 },
+          description:
+            'Põrgu’s vast kettle, forever boiling. The road down into the ' +
+            'deeps runs past its rim.',
+        },
+        {
+          id: 'fire-river',
+          name: 'The River of Fire',
+          kind: 'danger',
+          at: { x: 0.3, z: -0.24 },
+          description:
+            'A molten stream the hero must ford on his way in toward Sarvik’s ' +
+            'hall.',
+        },
+        {
+          id: 'sarvik-hall',
+          name: "Sarvik's Hall",
+          kind: 'danger',
+          at: { x: 0.0, z: 0.04 },
+          description:
+            'The seat of Sarvik the Horned, lord of the underworld, in the ' +
+            'deepest part of Põrgu. Here the hero wrestles him, binds him, and ' +
+            'breaks his power.',
+        },
+        {
+          id: 'maidens-cells',
+          name: "The Maidens' Cells",
+          kind: 'ruin',
+          at: { x: -0.36, z: 0.24 },
+          description:
+            'Where Sarvik keeps captive maidens. The hero strikes off their ' +
+            'chains and leads them up toward the light.',
+        },
+        {
+          id: 'the-hoard',
+          name: 'The Hoard',
+          kind: 'landmark',
+          at: { x: 0.36, z: 0.2 },
+          description:
+            'The demon’s heaped gold, which the hero carries up out of Põrgu.',
+        },
+        {
+          id: 'porgu-exit',
+          name: 'The Cleft to Daylight',
+          kind: 'landmark',
+          at: { x: 0.0, z: 0.82 },
+          description:
+            'THE EXIT. The climb back to the daylight world. Laden with the ' +
+            'hoard and leading the freed maidens, the hero ascends here, out ' +
+            'of the deeps and into the open air.',
+        },
+      ],
+      routes: [
+        {
+          id: 'hero-road',
+          name: 'The Hero’s Road through Põrgu',
+          color: '#ffb24a',
+          style: 'solid',
+          // A winding descent, not a ruled line: it bends off the Gates past
+          // the Binding Stone and the cauldron's rim, threads the low ground
+          // toward Sarvik's hall in the deeps, then wanders past the hoard and
+          // the maidens' cells before climbing to the Cleft. (Draped onto the
+          // terrain, so it also rises and dips with the crags.)
+          points: [
+            { x: 0.0, z: -0.82 },
+            { x: -0.14, z: -0.66 },
+            { x: -0.29, z: -0.42 },
+            { x: -0.18, z: -0.18 },
+            { x: 0.03, z: -0.02 },
+            { x: 0.0, z: 0.06 },
+            { x: 0.2, z: 0.22 },
+            { x: 0.08, z: 0.46 },
+            { x: -0.14, z: 0.6 },
+            { x: -0.04, z: 0.74 },
+            { x: 0.0, z: 0.82 },
+          ],
         },
       ],
       regions: [
-        { id: 'deeps', name: 'The Deeps of Põrgu', at: { x: 0.0, z: 0.05 }, scale: 1.1 },
+        { id: 'threshold', name: 'The Gates — enter here', at: { x: 0.34, z: -0.82 }, scale: 0.7 },
+        { id: 'deeps', name: 'The Deeps of Põrgu', at: { x: 0.34, z: 0.04 }, scale: 1.0 },
+        { id: 'ascent', name: 'The Cleft — back to daylight', at: { x: 0.34, z: 0.82 }, scale: 0.7 },
       ],
     },
   ],
@@ -374,16 +453,28 @@ export const kalevipoeg: Story = {
           id: 'porgu',
           title: 'The Gates of Põrgu',
           narration:
-            'Down through the Mouth of Põrgu the hero descends into the ' +
-            'underworld, to wrestle Sarvik the Horned in his hall — binding ' +
-            'the demon and carrying off his hoard. (You have descended a level.)',
+            'Down through the Mouth of Põrgu the hero climbs to the iron Gates ' +
+            '(north). He fords the river of fire, passes the great cauldron, ' +
+            'and comes to Sarvik’s hall in the deeps — where he wrestles the ' +
+            'Horned One, binds him, frees the captive maidens, and takes the ' +
+            'hoard. Then up the Cleft to Daylight (south) he climbs, back into ' +
+            'the open air. (You have descended a level — follow the road.)',
           level: 'porgu',
-          focus: { marker: 'sarvik-hall', distance: 34, pitch: 38 },
+          focus: { at: { x: 0.0, z: 0.0 }, distance: 96, pitch: 58 },
           reveal: {
-            markers: ['porgu-gates', 'sarvik-hall', 'the-hoard'],
-            regions: ['deeps'],
+            markers: [
+              'porgu-gates',
+              'the-cauldron',
+              'fire-river',
+              'sarvik-hall',
+              'maidens-cells',
+              'the-hoard',
+              'porgu-exit',
+            ],
+            routes: ['hero-road'],
+            regions: ['threshold', 'deeps', 'ascent'],
           },
-          highlight: { markers: ['sarvik-hall'] },
+          highlight: { markers: ['porgu-gates', 'sarvik-hall', 'porgu-exit'], routes: ['hero-road'] },
         },
         {
           id: 'kaapa-death',
