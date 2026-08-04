@@ -12,6 +12,7 @@ import { flattenChapters } from './engine/story'
 import { getLevels, getLevel, allMarkers, SURFACE_ID } from './engine/levels'
 import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
+import type { Story } from './types'
 
 /** URL query key for deep-linking a world, e.g. `?world=kalevipoeg`. */
 const WORLD_PARAM = 'world'
@@ -23,17 +24,45 @@ function worldFromUrl(): string | null {
   return id && stories.some((s) => s.id === id) ? id : null
 }
 
-/** Reflect the selected world in the URL (?world=id), preserving other params. */
+/** URL query key for deep-linking a floor of a multi-level world. */
+const FLOOR_PARAM = 'floor'
+
+/** A valid floor id for this story from the URL, or null if absent/unknown. */
+function floorFromUrl(story: Story): string | null {
+  if (typeof window === 'undefined') return null
+  const id = new URLSearchParams(window.location.search).get(FLOOR_PARAM)
+  if (!id) return null
+  return getLevels(story).some((l) => l.id === id) ? id : null
+}
+
+/**
+ * Reflect the selected world in the URL (?world=id), dropping any stale floor
+ * from the previous world.
+ */
 function writeWorldToUrl(id: string) {
   if (typeof window === 'undefined') return
   const url = new URL(window.location.href)
   url.searchParams.set(WORLD_PARAM, id)
+  url.searchParams.delete(FLOOR_PARAM)
+  window.history.replaceState(null, '', url)
+}
+
+/** Reflect the active floor in the URL (?floor=id); the surface clears it. */
+function writeFloorToUrl(id: string) {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (id === SURFACE_ID) url.searchParams.delete(FLOOR_PARAM)
+  else url.searchParams.set(FLOOR_PARAM, id)
   window.history.replaceState(null, '', url)
 }
 
 export default function App() {
-  // Initial world comes from the URL (?world=…) when present, else the first.
-  const [storyId, setStoryId] = useState(() => worldFromUrl() ?? stories[0].id)
+  // Initial world and floor come from the URL (?world=…&floor=…) when present.
+  const initial = useMemo(() => {
+    const s = getStory(worldFromUrl() ?? stories[0].id)
+    return { storyId: s.id, levelId: floorFromUrl(s) ?? SURFACE_ID }
+  }, [])
+  const [storyId, setStoryId] = useState(initial.storyId)
   const [mode, setMode] = useState<ViewMode>('3d')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
@@ -49,7 +78,7 @@ export default function App() {
   // null = free exploration; a number = playing that chapter.
   const [chapterIndex, setChapterIndex] = useState<number | null>(null)
   // Which map level (floor) is displayed.
-  const [levelId, setLevelId] = useState<string>(SURFACE_ID)
+  const [levelId, setLevelId] = useState<string>(initial.levelId)
 
   const story = getStory(storyId)
   const flat = useMemo(() => flattenChapters(story), [story])
@@ -94,17 +123,33 @@ export default function App() {
     writeWorldToUrl(id)
   }
 
-  // Keep the world in sync with the URL on back/forward or manual edits, so a
-  // shared `?world=…` link deep-links straight to that world.
+  const selectFloor = (id: string) => {
+    setLevelId(id)
+    selectMarker(null)
+    selectElement(null)
+    writeFloorToUrl(id)
+  }
+
+  // Keep world + floor in sync with the URL on back/forward or manual edits, so
+  // a shared `?world=…&floor=…` link deep-links straight there.
   useEffect(() => {
     const onPop = () => {
-      const id = worldFromUrl()
-      if (id && id !== storyId) pickStory(id)
+      const w = worldFromUrl()
+      if (w && w !== storyId) {
+        pickStory(w)
+        return
+      }
+      const f = floorFromUrl(story)
+      if (f && f !== levelId) {
+        setLevelId(f)
+        selectMarker(null)
+        selectElement(null)
+      }
     }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
-    // pickStory/storyId are stable enough here; re-bind when the world changes.
-  }, [storyId])
+    // pickStory/story/levelId are stable enough here; re-bind on change.
+  }, [storyId, story, levelId])
 
   function startStory() {
     setSelectedId(null)
@@ -207,15 +252,7 @@ export default function App() {
             chapterIndex={chapterIndex}
           />
           <Legend terrain={activeLevel.terrain} />
-          <FloorSwitcher
-            levels={levels}
-            activeId={levelId}
-            onSelect={(id) => {
-              setLevelId(id)
-              selectMarker(null)
-              selectElement(null)
-            }}
-          />
+          <FloorSwitcher levels={levels} activeId={levelId} onSelect={selectFloor} />
 
           {/* In story mode the detail shows as an overlay so the tour panel
               stays put. In free mode the InfoPanel handles it. */}
