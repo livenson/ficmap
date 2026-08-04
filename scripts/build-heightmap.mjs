@@ -33,6 +33,13 @@ const PRESETS = {
     capM: 1500,
     out: '../src/assets/france-height.png',
   },
+  britain: {
+    z: 6,
+    bbox: { lonMin: -8, lonMax: 2, latMin: 50, latMax: 59 },
+    capM: 1300,
+    flatOceanM: -10,
+    out: '../src/assets/britain-height.png',
+  },
   world: {
     z: 4,
     bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },

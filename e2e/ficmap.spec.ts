@@ -9,6 +9,7 @@ const WORLDS = [
   { id: 'center-earth', title: 'Journey to the Center of the Earth' },
   { id: 'verne-voyages', title: 'The Extraordinary Voyages' },
   { id: 'musketeers', title: "The d'Artagnan Romances" },
+  { id: 'harry-potter', title: 'Harry Potter' },
 ]
 
 function trackErrors(page: Page): string[] {

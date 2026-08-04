@@ -97,7 +97,8 @@ can paste straight into your story.
 | `terrain.heightScale` | Vertical exaggeration of the 3D mesh. |
 | `terrain.biomes[]` | Elevation → color bands (low to high). |
 | `terrain.rivers` | Number of rivers traced downhill from highlands to sea (`riverColor` to tint — e.g. lava-orange). |
-| `terrain.heightmap` | Optional grayscale image URL — real elevation (DEM) instead of noise. **Kalevipoeg** uses a real Estonia, **The d'Artagnan Romances** the real France + England, and **The Extraordinary Voyages** the real whole Earth. Build presets with `node scripts/build-heightmap.mjs [estonia\|france\|world]`; place markers at real `lon/lat` mapped into the DEM's box. |
+| `terrain.heightmap` | Optional grayscale image URL — real elevation (DEM) instead of noise. **Kalevipoeg** uses a real Estonia, **The d'Artagnan Romances** the real France + England, **Harry Potter** the real Britain, and **The Extraordinary Voyages** the real whole Earth. Build presets with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world]`; place markers at real `lon/lat` mapped into the DEM's box. |
+| `terrain.aspect` | World width ÷ depth (default 1 = square). Use >1 for a map wider than it is tall — **The Extraordinary Voyages** sets `360/140` so the equirectangular Earth keeps real proportions instead of stretching into the square. |
 | `markers[]` | Labeled points of interest (`capital`, `city`, `port`, `ruin`, …). |
 | `routes[]` | Journeys/roads drawn draped over the terrain. |
 | `regions[]` | Ambient area names floated over the map. |
