@@ -6,6 +6,9 @@ const WORLDS = [
   { id: 'emberfall', title: 'Emberfall' },
   { id: 'kalevipoeg', title: 'Kalevipoeg' },
   { id: 'fotr', title: 'The Fellowship of the Ring' },
+  { id: 'center-earth', title: 'Journey to the Center of the Earth' },
+  { id: 'verne-voyages', title: 'The Extraordinary Voyages' },
+  { id: 'musketeers', title: "The d'Artagnan Romances" },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -89,6 +92,16 @@ test('layers menu strips the map back', async ({ page }) => {
   await page.getByRole('button', { name: 'Map layers' }).click()
   await page.getByText('Trees & wildlife').click()
   await expect(badge).toHaveText('3')
+})
+
+test('descends the Center of the Earth subfloors', async ({ page }) => {
+  await selectWorld(page, 'center-earth')
+  await page.getByRole('button', { name: 'The Lidenbrock Sea', exact: true }).click()
+  await page.waitForTimeout(1400)
+  await expect(page.getByRole('button', { name: /Port Gräuben/ }).first()).toBeVisible()
+  await page.getByRole('button', { name: 'Toward the Centre', exact: true }).click()
+  await page.waitForTimeout(1400)
+  await expect(page.getByRole('button', { name: /Eruption Shaft/ }).first()).toBeVisible()
 })
 
 test('deep-links a world via the ?world= query param', async ({ page }) => {
