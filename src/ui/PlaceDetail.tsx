@@ -1,6 +1,6 @@
 import type { Marker } from '../types'
 import type { PlaceReference } from '../engine/references'
-import { useT } from '../i18n'
+import { useT, useKind } from '../i18n'
 
 interface Props {
   marker: Marker
@@ -23,6 +23,7 @@ export function PlaceDetail({
   onClose,
 }: Props) {
   const t = useT()
+  const kind = useKind()
   return (
     <div className="place">
       {onClose && (
@@ -30,7 +31,7 @@ export function PlaceDetail({
           ✕
         </button>
       )}
-      <span className="panel__kind">{marker.kind}</span>
+      <span className="panel__kind">{kind(marker.kind)}</span>
       <h2 className="panel__title">{marker.name}</h2>
 
       {marker.description && <p className="panel__body">{marker.description}</p>}

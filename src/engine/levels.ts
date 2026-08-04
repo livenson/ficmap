@@ -12,6 +12,8 @@ export interface ResolvedLevel {
   markers: Marker[]
   routes: Route[]
   regions: RegionLabel[]
+  /** Vertical order (surface = 0, sky realms > 0, underworlds < 0). */
+  tier: number
 }
 
 /**
@@ -28,8 +30,9 @@ export function getLevels(story: Story): ResolvedLevel[] {
     markers: story.markers ?? [],
     routes: story.routes ?? [],
     regions: story.regions ?? [],
+    tier: 0,
   }
-  const deeper = (story.levels ?? []).map((l) => ({
+  const deeper = (story.levels ?? []).map((l, i) => ({
     id: l.id,
     title: l.title,
     subtitle: l.subtitle,
@@ -38,7 +41,11 @@ export function getLevels(story: Story): ResolvedLevel[] {
     markers: l.markers ?? [],
     routes: l.routes ?? [],
     regions: l.regions ?? [],
+    // Default: stack undeclared floors beneath the surface in order.
+    tier: l.tier ?? -(i + 1),
   }))
+  // Surface stays first (it's the load/default level), but callers that want an
+  // elevator-style top-to-bottom view can sort by `tier` descending.
   return [surface, ...deeper]
 }
 

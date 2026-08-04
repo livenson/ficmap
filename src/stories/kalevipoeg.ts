@@ -251,7 +251,7 @@ export const kalevipoeg: Story = {
           { maxHeight: 1.0, color: '#ffb24a', name: 'The Pyres' },
         ],
       },
-      ambient: { trees: 0, birds: 0, dragons: 2 },
+      ambient: { trees: 0, birds: 0, dragons: 4 },
       markers: [
         {
           id: 'porgu-gates',

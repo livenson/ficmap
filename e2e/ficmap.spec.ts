@@ -106,6 +106,20 @@ test('descends the Center of the Earth subfloors', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Eruption Shaft/ }).first()).toBeVisible()
 })
 
+test('climbs Valdurn into the sky realms and down to the deeps', async ({ page }) => {
+  const errors = trackErrors(page)
+  await selectWorld(page, 'valdurn')
+  // A sky realm above the surface.
+  await page.getByRole('button', { name: 'The Cloudward Reach', exact: true }).click()
+  await page.waitForTimeout(1400)
+  await expect(page.getByRole('button', { name: /Hall of Ancestor-Kings/ }).first()).toBeVisible()
+  // An underworld below it.
+  await page.getByRole('button', { name: 'The Sunless Deep', exact: true }).click()
+  await page.waitForTimeout(1400)
+  await expect(page.getByRole('button', { name: /The Deep Forge/ }).first()).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
 test('deep-links a world via the ?world= query param', async ({ page }) => {
   await page.goto('/?world=kalevipoeg')
   await expect(page.getByRole('heading', { name: 'Kalevipoeg' })).toBeVisible()

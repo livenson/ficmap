@@ -14,9 +14,12 @@ interface Props {
  */
 export function FloorSwitcher({ levels, activeId, onSelect }: Props) {
   if (levels.length < 2) return null
+  // Display like an elevator: highest tier (sky realms) on top, the surface in
+  // the middle, underworlds at the bottom. Ties keep declaration order.
+  const ordered = [...levels].sort((a, b) => b.tier - a.tier)
   return (
     <div className="floors" role="group" aria-label={useT()('mapLevel')}>
-      {levels.map((l) => (
+      {ordered.map((l) => (
         <button
           key={l.id}
           className={`floors__btn ${l.id === activeId ? 'is-active' : ''}`}

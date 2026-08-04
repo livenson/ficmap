@@ -67,6 +67,9 @@ export function MapScene({
   const dark = terrain.sky === 'dark'
   const cavern = terrain.sky === 'cavern'
   const underground = dark || cavern
+  // A radiant sky realm above the world — a luminous cloud-sea with floating
+  // isles. Above-ground (not `underground`), but lit and coloured its own way.
+  const heaven = terrain.sky === 'heaven'
   // World aspect: >1 widens the world in X (e.g. an equirectangular map).
   const aspect = aspectOf(terrain)
 
@@ -101,16 +104,20 @@ export function MapScene({
       : '#160608'
     : mode === '2d'
       ? '#0d1b26'
-      : rainy
-        ? '#7c8892'
-        : '#9fc2d6'
+      : heaven
+        ? '#eaf3fb'
+        : rainy
+          ? '#7c8892'
+          : '#9fc2d6'
   const fogColor = cavern
     ? '#0c2029'
     : dark
       ? '#2a0c0a'
-      : rainy
-        ? '#7c8892'
-        : '#9fc2d6'
+      : heaven
+        ? '#eef5fd'
+        : rainy
+          ? '#7c8892'
+          : '#9fc2d6'
 
   return (
     <Canvas
@@ -132,16 +139,19 @@ export function MapScene({
 
       {/* Lighting */}
       <ambientLight
-        intensity={underground ? 0.6 : rainy ? 0.7 : mode === '2d' ? 0.9 : 0.55}
-        color={cavern ? '#9ec2d4' : dark ? '#ff8a66' : rainy ? '#c2ccd4' : '#ffffff'}
+        intensity={underground ? 0.6 : heaven ? 0.9 : rainy ? 0.7 : mode === '2d' ? 0.9 : 0.55}
+        color={
+          cavern ? '#9ec2d4' : dark ? '#ff8a66' : heaven ? '#fff4e6' : rainy ? '#c2ccd4' : '#ffffff'
+        }
       />
       <directionalLight
         // A wide world map wants a near-overhead sun so continents don't throw
         // long, blocky shadows across the ocean; a square world keeps the low,
-        // relief-revealing angle.
-        position={aspect > 1.5 ? [20, 220, 30] : [40, 80, 20]}
-        intensity={underground ? 0.5 : rainy ? 0.5 : mode === '2d' ? 0.7 : 1.15}
-        color={cavern ? '#cfe6f0' : dark ? '#ff5a3c' : rainy ? '#c8d0d6' : '#ffffff'}
+        // relief-revealing angle. The sky realm gets a soft, high sun so its
+        // isles are evenly bathed in light.
+        position={heaven ? [30, 180, 40] : aspect > 1.5 ? [20, 220, 30] : [40, 80, 20]}
+        intensity={underground ? 0.5 : heaven ? 1.1 : rainy ? 0.5 : mode === '2d' ? 0.7 : 1.15}
+        color={cavern ? '#cfe6f0' : dark ? '#ff5a3c' : heaven ? '#fff6e8' : rainy ? '#c8d0d6' : '#ffffff'}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-WORLD_SIZE * aspect}
@@ -155,7 +165,13 @@ export function MapScene({
         shadow-bias={-0.0004}
       />
       {mode === '3d' && !underground && !rainy && (
-        <Sky sunPosition={[40, 30, 20]} turbidity={6} rayleigh={1.4} />
+        heaven ? (
+          // A pale, near-white dome: sun high overhead, almost no scattering, so
+          // the sky glows rather than turning deep blue.
+          <Sky sunPosition={[0, 80, 30]} turbidity={1} rayleigh={0.35} mieCoefficient={0.02} />
+        ) : (
+          <Sky sunPosition={[40, 30, 20]} turbidity={6} rayleigh={1.4} />
+        )
       )}
 
       <Terrain field={field} terrain={terrain} />

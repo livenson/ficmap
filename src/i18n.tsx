@@ -56,6 +56,30 @@ export function translate(key: string, lang: Lang): string {
   return (e && (e[lang] ?? e.en)) ?? key
 }
 
+/**
+ * Localized names for the marker kinds (the little "CAPITAL" / "RUIN" tag on a
+ * place). Displayed uppercased by CSS, so these read as plain words. English
+ * simply echoes the kind; other languages get a proper translation.
+ */
+const KIND_DICT: Record<string, Record<Lang, string>> = {
+  capital: { en: 'capital', et: 'pealinn' },
+  city: { en: 'city', et: 'linn' },
+  town: { en: 'town', et: 'väikelinn' },
+  ruin: { en: 'ruin', et: 'varemed' },
+  landmark: { en: 'landmark', et: 'maamärk' },
+  battle: { en: 'battle', et: 'lahing' },
+  peak: { en: 'peak', et: 'tipp' },
+  port: { en: 'port', et: 'sadam' },
+  forest: { en: 'forest', et: 'mets' },
+  danger: { en: 'danger', et: 'oht' },
+}
+
+/** Localized label for a marker kind (falls back to the raw kind). */
+export function kindLabel(kind: string, lang: Lang): string {
+  const e = KIND_DICT[kind]
+  return (e && (e[lang] ?? e.en)) ?? kind
+}
+
 const LangCtx = createContext<Lang>('en')
 
 export function LangProvider({ lang, children }: { lang: Lang; children: ReactNode }) {
@@ -66,4 +90,10 @@ export function LangProvider({ lang, children }: { lang: Lang; children: ReactNo
 export function useT(): (key: string) => string {
   const lang = useContext(LangCtx)
   return (key: string) => translate(key, lang)
+}
+
+/** Returns a translator for marker kinds bound to the current language. */
+export function useKind(): (kind: string) => string {
+  const lang = useContext(LangCtx)
+  return (kind: string) => kindLabel(kind, lang)
 }
