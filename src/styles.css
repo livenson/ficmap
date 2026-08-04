@@ -210,8 +210,10 @@ body,
 
 /* ---------- Story player ---------- */
 .panel--story {
-  display: flex;
-  flex-direction: column;
+  /* Plain block flow so a long narration pushes the nav and chapter rail down
+     and the panel scrolls, instead of a flex column compressing the narration
+     box until its text overlaps the buttons below. */
+  display: block;
 }
 .story__meta {
   margin-top: 6px;
@@ -284,7 +286,7 @@ body,
   gap: 2px;
   border-top: 1px solid var(--line);
   padding-top: 14px;
-  margin-top: auto;
+  margin-top: 8px;
 }
 .story__dot {
   display: flex;
