@@ -62,13 +62,17 @@ export function Wildlife({ ambient, aspect = 1 }: Props) {
         kind: 'dragon',
         radius: WORLD_SIZE * (0.14 + (i % 2) * 0.12),
         cx: spread(i + 3),
-        height: 34 + i * 6,
+        // Fly lower than the birds so they sweep in view over the crags.
+        height: 22 + i * 6,
         speed: 0.12 + (i % 2) * 0.04,
         phase: i * GOLDEN + 1.2,
         dir: i % 2 === 0 ? -1 : 1,
         size: 3.2 + (i % 2) * 0.8,
         flap: 1.8 + i * 0.3,
-        color: '#7a2016',
+        // A glowing ember tone: unlit (MeshBasic) and bright, so the beasts read
+        // against a dark hellscape and catch the bloom instead of vanishing into
+        // the red gloom the way a dim maroon did.
+        color: '#ff7a33',
       })
     }
     return list

@@ -66,9 +66,10 @@ export interface TerrainConfig {
   /**
    * Sky mood. 'day' (default) draws a sky + daylight; 'dark' is a warm
    * hellfire underworld (Põrgu, magma caverns); 'cavern' is a cool,
-   * phosphorescent underground (an underground sea, ice caves).
+   * phosphorescent underground (an underground sea, ice caves); 'heaven' is a
+   * radiant sky realm — a luminous cloud-sea with floating isles.
    */
-  sky?: 'day' | 'dark' | 'cavern'
+  sky?: 'day' | 'dark' | 'cavern' | 'heaven'
   /** Color of the water/sea plane (default a sea blue). */
   waterColor?: string
   /**
@@ -217,6 +218,13 @@ export interface Level {
   markers?: Marker[]
   routes?: Route[]
   regions?: RegionLabel[]
+  /**
+   * Vertical order in the floor switcher, like an elevator button: the surface
+   * is 0, floors above it (sky realms) are positive, floors below (underworlds)
+   * are negative — higher numbers sit higher in the list. Omit for an
+   * underworld and floors are stacked beneath the surface in declaration order.
+   */
+  tier?: number
 }
 
 /**

@@ -2,7 +2,7 @@ import type { Story, Marker, StoryElement } from '../types'
 import type { PlaceReference } from '../engine/references'
 import { PlaceDetail } from './PlaceDetail'
 import { ElementDetail } from './ElementDetail'
-import { useT } from '../i18n'
+import { useT, useKind } from '../i18n'
 
 interface Props {
   story: Story
@@ -37,6 +37,7 @@ export function InfoPanel({
   onJumpToChapter,
 }: Props) {
   const t = useT()
+  const kind = useKind()
   const elements = story.elements ?? []
 
   return (
@@ -104,7 +105,7 @@ export function InfoPanel({
                   onClick={() => onJumpTo(m.id)}
                 >
                   {m.name}
-                  <span className="panel__gazetteer-kind">{m.kind}</span>
+                  <span className="panel__gazetteer-kind">{kind(m.kind)}</span>
                 </button>
               </li>
             ))}
