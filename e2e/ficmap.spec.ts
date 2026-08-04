@@ -124,12 +124,14 @@ test('filters the atlas to a single book/film', async ({ page }) => {
   await selectWorld(page, 'indiana-jones')
   // Everything shows by default.
   await expect(page.getByRole('button', { name: /Shanghai/ }).first()).toBeVisible()
-  // Filtering to one film pares the map down to just its places.
+  // The filter is collapsed; open it and pick one film to pare the map down.
+  await page.locator('.bookfilter__toggle').click()
   await page.getByRole('button', { name: 'The Last Crusade', exact: true }).click()
   await page.waitForTimeout(600)
   await expect(page.getByRole('button', { name: /Venice/ }).first()).toBeVisible()
   await expect(page.getByRole('button', { name: /Shanghai/ })).toHaveCount(0)
   // "All" restores the full atlas.
+  await page.locator('.bookfilter__toggle').click()
   await page.getByRole('button', { name: 'All', exact: true }).click()
   await page.waitForTimeout(400)
   await expect(page.getByRole('button', { name: /Shanghai/ }).first()).toBeVisible()
