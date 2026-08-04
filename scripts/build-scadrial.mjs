@@ -54,10 +54,19 @@ const ASHMOUNTS = [
   [0.06, 0.25, 0.062, 0.86], // Doriel
 ]
 
-// Inland lakes to carve (x, z, radius).
+// Inland lakes to carve (x, z, radius). Carved BEFORE the ashmounts so Mount
+// Tyrian can rise out of Lake Tyrian.
 const LAKES = [
-  [0.24, -0.11, 0.06], // Lake Luthadel
-  [0.35, -0.01, 0.08], // Black Lake
+  [0.0, -0.13, 0.12], // Lake Tyrian (Mount Tyrian stands in it)
+  [0.26, -0.11, 0.08], // Lake Luthadel (beside the capital)
+  [0.36, -0.01, 0.09], // Black Lake
+]
+
+// Small islands poking out of the south-western sea (the Southern Islands).
+const ISLANDS = [
+  [-0.8, 0.42, 0.05, 0.34],
+  [-0.88, 0.31, 0.045, 0.3],
+  [-0.73, 0.52, 0.05, 0.3],
 ]
 
 const out = new Float32Array(W * H)
@@ -78,11 +87,12 @@ for (let j = 0; j < H; j++) {
       smooth(0.99, 0.82, wz) // south sea beyond Remote
     let h = 0.2 + edge * 0.26
 
-    // --- The great inland Southern Sea (south-centre). ---
-    const ssx = (wx + 0.28) / 0.36
-    const ssz = (wz - 0.4) / 0.34
-    const southernSea = 1 - smooth(0.7, 1.15, Math.hypot(ssx, ssz) + 0.12 * fbm(wx * 2.2, wz * 2.2))
-    h -= southernSea * 0.5 * edge
+    // --- The great inland Southern Sea (a wide south-western gulf, its north
+    // shore up by Austrex, opening toward the Southern Islands in the SW). ---
+    const ssx = (wx + 0.26) / 0.44
+    const ssz = (wz - 0.42) / 0.34
+    const southernSea = 1 - smooth(0.62, 1.1, Math.hypot(ssx, ssz) + 0.1 * fbm(wx * 2.2, wz * 2.2))
+    h -= southernSea * 0.62 * edge
 
     // --- Mountain masses: tall enough to read as ranges, but kept below the
     // ashmount cones so only the volcanoes' tips glow. Combined with max() (not
@@ -93,17 +103,24 @@ for (let j = 0; j < H; j++) {
     const remote = smooth(0.6, 0.9, wz) * smooth(0.4, -0.2, wx) * 0.28 * (0.7 + fbm(wx * 3, wz * 3 - 5))
     h += Math.max(terris, west, cres, remote) * edge
 
+    // --- Carve the inland lakes BEFORE the ashmounts, so Mount Tyrian rises
+    // back out of Lake Tyrian. ---
+    for (const [cx, cz, r] of LAKES) {
+      const d = Math.hypot((wx - cx) / r, (wz - cz) / r)
+      if (d < 1) h = Math.min(h, 0.11 - 0.02 * (1 - d))
+    }
+
     // --- Ashmount cones (added on top, so they are the tallest points). ---
     for (const [cx, cz, r, amp] of ASHMOUNTS) h += cone(wx, wz, cx, cz, r, amp) * edge
 
-    // --- Texture, then carve lakes and clamp seas flat. ---
+    // --- Texture on the land, then flatten the deep rim ocean. ---
     h += fbm(wx * 2.6, wz * 2.6) * 0.05 * edge
-    for (const [cx, cz, r] of LAKES) {
-      const d = Math.hypot((wx - cx) / r, (wz - cz) / r)
-      if (d < 1) h = Math.min(h, 0.14 - 0.02 * (1 - d))
-    }
     h = clamp01(h)
-    if (edge < 0.04) h = Math.min(h, 0.12) // deep rim ocean, flat
+    if (edge < 0.04) h = Math.min(h, 0.1) // deep rim ocean, flat
+    // --- Southern Islands: small land in the far SW sea (added last so the
+    // ocean-flatten doesn't erase them). ---
+    for (const [cx, cz, r, amp] of ISLANDS) h = Math.max(h, cone(wx, wz, cx, cz, r, amp))
+    h = clamp01(h)
 
     out[j * W + i] = h
     if (h < mn) mn = h
