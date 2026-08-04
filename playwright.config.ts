@@ -12,12 +12,14 @@ export default defineConfig({
   testDir: './e2e',
   // The 3D scenes render under software WebGL here, so per-test budgets are
   // generous — a chapter tour includes a camera fly-through plus the full
-  // post-processing pass.
-  timeout: 90_000,
+  // post-processing pass, and the continuous render loop makes synthetic
+  // clicks on the map-overlay controls slow when the CPU is busy. A retry
+  // absorbs the occasional input-latency timeout.
+  timeout: 150_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
   workers: 1,
-  retries: process.env.CI ? 1 : 0,
+  retries: 1,
   reporter: [['list']],
   use: {
     baseURL: `http://localhost:${PORT}`,

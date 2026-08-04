@@ -432,6 +432,10 @@ body,
   position: relative;
   flex: 1;
   min-width: 0;
+  /* Own stacking context so the scene's HTML pins (marker/element labels,
+     z-index up to 10) stay contained here and can't paint over a sibling
+     panel — e.g. the bottom-sheet info panel on mobile. */
+  z-index: 0;
 }
 
 /* ---------- Info panel ---------- */
@@ -780,50 +784,91 @@ body,
 .bookfilter {
   position: absolute;
   top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 14px;
+  max-width: calc(100% - 28px);
+  /* Above the scene's HTML pins (z-index up to 10) so the menu opens over the
+     map and its items stay clickable, never hidden behind a marker label. */
+  z-index: 20;
+}
+.bookfilter__toggle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  max-width: calc(100% - 32px);
-  padding: 6px 8px 6px 12px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgba(12, 18, 24, 0.82);
-  backdrop-filter: blur(4px);
-}
-.bookfilter__label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ink-dim);
-  white-space: nowrap;
-}
-.bookfilter__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.bookfilter__chip {
+  gap: 7px;
+  max-width: 220px;
   font: inherit;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink-dim);
-  background: transparent;
+  background: rgba(12, 18, 24, 0.82);
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 3px 10px;
+  padding: 6px 12px;
   cursor: pointer;
-  white-space: nowrap;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  backdrop-filter: blur(4px);
+  transition: color 0.15s, border-color 0.15s;
 }
-.bookfilter__chip:hover {
+.bookfilter__toggle:hover {
   color: var(--ink);
   border-color: var(--accent-2);
 }
-.bookfilter__chip.is-active {
+.bookfilter__toggle.is-filtered {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.bookfilter__funnel {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.bookfilter__toggle-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bookfilter__caret {
+  font-size: 10px;
+  opacity: 0.7;
+}
+.bookfilter__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+.bookfilter__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 190px;
+  max-width: min(78vw, 280px);
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(14, 20, 27, 0.96);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+.bookfilter__item {
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  color: var(--ink-dim);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bookfilter__item:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+}
+.bookfilter__item.is-active {
   color: #17202a;
   background: var(--accent);
-  border-color: var(--accent);
 }
 
 .floors {
@@ -837,7 +882,8 @@ body,
   overflow: hidden;
   background: rgba(12, 18, 24, 0.85);
   backdrop-filter: blur(4px);
-  z-index: 6;
+  /* Above the scene's HTML pins (z-index up to 10) so the buttons stay tappable. */
+  z-index: 12;
 }
 .floors__btn {
   background: transparent;
@@ -889,6 +935,8 @@ body,
     max-height: 42%;
     border-right: none;
     border-top: 1px solid var(--line);
+    /* Sit above the map (and its overflowing HTML pins) as a solid sheet. */
+    z-index: 1;
   }
   .legend {
     display: none;
