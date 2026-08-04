@@ -97,7 +97,7 @@ can paste straight into your story.
 | `terrain.heightScale` | Vertical exaggeration of the 3D mesh. |
 | `terrain.biomes[]` | Elevation → color bands (low to high). |
 | `terrain.rivers` | Number of rivers traced downhill from highlands to sea (`riverColor` to tint — e.g. lava-orange). |
-| `terrain.heightmap` | Optional grayscale image URL — real elevation (DEM) instead of noise. **Kalevipoeg**'s surface uses a real heightmap of Estonia + the Gulf of Finland. Build one with `scripts/build-heightmap.mjs`. |
+| `terrain.heightmap` | Optional grayscale image URL — real elevation (DEM) instead of noise. **Kalevipoeg** uses a real Estonia, **The d'Artagnan Romances** the real France + England, and **The Extraordinary Voyages** the real whole Earth. Build presets with `node scripts/build-heightmap.mjs [estonia\|france\|world]`; place markers at real `lon/lat` mapped into the DEM's box. |
 | `markers[]` | Labeled points of interest (`capital`, `city`, `port`, `ruin`, …). |
 | `routes[]` | Journeys/roads drawn draped over the terrain. |
 | `regions[]` | Ambient area names floated over the map. |
@@ -157,8 +157,11 @@ and *Põrgu & the End*. `chapters` and `books` are interchangeable; a plain
 This shines when several works share one geography. **The Extraordinary
 Voyages** puts four Jules Verne novels (*Around the World in Eighty Days*,
 *Twenty Thousand Leagues*, *The Mysterious Island*, *From the Earth to the
-Moon*) on one world atlas as four books; **The d'Artagnan Romances** does the
-same for Dumas's three Musketeers novels over France and England.
+Moon*) on the real **whole Earth** as four books; **The d'Artagnan Romances**
+does the same for Dumas's three Musketeers novels over the real **France and
+England**. (Because a global map is wider than tall, the world stretches
+vertically in the square view, and the round-the-world route wraps off the east
+edge and back in the west.)
 
 ### Map levels (floors)
 

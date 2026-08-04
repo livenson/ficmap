@@ -3,25 +3,56 @@
  * Build a grayscale heightmap PNG from public Terrarium DEM tiles.
  *
  * Fetches the elevation tiles covering a lon/lat bounding box, stitches them,
- * samples the box (Web-Mercator-correct) into an N×N grid, normalizes to
- * 0..255 and writes a PNG the app can load as `terrain.heightmap`.
+ * samples the box (equirectangular) into a W×H grid, normalizes to 0..255 and
+ * writes a PNG the app can load as `terrain.heightmap`. Also prints the
+ * sea-level fraction to set as `terrain.seaLevel`.
  *
  * Requires network access and `pngjs` (npm i -D pngjs).
  *
- * Usage: node scripts/build-heightmap.mjs
- * Prints the sea-level fraction to set as `terrain.seaLevel` in the story.
+ * Usage:
+ *   node scripts/build-heightmap.mjs                 # Estonia (Kalevipoeg)
+ *   node scripts/build-heightmap.mjs france          # France + England (Musketeers)
+ *   node scripts/build-heightmap.mjs world           # whole Earth (Verne)
  *
- * The bundled src/assets/estonia-height.png was produced with the defaults
- * below (Estonia + Gulf of Finland + Lake Peipus + Pskov). Terrarium tiles are
- * public domain-ish DEM data © Mapzen/AWS Terrain Tiles.
+ * Terrarium tiles are DEM data © Mapzen/AWS Terrain Tiles (public).
  */
 import { PNG } from 'pngjs'
 import fs from 'fs'
 
-const Z = 7
-const BBOX = { lonMin: 21.5, lonMax: 28.9, latMin: 57.3, latMax: 60.75 }
-const N = 256
-const OUT = new URL('../src/assets/estonia-height.png', import.meta.url)
+// Named presets. `w`/`h` default to 256 (square) when omitted.
+const PRESETS = {
+  estonia: {
+    z: 7,
+    bbox: { lonMin: 21.5, lonMax: 28.9, latMin: 57.3, latMax: 60.75 },
+    out: '../src/assets/estonia-height.png',
+  },
+  france: {
+    z: 6,
+    bbox: { lonMin: -6, lonMax: 6, latMin: 42, latMax: 53 },
+    // Cap the Alps so lowland France keeps dynamic range (nicer relief).
+    capM: 1500,
+    out: '../src/assets/france-height.png',
+  },
+  world: {
+    z: 4,
+    bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },
+    w: 512,
+    h: 256,
+    capM: 3500,
+    out: '../src/assets/world-height.png',
+  },
+}
+
+const preset = PRESETS[process.argv[2] ?? 'estonia']
+if (!preset) {
+  console.error(`unknown preset "${process.argv[2]}"; try: ${Object.keys(PRESETS).join(', ')}`)
+  process.exit(1)
+}
+const Z = preset.z
+const BBOX = preset.bbox
+const W = preset.w ?? 256
+const H = preset.h ?? 256
+const OUT = new URL(preset.out, import.meta.url)
 
 const TS = 256
 const lon2tx = (lon) => Math.floor(((lon + 180) / 360) * 2 ** Z)
@@ -29,10 +60,11 @@ const lat2ty = (lat) => {
   const r = (lat * Math.PI) / 180
   return Math.floor(((1 - Math.asinh(Math.tan(r)) / Math.PI) / 2) * 2 ** Z)
 }
-const TX0 = lon2tx(BBOX.lonMin),
-  TX1 = lon2tx(BBOX.lonMax)
-const TY0 = lat2ty(BBOX.latMax),
-  TY1 = lat2ty(BBOX.latMin)
+const clampTile = (t) => Math.max(0, Math.min(2 ** Z - 1, t))
+const TX0 = clampTile(lon2tx(BBOX.lonMin)),
+  TX1 = clampTile(lon2tx(BBOX.lonMax))
+const TY0 = clampTile(lat2ty(BBOX.latMax)),
+  TY1 = clampTile(lat2ty(BBOX.latMin))
 const NX = TX1 - TX0 + 1,
   NY = TY1 - TY0 + 1
 const SW = NX * TS,
@@ -69,23 +101,24 @@ const sample = (sx, sy) => {
   return a * (1 - fx) * (1 - fy) + b * fx * (1 - fy) + c * (1 - fx) * fy + d * fx * fy
 }
 
-const out = new Float32Array(N * N)
+const out = new Float32Array(W * H)
 let mn = Infinity,
   mx = -Infinity
-for (let j = 0; j < N; j++)
-  for (let i = 0; i < N; i++) {
-    const lon = BBOX.lonMin + (i / (N - 1)) * (BBOX.lonMax - BBOX.lonMin)
-    const lat = BBOX.latMax - (j / (N - 1)) * (BBOX.latMax - BBOX.latMin)
+for (let j = 0; j < H; j++)
+  for (let i = 0; i < W; i++) {
+    const lon = BBOX.lonMin + (i / (W - 1)) * (BBOX.lonMax - BBOX.lonMin)
+    const lat = BBOX.latMax - (j / (H - 1)) * (BBOX.latMax - BBOX.latMin)
     const gpx = ((lon + 180) / 360) * worldPx
     const gpy = ((1 - Math.asinh(Math.tan((lat * Math.PI) / 180)) / Math.PI) / 2) * worldPx
     let m = Math.max(sample(gpx - TX0 * TS, gpy - TY0 * TS), -60)
-    out[j * N + i] = m
+    if (preset.capM) m = Math.min(m, preset.capM)
+    out[j * W + i] = m
     if (m < mn) mn = m
     if (m > mx) mx = m
   }
 
-const png = new PNG({ width: N, height: N })
-for (let k = 0; k < N * N; k++) {
+const png = new PNG({ width: W, height: H })
+for (let k = 0; k < W * H; k++) {
   const g = Math.round(((out[k] - mn) / (mx - mn)) * 255)
   png.data[k * 4] = g
   png.data[k * 4 + 1] = g
@@ -93,5 +126,5 @@ for (let k = 0; k < N * N; k++) {
   png.data[k * 4 + 3] = 255
 }
 fs.writeFileSync(OUT, PNG.sync.write(png))
-console.log(`wrote ${OUT.pathname}`)
+console.log(`wrote ${OUT.pathname} (${W}x${H})`)
 console.log(`minM=${mn.toFixed(1)} maxM=${mx.toFixed(1)} → set terrain.seaLevel = ${((0 - mn) / (mx - mn)).toFixed(4)}`)
