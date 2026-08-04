@@ -241,6 +241,8 @@ export interface Ambient {
   treeKind?: 'broadleaf' | 'conifer'
   /** Number of circling birds (default 6). */
   birds?: number
+  /** What the "birds" are: plain birds (default) or post owls (Harry Potter). */
+  birdKind?: 'bird' | 'owl'
   /** Number of circling dragons (default 0). */
   dragons?: number
   /** Number of mosquito swarms buzzing near the ground (default 0). */

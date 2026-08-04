@@ -12,7 +12,7 @@ interface Props {
   heaven?: boolean
 }
 
-type CreatureType = 'bird' | 'dragon' | 'angel'
+type CreatureType = 'bird' | 'dragon' | 'angel' | 'owl'
 
 interface Creature {
   type: CreatureType
@@ -43,6 +43,9 @@ const GOLDEN = 2.399963 // spread creatures around the sky evenly
 export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
   const birds = ambient.birds ?? 6
   const dragons = ambient.dragons ?? 0
+  const owls = !heaven && ambient.birdKind === 'owl'
+  // Tawny by default, with the odd snowy owl (a Hedwig) among the flock.
+  const owlColor = (i: number) => (i % 3 === 0 ? '#e7e2d6' : i % 3 === 1 ? '#6f5c46' : '#4f4436')
 
   const creatures = useMemo<Creature[]>(() => {
     const list: Creature[] = []
@@ -52,16 +55,17 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
       aspect <= 1 ? 0 : (((i * 0.61803) % 1) * 2 - 1) * WORLD_HALF * (aspect - 0.3)
     for (let i = 0; i < birds; i++) {
       list.push({
-        type: heaven ? 'angel' : 'bird',
+        type: heaven ? 'angel' : owls ? 'owl' : 'bird',
         radius: WORLD_SIZE * (0.18 + (i % 4) * 0.09),
         cx: spread(i),
-        height: 26 + (i % 5) * 5,
-        speed: heaven ? 0.14 + (i % 3) * 0.04 : 0.22 + (i % 3) * 0.06,
+        // Owls beat lower and slower over the land, like post owls on a round.
+        height: owls ? 20 + (i % 5) * 4 : 26 + (i % 5) * 5,
+        speed: heaven ? 0.14 + (i % 3) * 0.04 : owls ? 0.16 + (i % 3) * 0.04 : 0.22 + (i % 3) * 0.06,
         phase: i * GOLDEN,
         dir: i % 2 === 0 ? 1 : -1,
-        size: heaven ? 1.5 + (i % 3) * 0.3 : 0.9 + (i % 3) * 0.25,
-        flap: heaven ? 3 + (i % 2) : 5 + (i % 3),
-        color: heaven ? '#fff6e2' : '#1c242c',
+        size: heaven ? 1.5 + (i % 3) * 0.3 : owls ? 1.15 + (i % 3) * 0.2 : 0.9 + (i % 3) * 0.25,
+        flap: heaven ? 3 + (i % 2) : owls ? 4 + (i % 2) : 5 + (i % 3),
+        color: heaven ? '#fff6e2' : owls ? owlColor(i) : '#1c242c',
       })
     }
     for (let i = 0; i < dragons; i++) {
@@ -80,7 +84,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
       })
     }
     return list
-  }, [birds, dragons, aspect, heaven])
+  }, [birds, dragons, aspect, heaven, owls])
 
   const groups = useRef<THREE.Group[]>([])
   const inners = useRef<THREE.Group[]>([])
@@ -115,7 +119,8 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
       if (w) {
         // Flap-then-glide: amplitude waxes and wanes so fliers soar between beats.
         const glide = 0.3 + 0.7 * Math.max(0, Math.sin(t * 0.5 + c.phase * 1.3))
-        const amp = c.type === 'dragon' ? 0.5 : c.type === 'angel' ? 0.4 : 0.85
+        const amp =
+          c.type === 'dragon' ? 0.5 : c.type === 'angel' ? 0.4 : c.type === 'owl' ? 0.6 : 0.85
         const a = Math.sin(t * c.flap + c.phase) * amp * glide
         w.l.rotation.z = a
         w.r.rotation.z = -a
@@ -178,7 +183,68 @@ function Body({
   color: string
   scales: THREE.Texture
 }) {
-  const tails = useMemo(() => ({ bird: makeTail(false), dragon: makeTail(true) }), [])
+  const tails = useMemo(
+    () => ({ bird: makeTail(0.32, 0.5), dragon: makeTail(0.55, 0.9), owl: makeTail(0.34, 0.36) }),
+    [],
+  )
+
+  if (type === 'owl') {
+    // A plump post owl: round body, big head with ear-tufts and pale eyes, a
+    // broad short tail — and a letter clutched in its talons.
+    return (
+      <group>
+        <mesh rotation-x={Math.PI / 2} scale={[1, 1, 0.85]}>
+          <capsuleGeometry args={[0.17, 0.32, 6, 10]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        {/* big round head */}
+        <mesh position={[0, 0.09, 0.33]}>
+          <sphereGeometry args={[0.2, 12, 12]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        {/* ear tufts */}
+        <mesh position={[0.11, 0.25, 0.32]} rotation={[0, 0, -0.35]}>
+          <coneGeometry args={[0.05, 0.16, 5]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        <mesh position={[-0.11, 0.25, 0.32]} rotation={[0, 0, 0.35]}>
+          <coneGeometry args={[0.05, 0.16, 5]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        {/* pale facial discs + dark eyes */}
+        <mesh position={[0.08, 0.09, 0.49]}>
+          <sphereGeometry args={[0.07, 8, 8]} />
+          <meshBasicMaterial color="#f4efe4" />
+        </mesh>
+        <mesh position={[-0.08, 0.09, 0.49]}>
+          <sphereGeometry args={[0.07, 8, 8]} />
+          <meshBasicMaterial color="#f4efe4" />
+        </mesh>
+        <mesh position={[0.08, 0.09, 0.54]}>
+          <sphereGeometry args={[0.032, 6, 6]} />
+          <meshBasicMaterial color="#161210" />
+        </mesh>
+        <mesh position={[-0.08, 0.09, 0.54]}>
+          <sphereGeometry args={[0.032, 6, 6]} />
+          <meshBasicMaterial color="#161210" />
+        </mesh>
+        {/* beak */}
+        <mesh position={[0, 0.03, 0.55]} rotation-x={Math.PI / 2}>
+          <coneGeometry args={[0.03, 0.11, 5]} />
+          <meshBasicMaterial color="#d7a24a" />
+        </mesh>
+        {/* short fanned tail */}
+        <mesh geometry={tails.owl} position={[0, 0, -0.42]}>
+          <meshBasicMaterial color={color} side={THREE.DoubleSide} />
+        </mesh>
+        {/* a letter in its talons */}
+        <mesh position={[0, -0.17, 0.16]} rotation-x={0.35}>
+          <boxGeometry args={[0.24, 0.02, 0.17]} />
+          <meshBasicMaterial color="#efe7d2" />
+        </mesh>
+      </group>
+    )
+  }
 
   if (type === 'angel') {
     return (
@@ -285,15 +351,17 @@ function Wing({
 }) {
   const dragon = type === 'dragon'
   const angel = type === 'angel'
+  const owl = type === 'owl'
 
   const geo = useMemo(() => {
     const sx = dragon ? 1.75 : angel ? 1.5 : 1
-    const cF = dragon ? 0.5 : 0.32 // chord at root, front
-    const cB = dragon ? 1.0 : 0.55 // chord at root, back
+    // Owls have broad, rounded wings: wider chord, shorter, blunter span.
+    const cF = dragon ? 0.5 : owl ? 0.5 : 0.32 // chord at root, front
+    const cB = dragon ? 1.0 : owl ? 0.72 : 0.55 // chord at root, back
     const rf = [0, 0, cF]
     const rb = [0, 0, -cB]
-    const mid = [side * 0.9 * sx, 0.04, -0.06]
-    const tip = [side * 1.85 * sx, 0.08, -0.5]
+    const mid = [side * (owl ? 0.85 : 0.9) * sx, 0.04, owl ? -0.02 : -0.06]
+    const tip = [side * (owl ? 1.35 : 1.85) * sx, 0.06, owl ? -0.32 : -0.5]
     const g = new THREE.BufferGeometry()
     // Two triangles: a swept-back, tapered wing.
     g.setAttribute(
@@ -307,7 +375,7 @@ function Wing({
     )
     g.computeVertexNormals()
     return g
-  }, [dragon, angel, side])
+  }, [dragon, angel, owl, side])
 
   if (dragon) {
     return (
@@ -342,10 +410,8 @@ function Wing({
   )
 }
 
-/** A small fan tail (a triangle) pointing back along -Z. */
-function makeTail(dragon: boolean): THREE.BufferGeometry {
-  const w = dragon ? 0.55 : 0.32
-  const l = dragon ? 0.9 : 0.5
+/** A small fan tail (a triangle) pointing back along -Z, `w` wide and `l` long. */
+function makeTail(w: number, l: number): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry()
   g.setAttribute(
     'position',
