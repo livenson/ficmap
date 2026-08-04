@@ -31,7 +31,6 @@ export const kalevipoeg: Story = {
     trees: 0.6,
     treeKind: 'conifer',
     birds: 6,
-    mosquitoes: 7,
     rain: true,
     fish: 4,
   },
