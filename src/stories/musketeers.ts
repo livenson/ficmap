@@ -1,40 +1,42 @@
 import type { Story } from '../types'
+import franceHeight from '../assets/france-height.png'
 
 /**
  * The d'Artagnan Romances — Alexandre Dumas (1844–1850; public domain): The
  * Three Musketeers, Twenty Years After, and The Vicomte de Bragelonne (which
  * closes with The Man in the Iron Mask). The whole cycle plays out over the
  * same ground — France, and England across the Channel — so it is a COMMON
- * world with one book per novel, the shared map carrying the reader from the
- * Queen's diamonds to the mask of iron.
+ * world with one book per novel.
  *
- * Stylised procedural map (not a real France DEM): a large western land for
- * France, a smaller land across the water for England, the Channel between.
+ * The surface is a REAL heightmap: a Terrarium DEM of France + southern England
+ * + the Channel (bbox lon −6..6, lat 42..53). Markers sit at their true
+ * coordinates — with the symmetric longitude box, map-x is simply lon/6, and
+ * map-z is 2·(53−lat)/11 − 1. Rebuild with `node scripts/build-heightmap.mjs
+ * france`.
  */
 export const musketeers: Story = {
   id: 'musketeers',
   title: "The d'Artagnan Romances",
-  subtitle: 'Dumas — the Three Musketeers cycle',
+  subtitle: 'Dumas — the Three Musketeers cycle, over the real France',
   intro:
     'One for all: the cycle of the King’s Musketeers, from a Gascon boy’s ride ' +
-    'to Paris to the secret of the Iron Mask — three novels over one country. ' +
-    'Press ▶ Play story to follow a book, or open any place to see where it ' +
-    'belongs across the cycle.',
+    'to Paris to the secret of the Iron Mask — three novels over one real ' +
+    'country. Press ▶ Play story to follow a book, or open any place to see ' +
+    'where it belongs across the cycle.',
   surfaceName: 'France',
-  ambient: { trees: 0.55, birds: 6, fish: 3 },
+  ambient: { trees: 0.5, birds: 6, fish: 3 },
   terrain: {
-    seed: 'france-6',
-    seaLevel: 0.4,
-    islandFalloff: 0.1,
-    heightScale: 22,
-    frequency: 1.8,
+    seed: 'france-dem',
+    heightmap: franceHeight,
+    seaLevel: 0.0385, // 0 m in the capped (−60..1500 m) DEM
+    heightScale: 14,
     rivers: 5,
     biomes: [
-      { maxHeight: 0.4, color: '#2f6b86', name: 'The Sea' },
-      { maxHeight: 0.45, color: '#d8cca0', name: 'Coast' },
-      { maxHeight: 0.6, color: '#4a7a45', name: 'Farmland' },
-      { maxHeight: 0.75, color: '#6a7a3e', name: 'Vineyards' },
-      { maxHeight: 0.9, color: '#8a8272', name: 'Highlands' },
+      { maxHeight: 0.0385, color: '#2f6b86', name: 'The Sea' },
+      { maxHeight: 0.07, color: '#d8cca0', name: 'Coast' },
+      { maxHeight: 0.2, color: '#4a7a45', name: 'Farmland' },
+      { maxHeight: 0.42, color: '#6a7a3e', name: 'Hills' },
+      { maxHeight: 0.7, color: '#8a8272', name: 'Highlands' },
       { maxHeight: 1.0, color: '#e9e9e6', name: 'Alps' },
     ],
   },
@@ -43,7 +45,7 @@ export const musketeers: Story = {
       id: 'paris',
       name: 'Paris',
       kind: 'capital',
-      at: { x: 0.16, z: -0.08 },
+      at: { x: 0.392, z: -0.247 }, // 48.86 N, 2.35 E
       description:
         'The King’s city. The Louvre, the Palais-Cardinal, and the house on the ' +
         'Rue des Fossoyeurs where d’Artagnan lodges among the Musketeers.',
@@ -52,7 +54,7 @@ export const musketeers: Story = {
       id: 'gascony',
       name: 'Gascony',
       kind: 'town',
-      at: { x: -0.02, z: 0.5 },
+      at: { x: 0.034, z: 0.7 }, // ~43.65 N, 0.2 E (d'Artagnan's country)
       description:
         'The poor southern province from which young d’Artagnan rides north on ' +
         'a yellow pony, with a letter and a hot temper, to seek his fortune.',
@@ -61,7 +63,7 @@ export const musketeers: Story = {
       id: 'la-rochelle',
       name: 'La Rochelle',
       kind: 'battle',
-      at: { x: -0.24, z: 0.24 },
+      at: { x: -0.192, z: 0.244 }, // 46.16 N, −1.15 E
       description:
         'The Huguenot port besieged by the Cardinal. At the bastion Saint-' +
         'Gervais the four friends breakfast under enemy fire on a famous wager.',
@@ -70,7 +72,7 @@ export const musketeers: Story = {
       id: 'calais',
       name: 'Calais',
       kind: 'port',
-      at: { x: 0.06, z: -0.46 },
+      at: { x: 0.31, z: -0.627 }, // 50.95 N, 1.86 E
       description:
         'The Channel port. Through it the Musketeers race — and are waylaid — ' +
         'carrying the Queen’s honour to England and back.',
@@ -79,7 +81,7 @@ export const musketeers: Story = {
       id: 'london',
       name: 'London',
       kind: 'city',
-      at: { x: -0.44, z: -0.56 },
+      at: { x: -0.021, z: -0.729 }, // 51.51 N, −0.13 E
       description:
         'Across the water: the Duke of Buckingham’s city, where the diamond ' +
         'studs are recovered — and, twenty years on, a king goes to the block.',
@@ -88,7 +90,7 @@ export const musketeers: Story = {
       id: 'armentieres',
       name: 'Armentières',
       kind: 'danger',
-      at: { x: 0.34, z: -0.42 },
+      at: { x: 0.48, z: -0.579 }, // 50.69 N, 2.88 E
       description:
         'A lonely house by the Lys where the friends bring the woman called ' +
         'Milady to a final, midnight reckoning.',
@@ -97,7 +99,7 @@ export const musketeers: Story = {
       id: 'vaux',
       name: 'Vaux-le-Vicomte',
       kind: 'landmark',
-      at: { x: 0.38, z: 0.02 },
+      at: { x: 0.452, z: -0.194 }, // 48.57 N, 2.71 E
       description:
         'Fouquet’s dazzling château, where a fête for the King masks a plot to ' +
         'exchange him for his hidden twin.',
@@ -106,7 +108,7 @@ export const musketeers: Story = {
       id: 'belle-ile',
       name: 'Belle-Île',
       kind: 'ruin',
-      at: { x: -0.5, z: 0.16 },
+      at: { x: -0.526, z: 0.028 }, // 47.35 N, −3.16 E
       description:
         'The fortified isle off the coast where Porthos and Aramis make their ' +
         'last stand — and Porthos his last, giant stand in the grotto of Locmaria.',
@@ -115,7 +117,7 @@ export const musketeers: Story = {
       id: 'bastille',
       name: 'The Bastille',
       kind: 'danger',
-      at: { x: 0.24, z: -0.16 },
+      at: { x: 0.405, z: -0.222 }, // Paris — nudged off the Louvre pin
       description:
         'The King’s prison, where a prisoner whose face no one may see is kept ' +
         'behind a mask of iron.',
@@ -128,9 +130,10 @@ export const musketeers: Story = {
       color: '#e8b24a',
       style: 'solid',
       points: [
-        { x: -0.02, z: 0.5 },
-        { x: 0.08, z: 0.2 },
-        { x: 0.16, z: -0.08 },
+        { x: 0.034, z: 0.7 },
+        { x: 0.2, z: 0.24 },
+        { x: 0.32, z: -0.08 },
+        { x: 0.392, z: -0.247 },
       ],
     },
     {
@@ -139,21 +142,22 @@ export const musketeers: Story = {
       color: '#7ec8ff',
       style: 'dashed',
       points: [
-        { x: 0.16, z: -0.08 },
-        { x: 0.06, z: -0.46 },
-        { x: -0.44, z: -0.56 },
+        { x: 0.392, z: -0.247 },
+        { x: 0.31, z: -0.627 },
+        { x: -0.021, z: -0.729 },
       ],
     },
     {
       id: 'to-la-rochelle',
-      name: 'The Siege of La Rochelle',
+      name: 'The Siege & the Pursuit',
       color: '#d0693c',
       style: 'solid',
       points: [
-        { x: 0.16, z: -0.08 },
-        { x: -0.04, z: 0.08 },
-        { x: -0.24, z: 0.24 },
-        { x: 0.34, z: -0.42 },
+        { x: 0.392, z: -0.247 },
+        { x: 0.06, z: 0.02 },
+        { x: -0.192, z: 0.244 },
+        { x: 0.2, z: -0.2 },
+        { x: 0.48, z: -0.579 },
       ],
     },
     {
@@ -162,16 +166,17 @@ export const musketeers: Story = {
       color: '#b39ddb',
       style: 'dashed',
       points: [
-        { x: -0.5, z: 0.16 },
-        { x: 0.38, z: 0.02 },
-        { x: 0.24, z: -0.16 },
+        { x: -0.526, z: 0.028 },
+        { x: 0.0, z: -0.12 },
+        { x: 0.452, z: -0.194 },
+        { x: 0.405, z: -0.222 },
       ],
     },
   ],
   regions: [
-    { id: 'france', name: 'France', at: { x: 0.2, z: 0.18 }, scale: 1.4 },
-    { id: 'england', name: 'England', at: { x: -0.5, z: -0.66 }, scale: 0.8 },
-    { id: 'the-channel', name: 'The Channel', at: { x: -0.16, z: -0.4 }, scale: 0.7 },
+    { id: 'france', name: 'France', at: { x: 0.16, z: 0.08 }, scale: 1.3 },
+    { id: 'england', name: 'England', at: { x: -0.16, z: -0.82 }, scale: 0.8 },
+    { id: 'the-channel', name: 'The Channel', at: { x: 0.13, z: -0.52 }, scale: 0.7 },
   ],
   elements: [
     {
@@ -213,7 +218,7 @@ export const musketeers: Story = {
             'To save the Queen’s honour, the four race to London and back for ' +
             'the diamond studs the Cardinal means to expose — arriving at the ' +
             'ball with minutes, and two replaced diamonds, to spare.',
-          focus: { marker: 'london', distance: 34, pitch: 32 },
+          focus: { marker: 'london', distance: 30, pitch: 34 },
           reveal: {
             markers: ['calais', 'london'],
             routes: ['the-studs'],
@@ -228,7 +233,7 @@ export const musketeers: Story = {
             'At the siege of La Rochelle the friends breakfast under fire on a ' +
             'wager, and unmask the Cardinal’s agent Milady — pursuing her at ' +
             'last to a house on the Lys.',
-          focus: { marker: 'la-rochelle', distance: 34, pitch: 34 },
+          focus: { marker: 'la-rochelle', distance: 30, pitch: 34 },
           reveal: {
             markers: ['la-rochelle', 'armentieres'],
             routes: ['to-la-rochelle'],
@@ -249,7 +254,7 @@ export const musketeers: Story = {
             'Twenty years on, the four reunite amid the Fronde’s barricades, ' +
             'then cross to England in a doomed bid to save King Charles I from ' +
             'the scaffold at Whitehall.',
-          focus: { marker: 'london', distance: 36, pitch: 32 },
+          focus: { marker: 'london', distance: 32, pitch: 34 },
           reveal: { markers: ['london', 'paris'], regions: ['england'] },
           highlight: { markers: ['london', 'paris'] },
         },
@@ -268,7 +273,7 @@ export const musketeers: Story = {
             'Bastille; the plot breaks at Fouquet’s Vaux. Pursued to Belle-Île, ' +
             'Porthos dies holding up a collapsing grotto, and the friends’ long ' +
             'tale draws to its close.',
-          focus: { marker: 'vaux', distance: 30, pitch: 36 },
+          focus: { marker: 'vaux', distance: 28, pitch: 36 },
           reveal: {
             markers: ['vaux', 'bastille', 'belle-ile'],
             routes: ['iron-mask'],
