@@ -67,8 +67,14 @@ export function Water({ terrain }: Props) {
         color={terrain.waterColor ?? '#2b6c8f'}
         transparent
         opacity={0.6}
-        roughness={0.18}
-        metalness={0.2}
+        roughness={0.42}
+        metalness={0.1}
+        // Bias the sea slightly toward the camera in the depth buffer so it
+        // always wins over the near-coincident ocean floor (no z-fight shimmer
+        // on low-relief worlds where the two are almost the same height).
+        polygonOffset
+        polygonOffsetFactor={-4}
+        polygonOffsetUnits={-4}
         onBeforeCompile={onBeforeCompile}
       />
     </mesh>

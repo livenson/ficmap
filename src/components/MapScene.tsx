@@ -397,7 +397,10 @@ function Cameras({
         fov={is3d ? 50 : 28}
         // A hair of Z offset keeps the top-down view off the exact singularity.
         position={is3d ? [0, 55 * w, 78 * w] : [0, 235 * w, 0.1]}
-        near={0.1}
+        // A larger near plane in the far top-down view restores depth precision,
+        // so the water plane doesn't z-fight the near-flat ocean floor into a
+        // shimmering band. Kept below the 2D min-zoom distance (40).
+        near={is3d ? 0.1 : 8}
         far={2000 * w}
       />
       <MapControls
