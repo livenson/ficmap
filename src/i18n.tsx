@@ -17,7 +17,7 @@ type Dict = Record<string, Record<Lang, string>>
 
 const DICT: Dict = {
   world: { en: 'World', et: 'Maailm' },
-  playStory: { en: 'Play story', et: 'Esita lugu' },
+  playStory: { en: 'Play story', et: 'Alusta lugu' },
   exitStory: { en: 'Exit story', et: 'Välju loost' },
   viewMode: { en: 'View mode', et: 'Vaade' },
   mapLayers: { en: 'Map layers', et: 'Kaardikihid' },
