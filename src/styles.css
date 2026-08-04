@@ -77,6 +77,102 @@ body,
   font-size: 15px;
   cursor: pointer;
 }
+/* ---------- World picker ---------- */
+.worldpicker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.worldpicker__button {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  max-width: 340px;
+}
+.worldpicker__button:hover {
+  border-color: var(--accent);
+}
+.worldpicker__current {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.worldpicker__by {
+  font-size: 12px;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.worldpicker__chevron {
+  color: var(--ink-dim);
+  font-size: 11px;
+}
+.worldpicker__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  width: 320px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.worldpicker__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  padding: 9px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+}
+.worldpicker__item:hover {
+  background: var(--panel-2);
+}
+.worldpicker__item.is-active {
+  background: var(--panel-2);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.worldpicker__item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.worldpicker__item-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.worldpicker__item-by {
+  font-size: 12px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.worldpicker__item-sub {
+  font-size: 12px;
+  color: var(--ink-dim);
+}
+
 .toolbar__spacer {
   flex: 1;
 }

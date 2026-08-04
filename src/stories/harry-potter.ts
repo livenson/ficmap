@@ -17,6 +17,9 @@ export const harryPotter: Story = {
   id: 'harry-potter',
   title: 'Harry Potter',
   subtitle: 'Wizarding Britain, over the real map',
+  author: 'J. K. Rowling',
+  region: 'Wizarding Britain',
+  epoch: 'Published 1997–2007',
   intro:
     'The hidden magical Britain of Harry Potter, laid over the real island: ' +
     'Hogwarts in the Highlands, Diagon Alley and the Ministry beneath London, ' +

@@ -11,6 +11,9 @@ export const valdurn: Story = {
   id: 'valdurn',
   title: 'The Realm of Valdurn',
   subtitle: 'A divided kingdom on the edge of the Drowned Coast',
+  author: 'Ficmap original',
+  region: 'A high-fantasy realm',
+  epoch: 'Demo world',
   intro:
     'Once a single crown united the Vale, the Ashen Reach and the fenlands of ' +
     'the west. Now three powers watch the roads between them. Pan and zoom to ' +

@@ -1,6 +1,7 @@
 import type { ViewMode } from '../components/MapScene'
 import type { Story } from '../types'
 import { LayersMenu, type Layers } from './LayersMenu'
+import { WorldPicker } from './WorldPicker'
 
 interface Props {
   stories: Story[]
@@ -36,20 +37,7 @@ export function Toolbar({
         <span className="toolbar__name">Ficmap</span>
       </div>
 
-      <label className="toolbar__group">
-        <span className="toolbar__caption">World</span>
-        <select
-          className="toolbar__select"
-          value={currentId}
-          onChange={(e) => onPick(e.target.value)}
-        >
-          {stories.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.title}
-            </option>
-          ))}
-        </select>
-      </label>
+      <WorldPicker stories={stories} currentId={currentId} onPick={onPick} />
 
       {hasChapters && (
         <button

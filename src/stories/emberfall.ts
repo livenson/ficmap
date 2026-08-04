@@ -9,6 +9,9 @@ export const emberfall: Story = {
   id: 'emberfall',
   title: 'Emberfall',
   subtitle: 'A broken archipelago of ash and firelight',
+  author: 'Ficmap original',
+  region: 'A volcanic archipelago',
+  epoch: 'Demo world',
   intro:
     'The mountain that made these isles never truly slept. Ash-forests, ' +
     'obsidian shores and rivers of cooling stone — a harsher atlas, drawn with ' +

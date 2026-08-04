@@ -268,6 +268,12 @@ export interface Story {
   subtitle?: string
   /** Longer blurb shown in the info panel when nothing is selected. */
   intro?: string
+  /** Source author / creator, shown in the world picker (e.g. "Jules Verne"). */
+  author?: string
+  /** Where the world is set, shown in the world picker (e.g. "Wizarding Britain"). */
+  region?: string
+  /** When it is from — publication or era (e.g. "Published 1997–2007"). */
+  epoch?: string
   terrain: TerrainConfig
   /** Ambient 3D life (trees, birds, dragons). */
   ambient?: Ambient

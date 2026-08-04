@@ -20,6 +20,9 @@ export const verne: Story = {
   id: 'verne-voyages',
   title: 'The Extraordinary Voyages',
   subtitle: 'Jules Verne — many journeys, one real world',
+  author: 'Jules Verne',
+  region: 'The whole Earth',
+  epoch: 'Voyages extraordinaires · 1863–1905',
   intro:
     'Jules Verne’s Voyages extraordinaires all cross the same globe: around it ' +
     'in eighty days, twenty thousand leagues beneath it, and out to a lonely ' +
