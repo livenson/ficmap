@@ -13,8 +13,27 @@ import { getLevels, getLevel, allMarkers, SURFACE_ID } from './engine/levels'
 import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
 
+/** URL query key for deep-linking a world, e.g. `?world=kalevipoeg`. */
+const WORLD_PARAM = 'world'
+
+/** A valid world id from the current URL, or null if absent/unknown. */
+function worldFromUrl(): string | null {
+  if (typeof window === 'undefined') return null
+  const id = new URLSearchParams(window.location.search).get(WORLD_PARAM)
+  return id && stories.some((s) => s.id === id) ? id : null
+}
+
+/** Reflect the selected world in the URL (?world=id), preserving other params. */
+function writeWorldToUrl(id: string) {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  url.searchParams.set(WORLD_PARAM, id)
+  window.history.replaceState(null, '', url)
+}
+
 export default function App() {
-  const [storyId, setStoryId] = useState(stories[0].id)
+  // Initial world comes from the URL (?world=…) when present, else the first.
+  const [storyId, setStoryId] = useState(() => worldFromUrl() ?? stories[0].id)
   const [mode, setMode] = useState<ViewMode>('3d')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
@@ -72,7 +91,20 @@ export default function App() {
     setSelectedElementId(null)
     setChapterIndex(null)
     setLevelId(SURFACE_ID)
+    writeWorldToUrl(id)
   }
+
+  // Keep the world in sync with the URL on back/forward or manual edits, so a
+  // shared `?world=…` link deep-links straight to that world.
+  useEffect(() => {
+    const onPop = () => {
+      const id = worldFromUrl()
+      if (id && id !== storyId) pickStory(id)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+    // pickStory/storyId are stable enough here; re-bind when the world changes.
+  }, [storyId])
 
   function startStory() {
     setSelectedId(null)

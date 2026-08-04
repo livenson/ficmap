@@ -90,3 +90,12 @@ test('layers menu strips the map back', async ({ page }) => {
   await page.getByText('Trees & wildlife').click()
   await expect(badge).toHaveText('3')
 })
+
+test('deep-links a world via the ?world= query param', async ({ page }) => {
+  await page.goto('/?world=kalevipoeg')
+  await expect(page.getByRole('heading', { name: 'Kalevipoeg' })).toBeVisible()
+  await expect(page.locator('select')).toHaveValue('kalevipoeg')
+  // Switching worlds keeps the URL in sync for sharing.
+  await page.selectOption('select', 'fotr')
+  await expect(page).toHaveURL(/world=fotr/)
+})

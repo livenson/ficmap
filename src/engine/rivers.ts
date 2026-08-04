@@ -18,10 +18,13 @@ export function generateRivers(
   const seaLevel = terrain.seaLevel ?? 0.42
   const rng = alea(`${terrain.seed}:rivers`)
 
-  const springs = pickSprings(field, seaLevel, count, rng)
+  // Oversample springs: many will stall before reaching water and get dropped,
+  // so we try more sources than requested and stop once `count` rivers arrive.
+  const springs = pickSprings(field, seaLevel, count * 6, rng)
   const rivers: MapPoint[][] = []
 
   for (const s of springs) {
+    if (rivers.length >= count) break
     const path: MapPoint[] = []
     let x = s.x
     let z = s.z
@@ -29,11 +32,19 @@ export function generateRivers(
     let vz = 0
     const step = 0.011
     const eps = 0.009
+    // A river is only worth drawing if it actually arrives at water (the sea or
+    // an inland lake). Ones that stall on a slope or run off the map are dropped
+    // so we never render a line that floats, disconnected, in the middle of the
+    // land.
+    let reachedWater = false
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 800; i++) {
       path.push({ x, z })
       const h = field.at(x, z)
-      if (h <= seaLevel + 0.005) break // reached the coast
+      if (h <= seaLevel + 0.005) {
+        reachedWater = true
+        break // reached the coast / a lake shore
+      }
 
       // Downhill gradient from central differences.
       const gx = field.at(x + eps, z) - field.at(x - eps, z)
@@ -62,7 +73,10 @@ export function generateRivers(
       if (x < -1 || x > 1 || z < -1 || z > 1) break
     }
 
-    if (path.length >= 6) rivers.push(simplify(path))
+    // Keep only rivers that both arrive at water AND run a meaningful distance;
+    // this drops the short mountain-stream stubs that otherwise read as stray,
+    // disconnected fragments.
+    if (reachedWater && pathLength(path) >= 0.22) rivers.push(simplify(path))
   }
   return rivers
 }
@@ -91,7 +105,7 @@ function pickSprings(
   candidates.sort((a, b) => b.h - a.h)
 
   const chosen: Spring[] = []
-  const minDist = 0.35
+  const minDist = 0.28
   for (const c of candidates) {
     if (chosen.length >= count) break
     if (chosen.every((s) => Math.hypot(s.x - c.x, s.z - c.z) > minDist)) {
@@ -99,6 +113,15 @@ function pickSprings(
     }
   }
   return chosen
+}
+
+/** Total polyline length in map space. */
+function pathLength(path: MapPoint[]): number {
+  let d = 0
+  for (let i = 1; i < path.length; i++) {
+    d += Math.hypot(path[i].x - path[i - 1].x, path[i].z - path[i - 1].z)
+  }
+  return d
 }
 
 /** Drop points that barely move, to keep the drawn line light. */
