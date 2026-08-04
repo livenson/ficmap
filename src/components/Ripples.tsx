@@ -10,7 +10,7 @@ interface Props {
   terrain: TerrainConfig
 }
 
-const COUNT = 60
+const COUNT = 34
 
 /**
  * Expanding rain rings on the water surface. Each ring grows and fades where a
@@ -44,7 +44,7 @@ export function Ripples({ field, terrain }: Props) {
     () =>
       Array.from({ length: COUNT }, () => {
         const [x, z] = waterPoint()
-        return { x, z, life: Math.random(), dur: 1.1 + Math.random() * 1.2, max: 3 + Math.random() * 3 }
+        return { x, z, life: Math.random(), dur: 1.1 + Math.random() * 1.2, max: 2 + Math.random() * 2 }
       }),
     [waterPoint],
   )
@@ -61,12 +61,12 @@ export function Ripples({ field, terrain }: Props) {
         const [x, z] = waterPoint()
         d.x = x
         d.z = z
-        d.max = 3 + Math.random() * 3
+        d.max = 2 + Math.random() * 2
       }
       const s = 0.2 + d.life * d.max
       m.position.set(d.x, waterY, d.z)
       m.scale.set(s, s, s)
-      ;(m.material as THREE.MeshBasicMaterial).opacity = Math.sin(d.life * Math.PI) * 0.35
+      ;(m.material as THREE.MeshBasicMaterial).opacity = Math.sin(d.life * Math.PI) * 0.16
     }
   })
 
