@@ -12,6 +12,9 @@ export const fotr: Story = {
   id: 'fotr',
   title: 'The Fellowship of the Ring',
   subtitle: 'The Journey Begins',
+  author: 'J. R. R. Tolkien',
+  region: 'Middle-earth (Eriador)',
+  epoch: 'Published 1954',
   intro:
     'A dark lord seeks an ancient ring of power. A small group of heroes must ' +
     'carry it across dangerous lands to prevent a global catastrophe.',

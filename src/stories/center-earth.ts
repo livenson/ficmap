@@ -16,6 +16,9 @@ export const centerEarth: Story = {
   id: 'center-earth',
   title: 'Journey to the Center of the Earth',
   subtitle: 'Down through Snæfellsjökull, floor by floor',
+  author: 'Jules Verne',
+  region: 'Iceland → the centre',
+  epoch: 'Published 1864',
   intro:
     'Descend, bold traveller, and reach the centre of the Earth. From the ' +
     'crater of Snæfellsjökull the party climbs down into the dark — through a ' +

@@ -19,6 +19,9 @@ export const kalevipoeg: Story = {
   id: 'kalevipoeg',
   title: 'Kalevipoeg',
   subtitle: 'The Estonian epic, as a map across three books',
+  author: 'F. R. Kreutzwald',
+  region: 'Estonia & Põrgu',
+  epoch: 'Estonian national epic · 1857',
   intro:
     'The song of Kalev’s son — giant, king, and wanderer. One land, told in ' +
     'three books: his birth and the winning of the sword, his wars and ' +

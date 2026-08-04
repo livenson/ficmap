@@ -19,7 +19,8 @@ function trackErrors(page: Page): string[] {
 }
 
 async function selectWorld(page: Page, id: string) {
-  await page.selectOption('select', id)
+  await page.locator('.worldpicker__button').click()
+  await page.locator(`.worldpicker__item[data-id="${id}"]`).click()
   await page.waitForTimeout(1200) // scene remounts + settles
 }
 
@@ -108,9 +109,9 @@ test('descends the Center of the Earth subfloors', async ({ page }) => {
 test('deep-links a world via the ?world= query param', async ({ page }) => {
   await page.goto('/?world=kalevipoeg')
   await expect(page.getByRole('heading', { name: 'Kalevipoeg' })).toBeVisible()
-  await expect(page.locator('select')).toHaveValue('kalevipoeg')
+  await expect(page.locator('.worldpicker__current')).toHaveText('Kalevipoeg')
   // Switching worlds keeps the URL in sync for sharing.
-  await page.selectOption('select', 'fotr')
+  await selectWorld(page, 'fotr')
   await expect(page).toHaveURL(/world=fotr/)
 })
 
