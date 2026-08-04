@@ -179,6 +179,56 @@ export const kalevipoeg: Story = {
         'The rim of the world, which the hero sails to seek — and finds no man ' +
         'may pass.',
     },
+    {
+      id: 'virumaa',
+      name: 'The Shores of Viru',
+      kind: 'landmark',
+      at: { x: 0.3, z: -0.14 },
+      description:
+        'The north-eastern coast (Virumaa) where, in the oldest songs, the eagle ' +
+        'sets old Kalev down — the ground on which he founds his kingdom and his ' +
+        'line.',
+    },
+    {
+      id: 'iru-stone',
+      name: "Iru's Stepmother",
+      kind: 'landmark',
+      at: { x: -0.05, z: -0.22 },
+      description:
+        'The great boulder on the Pirita by Iru, into which the grieving Linda is ' +
+        'said to have been turned to stone — the "stepmother rock" that always ' +
+        'rolls back to its place.',
+    },
+    {
+      id: 'vortsjarv',
+      name: 'Lake Võrtsjärv',
+      kind: 'port',
+      at: { x: 0.2, z: 0.44 },
+      description:
+        'The great interior lake of the inland south. On its western shore at ' +
+        'Kivilõppe lies one of the giant’s cast stones, from his wanderings ' +
+        'between the waters.',
+    },
+    {
+      id: 'tartu',
+      name: "Tartu & Taara's Grove",
+      kind: 'city',
+      at: { x: 0.41, z: 0.37 },
+      description:
+        'The town on the Emajõgi and the sacred oak-grove of Taara that shines ' +
+        'across the water at evening. When the hero falls, his soul is called ' +
+        'home to the halls of Taara.',
+    },
+    {
+      id: 'vohandu',
+      name: 'The Võhandu',
+      kind: 'landmark',
+      at: { x: 0.58, z: 0.5 },
+      description:
+        'The holy river of the south-east, running from the Otepää heights to ' +
+        'Peipus. In the last wars Olev’s son throws a bridge across it for the ' +
+        'marching host.',
+    },
   ],
   routes: [
     {
@@ -402,7 +452,7 @@ export const kalevipoeg: Story = {
             'youngest grows the mightiest — Kalevipoeg, the giant heir.',
           focus: { marker: 'kalev-barrow', distance: 34, pitch: 34 },
           reveal: {
-            markers: ['kalev-barrow', 'lindanisa', 'ulemiste'],
+            markers: ['kalev-barrow', 'lindanisa', 'ulemiste', 'iru-stone'],
             regions: ['homeland'],
           },
           highlight: { markers: ['kalev-barrow'] },
@@ -414,7 +464,7 @@ export const kalevipoeg: Story = {
             'Chosen king, Kalevipoeg raises his burg at Lindanisa, the hill ' +
             'above the northern shore that later ages will call Tallinn.',
           focus: { marker: 'lindanisa', distance: 30, pitch: 30, heading: 20 },
-          reveal: { markers: [] },
+          reveal: { markers: ['virumaa'] },
           highlight: { markers: ['lindanisa'] },
         },
         {
@@ -460,7 +510,7 @@ export const kalevipoeg: Story = {
             'The hero carries his wars south, marching upon Pihkva and the ' +
             'lands beyond the great lake.',
           focus: { marker: 'pihkva', distance: 36, pitch: 34, heading: -15 },
-          reveal: { markers: ['pihkva'] },
+          reveal: { markers: ['pihkva', 'tartu'] },
           highlight: { markers: ['pihkva'] },
         },
         {
@@ -471,7 +521,7 @@ export const kalevipoeg: Story = {
             'thieves make off with his sword. It is lost in the Kääpa brook, ' +
             'where it sinks and waits.',
           focus: { marker: 'peipus', distance: 40, pitch: 30 },
-          reveal: { markers: ['kaapa', 'endla'], regions: ['eastern-waters'] },
+          reveal: { markers: ['kaapa', 'endla', 'vortsjarv'], regions: ['eastern-waters'] },
           highlight: { markers: ['peipus', 'kaapa'] },
         },
         {
@@ -524,7 +574,7 @@ export const kalevipoeg: Story = {
             'Back in the daylight, Kalevipoeg wades the Kääpa brook. The lost ' +
             'sword wakes to its old curse and shears the legs from its master.',
           focus: { marker: 'kaapa', distance: 30, pitch: 28 },
-          reveal: { markers: ['deep-gate'], routes: ['last-road'], regions: ['underworld'] },
+          reveal: { markers: ['deep-gate', 'vohandu'], routes: ['last-road'], regions: ['underworld'] },
           highlight: { markers: ['kaapa'] },
         },
         {

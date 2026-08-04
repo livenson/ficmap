@@ -12,6 +12,13 @@ import type { TerrainConfig } from '../types'
 export const WORLD_SIZE = 100
 export const WORLD_HALF = WORLD_SIZE / 2
 
+/**
+ * How far (in world units) to sink the deep sea floor beneath the water plane,
+ * eased to zero at the shore. Keeps the translucent sea from z-fighting the
+ * near-coincident flat ocean floor on low-relief real-DEM worlds.
+ */
+const SEA_FLOOR_DROP = 1.0
+
 /** Convert a normalized map coordinate to a world ground Z (or a square X). */
 export function mapToWorld(coord: number): number {
   return coord * WORLD_HALF
@@ -87,7 +94,16 @@ export function buildTerrainGeometry(
       const mz = v * 2 - 1
 
       const h = field.at(mx, mz)
-      const y = h * heightScale
+      let y = h * heightScale
+      // Sink the sea floor below the translucent water plane so the two never
+      // z-fight into a shimmering band over the ocean at a distant zoom (on a
+      // low-relief world sea level and the flat floor are otherwise almost the
+      // same height). The drop eases to nothing at the shore, so the coastline
+      // and shallows are untouched — it's just a hidden offshore basin.
+      if (h < seaLevel && seaLevel > 0) {
+        const belowFrac = Math.min(1, (seaLevel - h) / seaLevel) // 0 at shore → 1 deep
+        y -= SEA_FLOOR_DROP * belowFrac
+      }
 
       const idx = (j * nx + i) * 3
       positions[idx] = mx * WORLD_HALF * aspect
