@@ -12,9 +12,24 @@ import type { TerrainConfig } from '../types'
 export const WORLD_SIZE = 100
 export const WORLD_HALF = WORLD_SIZE / 2
 
-/** Convert a normalized map coordinate to a world ground X (or Z). */
+/** Convert a normalized map coordinate to a world ground Z (or a square X). */
 export function mapToWorld(coord: number): number {
   return coord * WORLD_HALF
+}
+
+/**
+ * World aspect: X width / Z depth. 1 = square (default); >1 = wider than deep,
+ * e.g. an equirectangular world map, so continents keep real proportions
+ * instead of being stretched vertically into the square.
+ */
+export function aspectOf(cfg?: { aspect?: number }): number {
+  const a = cfg?.aspect ?? 1
+  return a > 0 ? a : 1
+}
+
+/** Convert a normalized map X to world X, widened by the world's aspect. */
+export function mapToWorldX(coord: number, cfg?: { aspect?: number }): number {
+  return coord * WORLD_HALF * aspectOf(cfg)
 }
 
 /** World-space Y (elevation) at a given map point. */
@@ -47,6 +62,7 @@ export function buildTerrainGeometry(
 ): BufferGeometry {
   const heightScale = cfg.heightScale ?? 22
   const seaLevel = cfg.seaLevel ?? 0.42
+  const aspect = aspectOf(cfg)
   const colorer = makeBiomeColorer(cfg)
   // Procedural "texture": mid-frequency patches + high-frequency grain that
   // mottle the flat biome colors so land reads as fields/woods, not paint.
@@ -68,7 +84,7 @@ export function buildTerrainGeometry(
       const y = h * heightScale
 
       const idx = (j * n + i) * 3
-      positions[idx] = mx * WORLD_HALF
+      positions[idx] = mx * WORLD_HALF * aspect
       positions[idx + 1] = y
       positions[idx + 2] = mz * WORLD_HALF
 

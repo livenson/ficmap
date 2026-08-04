@@ -30,15 +30,18 @@ export const verne: Story = {
   terrain: {
     seed: 'verne-dem',
     heightmap: worldHeight,
-    seaLevel: 0.017, // 0 m in the capped (−60..3500 m) DEM
-    heightScale: 8,
+    // The DEM spans 360° of longitude over 140° of latitude, so the world is
+    // ~2.57× wider than deep — keep that ratio instead of squaring the globe.
+    aspect: 360 / 140,
+    seaLevel: 0.0017, // 0 m in the capped (−6..3500 m) DEM, sea flattened
+    heightScale: 5,
     rivers: 0,
     biomes: [
-      { maxHeight: 0.017, color: '#1f5773', name: 'Ocean' },
-      { maxHeight: 0.03, color: '#d9cfa6', name: 'Coast' },
+      { maxHeight: 0.0017, color: '#26618a', name: 'Ocean' },
+      { maxHeight: 0.02, color: '#d9cfa6', name: 'Coast' },
       { maxHeight: 0.1, color: '#3f7a4a', name: 'Lowlands' },
       { maxHeight: 0.26, color: '#5f7a3c', name: 'Steppe' },
-      { maxHeight: 0.6, color: '#8a8474', name: 'Mountains' },
+      { maxHeight: 0.58, color: '#8a8474', name: 'Mountains' },
       { maxHeight: 1.0, color: '#f2f2f2', name: 'Snows' },
     ],
   },

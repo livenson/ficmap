@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
-import { elevationAt, mapToWorld } from '../engine/terrain'
+import { elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -32,7 +32,7 @@ export function Mosquitoes({ swarms, field, terrain }: Props) {
       const mz = (Math.random() * 2 - 1) * 0.8
       if (field.at(mx, mz) <= seaLevel + 0.05) continue
       centers.push({
-        x: mapToWorld(mx),
+        x: mapToWorldX(mx, terrain),
         y: elevationAt(field, terrain, mx, mz) + 4 + Math.random() * 5,
         z: mapToWorld(mz),
       })

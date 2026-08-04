@@ -5,7 +5,7 @@ import * as THREE from 'three'
 import { makeHeightField, type HeightField } from '../engine/noise'
 import { FLAT_FIELD, loadImageHeightField } from '../engine/heightmap'
 import type { TerrainConfig } from '../types'
-import { WORLD_SIZE, elevationAt, mapToWorld } from '../engine/terrain'
+import { WORLD_SIZE, aspectOf, elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { CameraFocus, Marker, Story } from '../types'
 import {
   resolveHighlight,
@@ -67,6 +67,8 @@ export function MapScene({
   const dark = terrain.sky === 'dark'
   const cavern = terrain.sky === 'cavern'
   const underground = dark || cavern
+  // World aspect: >1 widens the world in X (e.g. an equirectangular map).
+  const aspect = aspectOf(terrain)
 
   // Story-mode state: what's visible, what's emphasized, where to fly.
   const visibility = useMemo(
@@ -121,9 +123,11 @@ export function MapScene({
       }}
     >
       <color attach="background" args={[bg]} />
-      {mode === '3d' && <fog attach="fog" args={[fogColor, WORLD_SIZE * 0.8, WORLD_SIZE * 2.2]} />}
+      {mode === '3d' && (
+        <fog attach="fog" args={[fogColor, WORLD_SIZE * 0.8 * aspect, WORLD_SIZE * 2.2 * aspect]} />
+      )}
 
-      <Cameras mode={mode} controlsRef={controls} />
+      <Cameras mode={mode} controlsRef={controls} aspect={aspect} />
       <CameraDirector goal={goal} controlsRef={controls} />
 
       {/* Lighting */}
@@ -132,16 +136,23 @@ export function MapScene({
         color={cavern ? '#9ec2d4' : dark ? '#ff8a66' : rainy ? '#c2ccd4' : '#ffffff'}
       />
       <directionalLight
-        position={[40, 80, 20]}
+        // A wide world map wants a near-overhead sun so continents don't throw
+        // long, blocky shadows across the ocean; a square world keeps the low,
+        // relief-revealing angle.
+        position={aspect > 1.5 ? [20, 220, 30] : [40, 80, 20]}
         intensity={underground ? 0.5 : rainy ? 0.5 : mode === '2d' ? 0.7 : 1.15}
         color={cavern ? '#cfe6f0' : dark ? '#ff5a3c' : rainy ? '#c8d0d6' : '#ffffff'}
         castShadow
         shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-WORLD_SIZE}
-        shadow-camera-right={WORLD_SIZE}
+        shadow-camera-left={-WORLD_SIZE * aspect}
+        shadow-camera-right={WORLD_SIZE * aspect}
         shadow-camera-top={WORLD_SIZE}
         shadow-camera-bottom={-WORLD_SIZE}
         shadow-camera-far={300}
+        // The wider the world, the coarser each shadow texel — bias along the
+        // normal so flat water/plains don't self-shadow into dark blotches.
+        shadow-normalBias={1.2 * aspect}
+        shadow-bias={-0.0004}
       />
       {mode === '3d' && !underground && !rainy && (
         <Sky sunPosition={[40, 30, 20]} turbidity={6} rayleigh={1.4} />
@@ -156,7 +167,7 @@ export function MapScene({
       {mode === '3d' && layers.nature && (
         <>
           <Flora field={field} terrain={terrain} ambient={level.ambient} />
-          <Wildlife ambient={level.ambient} />
+          <Wildlife ambient={level.ambient} aspect={aspect} />
           {level.ambient.mosquitoes ? (
             <Mosquitoes swarms={level.ambient.mosquitoes} field={field} terrain={terrain} />
           ) : null}
@@ -268,7 +279,7 @@ function resolveGoal(
   }
   if (mx == null || mz == null) return null
 
-  const tx = mapToWorld(mx)
+  const tx = mapToWorldX(mx, level.terrain)
   const tz = mapToWorld(mz)
   const ty = elevationAt(field, level.terrain, mx, mz)
   const target = new THREE.Vector3(tx, ty, tz)
@@ -367,11 +378,16 @@ function easeInOut(t: number): number {
 function Cameras({
   mode,
   controlsRef,
+  aspect = 1,
 }: {
   mode: ViewMode
   controlsRef: React.MutableRefObject<any>
+  aspect?: number
 }) {
   const is3d = mode === '3d'
+  // A wider-than-square world needs the camera pulled back to frame its width,
+  // and the zoom-out limit raised to match.
+  const w = Math.max(1, aspect)
 
   return (
     <>
@@ -380,9 +396,9 @@ function Cameras({
         makeDefault
         fov={is3d ? 50 : 28}
         // A hair of Z offset keeps the top-down view off the exact singularity.
-        position={is3d ? [0, 55, 78] : [0, 235, 0.1]}
+        position={is3d ? [0, 55 * w, 78 * w] : [0, 235 * w, 0.1]}
         near={0.1}
-        far={2000}
+        far={2000 * w}
       />
       <MapControls
         key={mode}
@@ -394,7 +410,7 @@ function Cameras({
         dampingFactor={0.08}
         screenSpacePanning={false}
         minDistance={is3d ? 12 : 40}
-        maxDistance={is3d ? 220 : 420}
+        maxDistance={(is3d ? 220 : 420) * w}
         // Tilt range in 3D; pinned just off straight-down in 2D.
         minPolarAngle={is3d ? 0.15 : 0.001}
         maxPolarAngle={is3d ? THREE.MathUtils.degToRad(78) : 0.001}

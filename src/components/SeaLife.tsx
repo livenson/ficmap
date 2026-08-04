@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
-import { mapToWorld } from '../engine/terrain'
+import { mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -32,10 +32,10 @@ export function SeaLife({ field, terrain, fish }: Props) {
       const mx = (Math.random() * 2 - 1) * 0.85
       const mz = (Math.random() * 2 - 1) * 0.85
       if (field.at(mx, mz) > seaLevel - 0.02) continue
-      out.push({ x: mapToWorld(mx), z: mapToWorld(mz) })
+      out.push({ x: mapToWorldX(mx, terrain), z: mapToWorld(mz) })
     }
     return out
-  }, [field, seaLevel, fish])
+  }, [field, terrain, seaLevel, fish])
 
   const fishRef = useRef<THREE.InstancedMesh>(null)
   const fishData = useMemo(() => {

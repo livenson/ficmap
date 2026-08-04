@@ -3,7 +3,7 @@ import { CatmullRomCurve3, Vector3 } from 'three'
 import { Line } from '@react-three/drei'
 import type { HeightField } from '../engine/noise'
 import { generateRivers } from '../engine/rivers'
-import { elevationAt, mapToWorld } from '../engine/terrain'
+import { elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -53,7 +53,7 @@ function RiverLine({
       const p = curve.getPoint(i / n)
       out.push(
         new Vector3(
-          mapToWorld(p.x),
+          mapToWorldX(p.x, terrain),
           elevationAt(field, terrain, p.x, p.z) + 0.25,
           mapToWorld(p.z),
         ),

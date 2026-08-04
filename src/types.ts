@@ -71,6 +71,13 @@ export interface TerrainConfig {
   sky?: 'day' | 'dark' | 'cavern'
   /** Color of the water/sea plane (default a sea blue). */
   waterColor?: string
+  /**
+   * World aspect ratio, X width / Z depth. Default 1 (square). Use >1 for a
+   * map that is wider than it is tall — e.g. an equirectangular world map,
+   * where 360° of longitude over ~140° of latitude wants ~2.57 — so the
+   * terrain keeps real proportions instead of stretching into the square.
+   */
+  aspect?: number
 }
 
 export type MarkerKind =

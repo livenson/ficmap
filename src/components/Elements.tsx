@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Vector3 } from 'three'
 import { Html, Line } from '@react-three/drei'
 import type { HeightField } from '../engine/noise'
-import { elevationAt, mapToWorld } from '../engine/terrain'
+import { elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import { activeStopIndex, elementPoint, stopPoint } from '../engine/elements'
 import { markerLevelId } from '../engine/levels'
 import type { Story, StoryElement, TerrainConfig } from '../types'
@@ -89,7 +89,7 @@ function ElementPin({
       .map(
         (p) =>
           new Vector3(
-            mapToWorld(p.x),
+            mapToWorldX(p.x, terrain),
             elevationAt(field, terrain, p.x, p.z) + 0.6,
             mapToWorld(p.z),
           ),
@@ -98,7 +98,7 @@ function ElementPin({
   }, [selected, element, story, field, terrain])
 
   if (!pt) return null
-  const wx = mapToWorld(pt.x)
+  const wx = mapToWorldX(pt.x, terrain)
   const wz = mapToWorld(pt.z)
   const wy = elevationAt(field, terrain, pt.x, pt.z)
   const glyph = element.glyph ?? '◆'
