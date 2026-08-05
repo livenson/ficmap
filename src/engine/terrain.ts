@@ -19,6 +19,9 @@ export const WORLD_HALF = WORLD_SIZE / 2
  */
 const SEA_FLOOR_DROP = 1.0
 
+/** World units per tile of the optional detail (bump/normal) texture. */
+const DETAIL_TILE = 4
+
 /** Convert a normalized map coordinate to a world ground Z (or a square X). */
 export function mapToWorld(coord: number): number {
   return coord * WORLD_HALF
@@ -84,6 +87,9 @@ export function buildTerrainGeometry(
   const nz = resZ + 1
   const positions = new Float32Array(nx * nz * 3)
   const colors = new Float32Array(nx * nz * 3)
+  // World-space UVs so an optional tiled detail (bump/normal) texture repeats
+  // uniformly regardless of world size — one tile every DETAIL_TILE world units.
+  const uvs = new Float32Array(nx * nz * 2)
   const indices: number[] = []
 
   for (let j = 0; j < nz; j++) {
@@ -106,9 +112,14 @@ export function buildTerrainGeometry(
       }
 
       const idx = (j * nx + i) * 3
-      positions[idx] = mx * WORLD_HALF * aspect
+      const wx = mx * WORLD_HALF * aspect
+      const wz = mz * WORLD_HALF
+      positions[idx] = wx
       positions[idx + 1] = y
-      positions[idx + 2] = mz * WORLD_HALF
+      positions[idx + 2] = wz
+      const uvIdx = (j * nx + i) * 2
+      uvs[uvIdx] = wx / DETAIL_TILE
+      uvs[uvIdx + 1] = wz / DETAIL_TILE
 
       const c = colorer(h)
       // Mottle brightness by noise — patches, grain, and a finer speckle that
@@ -138,6 +149,7 @@ export function buildTerrainGeometry(
   const geo = new BufferGeometry()
   geo.setAttribute('position', new Float32BufferAttribute(positions, 3))
   geo.setAttribute('color', new Float32BufferAttribute(colors, 3))
+  geo.setAttribute('uv', new Float32BufferAttribute(uvs, 2))
   geo.setIndex(indices)
   geo.computeVertexNormals()
   return geo
