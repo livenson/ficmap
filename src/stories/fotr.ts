@@ -35,7 +35,9 @@ export const fotr: Story = {
       { maxHeight: 0.08, color: '#cdbf94', name: 'Shore' },
       { maxHeight: 0.3, color: '#3f7a45', name: 'Green Country' },
       { maxHeight: 0.52, color: '#4a5d23', name: 'Wolds' },
-      { maxHeight: 0.74, color: '#8c8c8c', name: 'Mountains' },
+      // Most of the Misty Mountains read as grey stone; only the peaks catch
+      // snow — closer to Tolkien's line-drawn range than a solid white wall.
+      { maxHeight: 0.85, color: '#8c8c8c', name: 'Mountains' },
       { maxHeight: 1.0, color: '#f4f4f4', name: 'Snows' },
     ],
   },
@@ -49,7 +51,7 @@ export const fotr: Story = {
       id: 'grey-havens',
       name: 'The Grey Havens',
       kind: 'port',
-      at: { x: -0.82, z: -0.28 },
+      at: { x: -0.82, z: -0.27 },
       description:
         'Mithlond, the elven harbour on the Gulf of Lune, from whose quays the ' +
         'last ships sail into the West.',
@@ -58,28 +60,28 @@ export const fotr: Story = {
       id: 'hobbiton',
       name: 'Hobbiton',
       kind: 'town',
-      at: { x: -0.56, z: -0.24 },
+      at: { x: -0.6, z: -0.13 },
       description: 'A peaceful, pastoral village in the Shire.',
     },
     {
       id: 'bree',
       name: 'Bree',
       kind: 'town',
-      at: { x: -0.38, z: -0.19 },
+      at: { x: -0.4, z: -0.1 },
       description: 'A bustling crossroads town where men and hobbits mingle.',
     },
     {
       id: 'weathertop',
       name: 'Weathertop',
       kind: 'ruin',
-      at: { x: -0.24, z: -0.22 },
+      at: { x: -0.24, z: -0.13 },
       description: 'An ancient ruined watchtower atop a great hill.',
     },
     {
       id: 'rivendell',
       name: 'Rivendell',
       kind: 'city',
-      at: { x: -0.06, z: -0.32 },
+      at: { x: -0.02, z: -0.18 },
       description:
         'Imladris — a hidden refuge of the Elves in a deep valley at the ' +
         'western feet of the Misty Mountains.',
@@ -88,7 +90,7 @@ export const fotr: Story = {
       id: 'moria',
       name: 'Mines of Moria',
       kind: 'danger',
-      at: { x: 0.04, z: 0.02 },
+      at: { x: 0.11, z: 0.16 },
       description:
         'Khazad-dûm — an abandoned, dark dwarven realm delved beneath the ' +
         'Misty Mountains, entered from the west and left, barely, to the east.',
@@ -97,7 +99,7 @@ export const fotr: Story = {
       id: 'lothlorien',
       name: 'Lothlórien',
       kind: 'forest',
-      at: { x: 0.32, z: 0.12 },
+      at: { x: 0.34, z: 0.28 },
       description:
         'The golden elven wood beyond the mountains, on the near bank of the ' +
         'Great River.',
@@ -106,7 +108,7 @@ export const fotr: Story = {
       id: 'amon_hen',
       name: 'Amon Hen',
       kind: 'landmark',
-      at: { x: 0.26, z: 0.52 },
+      at: { x: 0.3, z: 0.6 },
       description:
         'The Hill of Sight above the falls of Rauros, where the Fellowship ' +
         'breaks.',
@@ -117,13 +119,13 @@ export const fotr: Story = {
       id: 'fellowship-path',
       name: 'Path of the Ringbearer',
       points: [
-        { x: -0.56, z: -0.24 },
-        { x: -0.38, z: -0.19 },
-        { x: -0.24, z: -0.22 },
-        { x: -0.06, z: -0.32 },
-        { x: 0.04, z: 0.02 },
-        { x: 0.32, z: 0.12 },
-        { x: 0.26, z: 0.52 },
+        { x: -0.6, z: -0.13 },
+        { x: -0.4, z: -0.1 },
+        { x: -0.24, z: -0.13 },
+        { x: -0.02, z: -0.18 },
+        { x: 0.11, z: 0.16 },
+        { x: 0.34, z: 0.28 },
+        { x: 0.3, z: 0.6 },
       ],
       color: '#ffaa00',
       style: 'solid',
@@ -133,10 +135,13 @@ export const fotr: Story = {
     },
   ],
   regions: [
-    { id: 'shire', name: 'The Shire', at: { x: -0.55, z: -0.28 }, scale: 1.0 },
-    { id: 'eriador', name: 'Eriador', at: { x: -0.3, z: 0.2 }, scale: 1.3 },
-    { id: 'misty-mountains', name: 'The Misty Mountains', at: { x: 0.02, z: -0.6 }, scale: 0.9 },
-    { id: 'wilderland', name: 'Wilderland', at: { x: 0.45, z: -0.15 }, scale: 1.1 },
+    { id: 'shire', name: 'The Shire', at: { x: -0.58, z: -0.16 }, scale: 1.0 },
+    { id: 'ered-luin', name: 'Ered Luin', at: { x: -0.8, z: -0.62 }, scale: 0.85 },
+    { id: 'eriador', name: 'Eriador', at: { x: -0.34, z: 0.24 }, scale: 1.3 },
+    { id: 'misty-mountains', name: 'The Misty Mountains', at: { x: 0.02, z: -0.62 }, scale: 0.9 },
+    { id: 'anduin', name: 'Vale of Anduin', at: { x: 0.34, z: -0.08 }, scale: 0.85 },
+    { id: 'mirkwood', name: 'Mirkwood', at: { x: 0.64, z: 0.06 }, scale: 1.0 },
+    { id: 'wilderland', name: 'Wilderland', at: { x: 0.5, z: 0.5 }, scale: 1.1 },
   ],
   elements: [
     {
@@ -166,7 +171,7 @@ export const fotr: Story = {
             'inheritance demands a dangerous departure. A small group sets out ' +
             'under the cover of darkness.',
           focus: { marker: 'hobbiton', distance: 15 },
-          reveal: { markers: ['hobbiton', 'bree'], regions: ['shire'] },
+          reveal: { markers: ['hobbiton', 'bree'], regions: ['shire', 'ered-luin'] },
           highlight: { markers: ['hobbiton'] },
         },
         {
@@ -199,7 +204,10 @@ export const fotr: Story = {
             'they are forced into perilous, dark underground paths where ' +
             'ancient terrors sleep.',
           focus: { marker: 'moria', distance: 20 },
-          reveal: { markers: ['moria', 'lothlorien'], regions: ['misty-mountains'] },
+          reveal: {
+            markers: ['moria', 'lothlorien'],
+            regions: ['misty-mountains', 'anduin'],
+          },
           highlight: { markers: ['moria'] },
         },
         {
@@ -210,7 +218,7 @@ export const fotr: Story = {
             'the river. Tragedy and conflict strike the group, forcing them to ' +
             'scatter.',
           focus: { marker: 'amon_hen', distance: 15 },
-          reveal: { markers: ['amon_hen'] },
+          reveal: { markers: ['amon_hen'], regions: ['mirkwood', 'wilderland'] },
           highlight: { markers: ['amon_hen'] },
         },
       ],
