@@ -46,6 +46,7 @@ export const mistborn: Story = {
     seaLevel: 0.14,
     heightScale: 15,
     rivers: 0,
+    detail: true, // fine surface bump so the ashlands read as gritty stone
     waterColor: '#33414b',
     biomes: [
       { maxHeight: 0.14, color: '#3a4852', name: 'Ashen Waters' },

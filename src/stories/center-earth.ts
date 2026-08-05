@@ -34,6 +34,7 @@ export const centerEarth: Story = {
     heightScale: 18,
     frequency: 1.8,
     rivers: 3,
+    detail: true, // fine surface bump so lava rock / ash slopes read as gritty
     biomes: [
       { maxHeight: 0.32, color: '#2b5a72', name: 'North Sea' },
       { maxHeight: 0.4, color: '#6f7d78', name: 'Black Sand' },
