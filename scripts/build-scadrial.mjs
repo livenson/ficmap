@@ -115,6 +115,19 @@ for (let j = 0; j < H; j++) {
 
     // --- Texture on the land, then flatten the deep rim ocean. ---
     h += fbm(wx * 2.6, wz * 2.6) * 0.05 * edge
+
+    // --- Cheap erosion (the three.js infinite-terrain trick): a smoothstepped,
+    // ping-ponged noise carves parallel gullies down the slopes, deeper on
+    // higher ground, so the Terris/Western/Crescent ranges and the ashmount
+    // flanks read as eroded rock rather than smooth mounds. Kept gentle so the
+    // map stays legible and the ashmount tips still stand proud. ---
+    const pingpong = (x) => {
+      const t = ((x % 2) + 2) % 2
+      return t < 1 ? t : 2 - t
+    }
+    const gully = smooth(0.15, 0.85, pingpong(1 + fbm(wx * 5.5, wz * 5.5) * 2.4))
+    h -= gully * 0.05 * edge * smooth(0.3, 0.7, h)
+
     h = clamp01(h)
     if (edge < 0.04) h = Math.min(h, 0.1) // deep rim ocean, flat
     // --- Southern Islands: small land in the far SW sea (added last so the
