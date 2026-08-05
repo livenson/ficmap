@@ -29,6 +29,7 @@ export const fotr: Story = {
     seaLevel: 0.04,
     heightScale: 13,
     rivers: 4,
+    detail: true, // fine surface bump (prototype of the landscape techniques)
     biomes: [
       { maxHeight: 0.04, color: '#2a5f7a', name: 'The Sea' },
       { maxHeight: 0.08, color: '#cdbf94', name: 'Shore' },

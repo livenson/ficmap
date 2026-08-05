@@ -73,6 +73,12 @@ export interface TerrainConfig {
   /** Color of the water/sea plane (default a sea blue). */
   waterColor?: string
   /**
+   * Add fine surface relief with a tiled procedural bump map, so light reveals
+   * micro-detail (rockiness, grain) up close without extra geometry. Off by
+   * default; the flat-shaded stylized look is the norm.
+   */
+  detail?: boolean
+  /**
    * World aspect ratio, X width / Z depth. Default 1 (square). Use >1 for a
    * map that is wider than it is tall — e.g. an equirectangular world map,
    * where 360° of longitude over ~140° of latitude wants ~2.57 — so the

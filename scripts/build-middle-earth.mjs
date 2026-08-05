@@ -76,6 +76,18 @@ for (let j = 0; j < N; j++) {
 
     // Texture.
     h += fbm(wx * 2.4, wz * 2.4) * 0.06 * land
+
+    // --- Cheap erosion (the three.js infinite-terrain trick): a smoothstepped,
+    // ping-ponged noise carves parallel gullies down the slopes, sharper and
+    // deeper on higher ground so ridgelines read as eroded stone rather than a
+    // smooth mound. Kept gentle so the map stays calm and legible. ---
+    const pingpong = (x) => {
+      const t = ((x % 2) + 2) % 2
+      return t < 1 ? t : 2 - t
+    }
+    const gully = smooth(0.15, 0.85, pingpong(1 + fbm(wx * 5.5, wz * 5.5) * 2.4))
+    h -= gully * 0.055 * land * smooth(0.22, 0.6, h)
+
     h = clamp01(h)
     // Force the deep sea flat and low so the coast reads cleanly.
     if (land < 0.02) h = Math.min(h, 0.12)
