@@ -253,6 +253,12 @@ export interface Ambient {
   dragons?: number
   /** Number of mosquito swarms buzzing near the ground (default 0). */
   mosquitoes?: number
+  /**
+   * Number of drifting will-o'-the-wisp / fire-spirit lights that hover low
+   * over the wet ground — marsh and water (default 0). Used for the Forest
+   * Song's Perelesnyk and poterchata.
+   */
+  wisps?: number
   /** Overcast clouds with animated rain (default false). */
   rain?: boolean
   /** Number of fish schools swimming under the sea (default 0). */
