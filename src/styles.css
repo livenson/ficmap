@@ -477,7 +477,9 @@ body,
 .stage--collapsed .panel-toggle {
   left: 0;
 }
-.stage--collapsed .panel {
+/* Collapsing only hides the free-exploration panel; the story panel must stay
+   visible in a tour (its narration is the whole point). */
+.stage--collapsed .panel:not(.panel--story) {
   display: none;
 }
 
@@ -980,6 +982,10 @@ body,
     border-top: 1px solid var(--line);
     /* Sit above the map (and its overflowing HTML pins) as a solid sheet. */
     z-index: 1;
+  }
+  /* The tour needs more room for its narration than a place blurb does. */
+  .panel--story {
+    max-height: 52%;
   }
   .legend {
     display: none;
