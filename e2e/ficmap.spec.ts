@@ -11,6 +11,7 @@ const WORLDS = [
   { id: 'harry-potter', title: 'Harry Potter' },
   { id: 'indiana-jones', title: 'The Adventures of Indiana Jones' },
   { id: 'mistborn', title: 'Mistborn' },
+  { id: 'forest-song', title: 'The Forest Song' },
 ]
 
 function trackErrors(page: Page): string[] {
