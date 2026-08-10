@@ -8,6 +8,7 @@ import { musketeers } from './musketeers'
 import { harryPotter } from './harry-potter'
 import { indianaJones } from './indiana-jones'
 import { mistborn } from './mistborn'
+import { forestSong } from './forest-song'
 
 /**
  * The atlas registry. To add a world:
@@ -25,6 +26,7 @@ export const stories: Story[] = [
   harryPotter,
   indianaJones,
   mistborn,
+  forestSong,
 ]
 
 export function getStory(id: string | null | undefined): Story {
