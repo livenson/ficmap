@@ -266,6 +266,23 @@ export const eneida: Story = {
             'armour is hammered out for Aeneas’s last war.',
         },
       ],
+      routes: [
+        {
+          id: 'plea',
+          name: 'Venus’s Plea',
+          points: [
+            { x: 0.34, z: 0.08 },
+            { x: -0.28, z: 0.12 },
+            { x: 0.0, z: -0.2 },
+          ],
+          color: '#ffd9a8',
+          style: 'dashed',
+          description:
+            'The course of Aeneas’s cause through heaven: from Venus’s bower, ' +
+            'through the wrangling of the gods’ table, to the throne of Jove ' +
+            'where his fate is decreed.',
+        },
+      ],
       regions: [
         { id: 'heaven', name: 'Olympus', at: { x: 0.0, z: 0.0 }, scale: 1.3 },
       ],
@@ -421,6 +438,7 @@ export const eneida: Story = {
           'neptune-court',
           'vulcan-forge',
         ],
+        routes: ['plea'],
         regions: ['heaven'],
       },
       highlight: { markers: ['gods-table', 'jove-hall'] },

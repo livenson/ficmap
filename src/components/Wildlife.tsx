@@ -166,10 +166,85 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
             >
               <Wing type={c.type} color={c.color} side={-1} membrane={membrane} />
             </group>
+            {c.type === 'dragon' && <DragonFire phase={c.phase} />}
           </group>
         </group>
       ))}
     </>
+  )
+}
+
+/**
+ * A jet of fire from a dragon's maw. A stream of additive, colour-shifting
+ * puffs that spawn at the snout (local +Z), widen and cool (white → orange →
+ * red) as they travel forward, and fade out — gated by a slow "breath" so the
+ * dragon puffs in rhythmic bursts rather than a constant flame. Rendered inside
+ * the dragon's banked body frame, so the fire follows the head as it flies.
+ */
+function DragonFire({ phase }: { phase: number }) {
+  const COUNT = 16
+  const parts = useRef<THREE.Mesh[]>([])
+  const seeds = useMemo(
+    () =>
+      Array.from({ length: COUNT }, (_, i) => ({
+        off: i / COUNT,
+        spread: 0.4 + (i % 5) * 0.12,
+        ang: i * GOLDEN,
+        sp: 0.85 + (i % 3) * 0.16,
+      })),
+    [],
+  )
+  const cHot = useMemo(() => new THREE.Color('#fff3c8'), [])
+  const cMid = useMemo(() => new THREE.Color('#ff8a2a'), [])
+  const cEnd = useMemo(() => new THREE.Color('#c0301a'), [])
+  const tmp = useMemo(() => new THREE.Color(), [])
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime()
+    // Breath: always a little flame at the maw, waxing to a strong gout.
+    const breath = 0.35 + 0.65 * Math.max(0, Math.sin(t * 0.8 + phase))
+    for (let i = 0; i < COUNT; i++) {
+      const m = parts.current[i]
+      if (!m) continue
+      const s = seeds[i]
+      const life = (t * s.sp + s.off + phase * 0.3) % 1 // 0 at maw → 1 downstream
+      const r = life * s.spread
+      m.position.set(
+        Math.cos(s.ang) * r,
+        0.06 + Math.sin(s.ang) * r * 0.6 + life * 0.12,
+        1.9 + life * 1.9,
+      )
+      const bulge = Math.sin(life * Math.PI)
+      const gust = 0.7 + 0.3 * Math.sin(t * 9 + i)
+      m.scale.setScalar(Math.max(0.001, (0.13 + bulge * 0.42) * gust))
+      if (life < 0.5) tmp.copy(cHot).lerp(cMid, life / 0.5)
+      else tmp.copy(cMid).lerp(cEnd, (life - 0.5) / 0.5)
+      const mat = m.material as THREE.MeshBasicMaterial
+      mat.color.copy(tmp)
+      mat.opacity = (1 - life) * breath * gust * 0.9
+    }
+  })
+
+  return (
+    <group>
+      {seeds.map((_, i) => (
+        <mesh
+          key={i}
+          ref={(el) => {
+            if (el) parts.current[i] = el
+          }}
+        >
+          <sphereGeometry args={[1, 8, 8]} />
+          <meshBasicMaterial
+            color="#ffcf6b"
+            transparent
+            opacity={0}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      ))}
+    </group>
   )
 }
 
