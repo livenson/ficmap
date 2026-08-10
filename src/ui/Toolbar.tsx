@@ -60,39 +60,43 @@ export function Toolbar({
 
       <div className="toolbar__spacer" />
 
-      <div className="toolbar__toggle" role="group" aria-label={t('language')}>
-        {LANGS.map((l) => (
+      {/* The controls group wraps to its own full-width row on narrow phones so
+          the world picker keeps the top row and nothing is pushed off-screen. */}
+      <div className="toolbar__controls">
+        <div className="toolbar__toggle" role="group" aria-label={t('language')}>
+          {LANGS.map((l) => (
+            <button
+              key={l.code}
+              className={lang === l.code ? 'is-active' : ''}
+              onClick={() => onLang(l.code)}
+              aria-pressed={lang === l.code}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="toolbar__toggle" role="tablist" aria-label={t('viewMode')}>
           <button
-            key={l.code}
-            className={lang === l.code ? 'is-active' : ''}
-            onClick={() => onLang(l.code)}
-            aria-pressed={lang === l.code}
+            className={mode === '2d' ? 'is-active' : ''}
+            onClick={() => onMode('2d')}
+            role="tab"
+            aria-selected={mode === '2d'}
           >
-            {l.label}
+            2D
           </button>
-        ))}
-      </div>
+          <button
+            className={mode === '3d' ? 'is-active' : ''}
+            onClick={() => onMode('3d')}
+            role="tab"
+            aria-selected={mode === '3d'}
+          >
+            3D
+          </button>
+        </div>
 
-      <div className="toolbar__toggle" role="tablist" aria-label={t('viewMode')}>
-        <button
-          className={mode === '2d' ? 'is-active' : ''}
-          onClick={() => onMode('2d')}
-          role="tab"
-          aria-selected={mode === '2d'}
-        >
-          2D
-        </button>
-        <button
-          className={mode === '3d' ? 'is-active' : ''}
-          onClick={() => onMode('3d')}
-          role="tab"
-          aria-selected={mode === '3d'}
-        >
-          3D
-        </button>
+        <LayersMenu layers={layers} onToggle={onToggleLayer} />
       </div>
-
-      <LayersMenu layers={layers} onToggle={onToggleLayer} />
     </header>
   )
 }
