@@ -1,9 +1,10 @@
 # Ficmap — an atlas of fictional worlds
 
 Interactive **2D / 3D maps for made-up worlds**, in the browser. Each "story"
-is a small data file describing a world; the engine procedurally builds the
-terrain from a seed and drapes your cities, roads and regions onto it. Pan and
-zoom like a web map, tilt into 3D, click a place to read its lore.
+is a small data file describing a world; the engine builds the terrain from a
+seed (or a real-elevation / hand-shaped heightmap) and drapes your cities, roads
+and regions onto it. Pan and zoom like a web map, tilt into 3D, click a place to
+read its lore.
 
 Built with **React + react-three-fiber (Three.js)** and **Vite**. No backend —
 it's a static site.
@@ -24,8 +25,10 @@ npm test           # Playwright e2e tests (see below)
 
 End-to-end tests (`e2e/`, Playwright) cover **all demo scenarios** — every
 world loads without errors, plus the 2D/3D toggle, chapter playback,
-cross-chapter place references, artifact journeys, the Põrgu underworld floor
-switch, and the layers menu. `npm test` starts a dev server and runs them.
+cross-chapter references, artifact journeys, floor switching (Põrgu, the
+Center-of-the-Earth subfloors, Valdurn's sky realms, Mistborn's two eras), the
+per-book/film filter, the layers menu, the Estonian language toggle, and URL
+deep-links. `npm test` starts a dev server and runs them.
 It uses the environment's preinstalled Chromium via `executablePath`; point
 `PW_CHROMIUM` at a different binary if needed.
 
@@ -58,6 +61,31 @@ The Vite `base` is already set to `./` so assets resolve correctly under the
 - **Place in 2D, render in 3D.** You give every marker/route a flat `(x, z)`
   coordinate in the range `[-1, 1]`; the engine looks up the terrain height and
   snaps it onto the surface. (`src/engine/terrain.ts`)
+
+## The worlds
+
+Eleven worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
+terrain:
+
+- **The Realm of Valdurn** — an original demo kingdom that climbs to the
+  **Empyrean** sky realm and drops to the **Sunless Deep** (procedural).
+- **Kalevipoeg** — the Estonian national epic over a real Estonia, three books,
+  with the **Põrgu** underworld.
+- **The Fellowship of the Ring** — Eriador, a shaped heightmap echoing Tolkien's
+  map (the Misty Mountains, the Shire, Mirkwood, Erebor).
+- **Journey to the Center of the Earth** — an Iceland surface over three
+  descending subfloors (Verne).
+- **The Extraordinary Voyages** — four Jules Verne novels on the real whole
+  Earth.
+- **The d'Artagnan Romances** — Dumas's three Musketeers novels over real France
+  and England.
+- **Harry Potter** — wizarding Britain over a real Britain DEM, with post owls.
+- **The Adventures of Indiana Jones** — real-Earth DEM, with a per-film filter.
+- **Mistborn** — Scadrial's Final Empire, a shaped heightmap, across two eras.
+- **The Forest Song** — Lesya Ukrainka's Volhynian Polissia forest, with
+  drifting will-o'-the-wisp spirits.
+- **Eneida** — Kotliarevsky's Cossack *Aeneid*: a Mediterranean voyage with
+  **Olympus** above and **Peklo** below.
 
 ## Add your own world
 
@@ -97,15 +125,17 @@ can paste straight into your story.
 | `terrain.heightScale` | Vertical exaggeration of the 3D mesh. |
 | `terrain.biomes[]` | Elevation → color bands (low to high). |
 | `terrain.rivers` | Number of rivers traced downhill from highlands to sea (`riverColor` to tint — e.g. lava-orange). |
-| `terrain.heightmap` | Optional grayscale image URL — real elevation (DEM) instead of noise. **Kalevipoeg** uses a real Estonia, **The d'Artagnan Romances** the real France + England, **Harry Potter** the real Britain, and **The Extraordinary Voyages** the real whole Earth. Build presets with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world]` (the real-Britain/France/Estonia presets also carve real lake bodies from Natural Earth data so inland water reads); place markers at real `lon/lat` mapped into the DEM's box. |
+| `terrain.heightmap` | Optional grayscale image URL — sampled elevation instead of noise. Some worlds use a **real DEM**: **Kalevipoeg** (Estonia), **The d'Artagnan Romances** (France + England), **Harry Potter** (Britain), **The Extraordinary Voyages** and **The Adventures of Indiana Jones** (the whole Earth), **Eneida** (the Mediterranean). Build these with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world\|mediterranean]` (some presets also carve real lakes from Natural Earth data). Others use a **shaped** heightmap — hand-built to echo a canonical map — via their own script: **The Fellowship of the Ring** (`build-middle-earth.mjs`), **Mistborn** (`build-scadrial.mjs`), **The Forest Song** (`build-polissia.mjs`). Place markers at real `lon/lat` mapped into the DEM's box. |
 | `terrain.aspect` | World width ÷ depth (default 1 = square). Use >1 for a map wider than it is tall — **The Extraordinary Voyages** sets `360/140` so the equirectangular Earth keeps real proportions instead of stretching into the square. |
+| `terrain.detail` | Adds fine surface relief (a tiled procedural bump map) so light picks out rockiness up close. On for the shaped-terrain worlds (FOTR, Mistborn, The Forest Song). |
+| `terrain.sky` | Sky mood: `'day'` (default), `'dark'` (warm hellfire underworld), `'cavern'` (cool phosphorescence), `'heaven'` (a luminous cloud-sea sky realm). |
 | `markers[]` | Labeled points of interest (`capital`, `city`, `port`, `ruin`, …). |
 | `routes[]` | Journeys/roads drawn draped over the terrain. |
 | `regions[]` | Ambient area names floated over the map. |
 | `elements[]` | Tracked artifacts (a crown, a sword) with a `journey` of stops; shown on the map wherever they are for the current chapter, so they visibly move. |
 | `chapters[]` | Optional guided tour — see below. |
 | `books[]` | Multi-book tour: one shared map, several books each with their own `chapters`. References then span books ("Bk 2 · Ch 3"). |
-| `ambient` | 3D-only life: `{ trees, treeKind, treeColor, birds, dragons, mosquitoes, rain }`. Trees scatter across wooded elevations; birds/dragons circle; `mosquitoes` adds buzzing swarms; `rain: true` brings overcast clouds + animated rain (see **Kalevipoeg**). Shown only in 3D, under the "Trees & wildlife" layer. |
+| `ambient` | 3D-only life: `{ trees, treeKind, treeColor, birds, birdKind, dragons, mosquitoes, rain, fish, wisps }`. Trees scatter across wooded elevations; **birds** circle (or **post owls** with `birdKind: 'owl'`, or glowing **angels** over a `'heaven'` sky); **dragons** wheel and **breathe fire**; **fish** school under the sea; **wisps** drift as will-o'-the-wisp lights over marsh and water (see **The Forest Song**); `mosquitoes` swarm; `rain: true` brings clouds + animated rain (see **Kalevipoeg**). Shown only in 3D, under the "Trees & wildlife" layer. |
 
 ## Story mode (chapters)
 
@@ -166,14 +196,17 @@ edge and back in the west.)
 
 ### Map levels (floors)
 
-A world can have levels below the surface — an underworld, a dungeon, a sky
-realm. Add `levels` (each with its own `terrain`, `markers`, etc.) and a **floor
-switcher** appears. A chapter's `level` id makes the guided tour **descend and
-resurface** automatically. Try **Kalevipoeg** → descend into **Põrgu**, or play
-Book III and watch the tour drop below and climb back. **Journey to the Center
-of the Earth** stacks three subfloors — a volcanic chimney, the Lidenbrock Sea,
-and the deep caverns — each with its own `sky` mood (`'dark'` warm hellfire,
-`'cavern'` cool phosphorescence).
+A world can have levels above or below the surface — an underworld, a dungeon,
+a sky realm. Add `levels` (each with its own `terrain`, `markers`, etc.) and a
+**floor switcher** appears, ordered like an elevator by each level's `tier`
+(surface `0`, sky realms positive, underworlds negative). A chapter's `level` id
+makes the guided tour **change floors** automatically, and each level sets its
+own `sky` mood — `'dark'` (hellfire), `'cavern'` (phosphorescence) or
+`'heaven'` (a luminous cloud-sea). Try **Kalevipoeg** → descend into **Põrgu**;
+**Journey to the Center of the Earth** → three subfloors (a volcanic chimney,
+the Lidenbrock Sea, the deep caverns); **Valdurn**, which climbs to the
+**Empyrean** and drops to the **Sunless Deep**; or **Eneida**, whose tour rises
+to **Olympus** and descends into **Peklo**.
 
 ```ts
 levels: [{ id: 'porgu', title: 'Põrgu', terrain: { /* dark, sky: 'dark' */ }, markers: [...] }],
@@ -203,6 +236,20 @@ On the map the artifact is drawn wherever it is for the current chapter, so it
 Toggle the **Artifacts** layer to hide them. (Try the sword in **Kalevipoeg**
 or the crown in **Valdurn**.)
 
+## Around the map
+
+A few more conveniences in the viewer:
+
+- **Language toggle.** UI chrome and marker-kind labels switch between English
+  and Estonian (`EN` / `ET`).
+- **Per-source filter.** Worlds built from several books or films get a
+  **Filter** dropdown that pares the map down to one source's own places and
+  routes — see **The Adventures of Indiana Jones**.
+- **Collapsible panel.** A tab on the seam hides the side panel (a bottom sheet
+  on mobile) to give the map the whole stage.
+- **Deep-links.** State lives in the URL: `?world=`, `?floor=`, `?view=2d`,
+  `?lang=et` — so any world, floor, view or language is directly shareable.
+
 ## Project layout
 
 ```
@@ -213,9 +260,11 @@ src/
     terrain.ts          #   mesh builder + map↔world coordinates
     biomes.ts           #   elevation → color
   components/           # react-three-fiber scene
-    MapScene.tsx        #   canvas, cameras (2D/3D), lighting
+    MapScene.tsx        #   canvas, cameras (2D/3D), lighting, floor state
     Terrain / Water / Markers / Routes / Regions
-  ui/                   # DOM overlay: toolbar, info panel, legend
+    Flora / Wildlife / Wisps / SeaLife / Weather   # 3D ambient life
+  ui/                   # DOM overlay: toolbar, info panel, legend,
+                        #   floor switcher, per-source filter, story player
   stories/              # the worlds — add yours here
 ```
 
@@ -223,8 +272,6 @@ src/
 
 The architecture leaves room to grow without rework:
 
-- Story-driven camera fly-throughs and chapter-by-chapter reveals.
 - Load worlds from external JSON / a CMS instead of bundled TS.
-- Heightmap-image terrain as an alternative to procedural noise.
 - Fog-of-war / exploration state, day–night lighting, animated routes.
 - An in-browser editor that exports the same `Story` format.
