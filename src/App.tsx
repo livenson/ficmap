@@ -287,14 +287,18 @@ export default function App() {
       />
 
       <div className={`stage${sidebarOpen ? '' : ' stage--collapsed'}`}>
-        <button
-          className="panel-toggle"
-          onClick={() => setSidebarOpen((o) => !o)}
-          aria-label={translate(sidebarOpen ? 'hidePanel' : 'showPanel', lang)}
-          title={translate(sidebarOpen ? 'hidePanel' : 'showPanel', lang)}
-        >
-          <span className="panel-toggle__chev">{sidebarOpen ? '‹' : '›'}</span>
-        </button>
+        {/* Collapse is only offered in free exploration — during a guided tour
+            the narration IS the point, so the story panel always stays open. */}
+        {!inStory && (
+          <button
+            className="panel-toggle"
+            onClick={() => setSidebarOpen((o) => !o)}
+            aria-label={translate(sidebarOpen ? 'hidePanel' : 'showPanel', lang)}
+            title={translate(sidebarOpen ? 'hidePanel' : 'showPanel', lang)}
+          >
+            <span className="panel-toggle__chev">{sidebarOpen ? '‹' : '›'}</span>
+          </button>
+        )}
         {inStory ? (
           <StoryPlayer
             flat={flat}
