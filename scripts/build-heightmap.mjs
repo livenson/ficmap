@@ -43,6 +43,21 @@ const PRESETS = {
     lakes: true,
     out: '../src/assets/britain-height.png',
   },
+  mediterranean: {
+    // The classical Mediterranean for the Eneida: Iberia and the Atlas in the
+    // west, the Maghreb coast (Carthage) to the south, Italy + Sicily in the
+    // centre, Greece and the Aegean/Asia Minor (Troy) to the east.
+    z: 6,
+    bbox: { lonMin: -6, lonMax: 30, latMin: 30, latMax: 46 },
+    w: 1152,
+    h: 512,
+    // Cap the Alps/Atlas so the lowlands and coasts keep dynamic range.
+    capM: 2400,
+    // Flatten the sea to one even depth (like the world map) so the broad
+    // Mediterranean reads as a single calm blue from straight down.
+    flatOceanM: -6,
+    out: '../src/assets/mediterranean-height.png',
+  },
   world: {
     // z5 source (~39 km/px) resampled to a 1536×768 grid, so coastlines and
     // ranges stay crisp when you zoom into a continent instead of turning to
