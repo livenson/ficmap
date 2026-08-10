@@ -50,6 +50,7 @@ export const forestSong: Story = {
     treeColor: '#3f7f45',
     birds: 7,
     fish: 5,
+    wisps: 16, // Perelesnyk & poterchata drifting over the fen and lake
   },
   markers: [
     {

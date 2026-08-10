@@ -26,6 +26,7 @@ import { Elements } from './Elements'
 import { Weather } from './Weather'
 import { Mosquitoes } from './Mosquitoes'
 import { Ripples } from './Ripples'
+import { Wisps } from './Wisps'
 import { SeaLife } from './SeaLife'
 import { Postprocess } from './Postprocess'
 
@@ -191,6 +192,9 @@ export function MapScene({
           {level.ambient.rain ? <Ripples field={field} terrain={terrain} /> : null}
           {level.ambient.fish ? (
             <SeaLife field={field} terrain={terrain} fish={level.ambient.fish} />
+          ) : null}
+          {level.ambient.wisps ? (
+            <Wisps field={field} terrain={terrain} count={level.ambient.wisps} />
           ) : null}
         </>
       )}
