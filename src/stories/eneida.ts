@@ -106,6 +106,33 @@ export const eneida: Story = {
         'The promised land on the Italian shore. Here Aeneas wars with Turnus ' +
         'for the hand of Lavinia, wins her, and founds the line that is to come.',
     },
+    {
+      id: 'delos',
+      name: 'Delos',
+      kind: 'landmark',
+      at: { x: 0.5, z: 0.03 },
+      description:
+        'The oracle-isle of the Aegean, where Aeneas is bidden to seek the ' +
+        'ancient land of his fathers — a riddle that sends the Trojans wandering.',
+    },
+    {
+      id: 'pallanteum',
+      name: 'Pallanteum',
+      kind: 'town',
+      at: { x: -0.02, z: -0.56 },
+      description:
+        'Old King Evander’s little town on the seven hills where Rome will one ' +
+        'day stand. Here Aeneas wins an ally and the young prince Pallas.',
+    },
+    {
+      id: 'ardea',
+      name: 'Ardea',
+      kind: 'battle',
+      at: { x: 0.13, z: -0.4 },
+      description:
+        'The stronghold of Turnus, king of the Rutulians — Aeneas’s rival for ' +
+        'Lavinia and the fiercest foe of the war for Latium.',
+    },
   ],
   routes: [
     {
@@ -113,6 +140,7 @@ export const eneida: Story = {
       name: 'The Voyage of Aeneas',
       points: [
         { x: 0.79, z: -0.24 },
+        { x: 0.5, z: 0.03 },
         { x: 0.34, z: -0.08 },
         { x: -0.09, z: 0.14 },
         { x: 0.03, z: 0.0 },
@@ -219,6 +247,24 @@ export const eneida: Story = {
             'The blustering wind-god’s cave, loosed against Aeneas’s ships for a ' +
             'promised bribe.',
         },
+        {
+          id: 'neptune-court',
+          name: 'Neptune’s Court',
+          kind: 'port',
+          at: { x: 0.16, z: 0.36 },
+          description:
+            'The sea-god’s hall. Better bribed than Juno, Neptune stills the ' +
+            'storm that Aeolus raised and lets the Trojan ships run on.',
+        },
+        {
+          id: 'vulcan-forge',
+          name: 'Vulcan’s Forge',
+          kind: 'ruin',
+          at: { x: -0.42, z: 0.34 },
+          description:
+            'The smith-god’s fiery forge where — at Venus’s coaxing — the divine ' +
+            'armour is hammered out for Aeneas’s last war.',
+        },
       ],
       regions: [
         { id: 'heaven', name: 'Olympus', at: { x: 0.0, z: 0.0 }, scale: 1.3 },
@@ -253,7 +299,7 @@ export const eneida: Story = {
           id: 'gates',
           name: 'The Gates of Peklo',
           kind: 'danger',
-          at: { x: -0.4, z: -0.32 },
+          at: { x: -0.55, z: -0.25 },
           description:
             'The mouth of Hell below Cumae, where the Sibyl leads Aeneas past ' +
             'the guardian into the dark.',
@@ -262,7 +308,7 @@ export const eneida: Story = {
           id: 'styx',
           name: 'The River Styx',
           kind: 'landmark',
-          at: { x: -0.05, z: -0.05 },
+          at: { x: -0.28, z: 0.02 },
           description:
             'The black river the dead must cross — ferried over by a surly, ' +
             'greedy boatman who haggles for his fare.',
@@ -271,17 +317,26 @@ export const eneida: Story = {
           id: 'cauldrons',
           name: 'The Cauldrons',
           kind: 'danger',
-          at: { x: 0.28, z: 0.2 },
+          at: { x: 0.04, z: 0.2 },
           description:
             'Kotliarevsky’s satirical Hell: crooked lords, bribe-taking judges ' +
             'and cruel masters stew in the pitch and pay for the wrongs they did ' +
             'the poor.',
         },
         {
+          id: 'tar-pits',
+          name: 'The Tar Pits',
+          kind: 'danger',
+          at: { x: 0.34, z: 0.06 },
+          description:
+            'Boiling pitch for the misers, cheats and lying matchmakers — the ' +
+            'small, mean sinners who crowd Kotliarevsky’s Hell.',
+        },
+        {
           id: 'plutos-hall',
           name: 'Pluto’s Hall',
           kind: 'capital',
-          at: { x: 0.16, z: -0.42 },
+          at: { x: 0.42, z: -0.3 },
           description:
             'The dark lord of the underworld keeps his court among the fires.',
         },
@@ -289,10 +344,29 @@ export const eneida: Story = {
           id: 'elysium',
           name: 'The Blessed Fields',
           kind: 'landmark',
-          at: { x: -0.5, z: 0.42 },
+          at: { x: 0.05, z: -0.55 },
           description:
             'A calmer corner where the just and the brave rest. Here Aeneas ' +
             'finds old Anchises, who shows him the glory his line will win.',
+        },
+      ],
+      routes: [
+        {
+          id: 'descent',
+          name: 'The Descent of Aeneas',
+          points: [
+            { x: -0.55, z: -0.25 },
+            { x: -0.28, z: 0.02 },
+            { x: 0.04, z: 0.2 },
+            { x: 0.34, z: 0.06 },
+            { x: 0.42, z: -0.3 },
+            { x: 0.05, z: -0.55 },
+          ],
+          color: '#ff8a3a',
+          style: 'dashed',
+          description:
+            'From the Gates, across the Styx and past the cauldrons of the ' +
+            'sinners, to the Blessed Fields where Anchises waits.',
         },
       ],
       regions: [
@@ -310,7 +384,11 @@ export const eneida: Story = {
         'who hates him, bribes Aeolus to raise a storm; his ships are scattered ' +
         'until Neptune, better bribed, stills the water.',
       focus: { marker: 'troy', distance: 30 },
-      reveal: { markers: ['troy', 'aeolia'], routes: ['voyage'], regions: ['asia', 'sea'] },
+      reveal: {
+        markers: ['troy', 'aeolia', 'delos'],
+        routes: ['voyage'],
+        regions: ['asia', 'sea'],
+      },
       highlight: { markers: ['troy'] },
     },
     {
@@ -334,7 +412,15 @@ export const eneida: Story = {
         'between draughts, decrees that he shall reach his promised shore.',
       focus: { marker: 'gods-table', distance: 24 },
       reveal: {
-        markers: ['jove-hall', 'gods-table', 'venus-bower', 'juno-throne', 'aeolus-cave'],
+        markers: [
+          'jove-hall',
+          'gods-table',
+          'venus-bower',
+          'juno-throne',
+          'aeolus-cave',
+          'neptune-court',
+          'vulcan-forge',
+        ],
         regions: ['heaven'],
       },
       highlight: { markers: ['gods-table', 'jove-hall'] },
@@ -361,7 +447,8 @@ export const eneida: Story = {
         'and to Anchises, who shows him the glory of the line to come.',
       focus: { marker: 'cauldrons', distance: 26 },
       reveal: {
-        markers: ['gates', 'styx', 'cauldrons', 'plutos-hall', 'elysium'],
+        markers: ['gates', 'styx', 'cauldrons', 'tar-pits', 'plutos-hall', 'elysium'],
+        routes: ['descent'],
         regions: ['hell'],
       },
       highlight: { markers: ['cauldrons', 'elysium'] },
@@ -375,8 +462,8 @@ export const eneida: Story = {
         'the bride, plants the gods of Troy in new earth, and founds the line ' +
         'that is to come.',
       focus: { marker: 'latium', distance: 24 },
-      reveal: { markers: ['latium'] },
-      highlight: { markers: ['latium'] },
+      reveal: { markers: ['latium', 'pallanteum', 'ardea'] },
+      highlight: { markers: ['latium', 'ardea'] },
     },
   ],
 }
