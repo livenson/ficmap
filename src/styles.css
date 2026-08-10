@@ -438,6 +438,44 @@ body,
   z-index: 0;
 }
 
+/* ---------- Panel collapse toggle ---------- */
+/* A small tab on the seam between the panel and the map. On desktop it clings
+   to the sidebar's right edge (sliding to the stage edge when collapsed); on
+   mobile it rides the top edge of the bottom sheet (see the media query). */
+.panel-toggle {
+  position: absolute;
+  z-index: 15;
+  left: 340px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  color: var(--ink-dim);
+  cursor: pointer;
+  transition: left 0.18s ease, bottom 0.18s ease, color 0.15s ease;
+}
+.panel-toggle:hover {
+  color: var(--ink);
+}
+.panel-toggle__chev {
+  font-size: 18px;
+  line-height: 1;
+}
+.stage--collapsed .panel-toggle {
+  left: 0;
+}
+.stage--collapsed .panel {
+  display: none;
+}
+
 /* ---------- Info panel ---------- */
 .panel {
   width: 340px;
@@ -947,6 +985,26 @@ body,
     right: 12px;
     top: 12px;
     max-height: 50%;
+  }
+  /* The panel is a bottom sheet here, so the tab rides its top edge and points
+     down/up instead of left/right (the chevron is rotated a quarter turn). */
+  .panel-toggle {
+    left: 50%;
+    top: auto;
+    bottom: 42%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 22px;
+    border: 1px solid var(--line);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+  }
+  .panel-toggle__chev {
+    transform: rotate(-90deg);
+  }
+  .stage--collapsed .panel-toggle {
+    left: 50%;
+    bottom: 0;
   }
 }
 

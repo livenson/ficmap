@@ -105,6 +105,9 @@ export default function App() {
   }
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
+  // Collapse the side/bottom panel to give the map the full stage. Works on
+  // desktop (left sidebar) and mobile (bottom sheet) via the same toggle.
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   // Toggleable map detail layers (strip back to a clean map).
   const [layers, setLayers] = useState<Layers>({
     labels: true,
@@ -283,7 +286,15 @@ export default function App() {
         onLang={pickLang}
       />
 
-      <div className="stage">
+      <div className={`stage${sidebarOpen ? '' : ' stage--collapsed'}`}>
+        <button
+          className="panel-toggle"
+          onClick={() => setSidebarOpen((o) => !o)}
+          aria-label={translate(sidebarOpen ? 'hidePanel' : 'showPanel', lang)}
+          title={translate(sidebarOpen ? 'hidePanel' : 'showPanel', lang)}
+        >
+          <span className="panel-toggle__chev">{sidebarOpen ? '‹' : '›'}</span>
+        </button>
         {inStory ? (
           <StoryPlayer
             flat={flat}

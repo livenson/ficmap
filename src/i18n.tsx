@@ -51,6 +51,8 @@ const DICT: Dict = {
   hintChapters: { en: '← → chapters', et: '← → peatükid' },
   filterByBook: { en: 'Filter', et: 'Filter' },
   allBooks: { en: 'All', et: 'Kõik' },
+  hidePanel: { en: 'Hide panel', et: 'Peida paneel' },
+  showPanel: { en: 'Show panel', et: 'Näita paneeli' },
 }
 
 export function translate(key: string, lang: Lang): string {
