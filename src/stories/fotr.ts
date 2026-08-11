@@ -24,6 +24,7 @@ export const fotr: Story = {
     'A dark lord seeks an ancient ring of power. A small group of heroes must ' +
     'carry it across dangerous lands to prevent a global catastrophe.',
   terrain: {
+    music: 'epic',
     seed: 'middle-earth',
     heightmap: middleEarthHeight,
     seaLevel: 0.04,

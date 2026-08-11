@@ -33,6 +33,7 @@ export const indianaJones: Story = {
   surfaceName: 'The World',
   ambient: { trees: 0.3, birds: 6, fish: 4 },
   terrain: {
+    music: 'wonder',
     // Shares Verne's whole-Earth DEM and its exact height/sea calibration.
     seed: 'world-dem',
     heightmap: worldHeight,

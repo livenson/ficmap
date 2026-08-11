@@ -216,6 +216,35 @@ body,
   accent-color: var(--accent);
 }
 
+/* Music toggle */
+.toolbar__music {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--panel-2);
+  color: var(--ink-dim);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+  flex: 0 0 auto;
+}
+.toolbar__music:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+.toolbar__music.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.toolbar__music-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
 /* Layers menu */
 .layers {
   position: relative;
@@ -1070,11 +1099,15 @@ body,
     padding: 8px 16px;
     font-size: 15px;
   }
-  /* Layers button collapses to icon + count. */
+  /* Layers and music buttons collapse to their icons. */
   .layers__btn {
     padding: 8px 14px;
   }
-  .layers__text {
+  .layers__text,
+  .toolbar__music-text {
     display: none;
+  }
+  .toolbar__music {
+    padding: 8px 12px;
   }
 }

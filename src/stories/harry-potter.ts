@@ -29,6 +29,7 @@ export const harryPotter: Story = {
   surfaceName: 'Britain',
   ambient: { trees: 0.6, birds: 7, birdKind: 'owl', fish: 3 },
   terrain: {
+    music: 'mystic',
     seed: 'britain-dem',
     heightmap: britainHeight,
     aspect: 10 / 9,

@@ -79,6 +79,11 @@ export interface TerrainConfig {
    */
   detail?: boolean
   /**
+   * Ambient music mood for this level. Omit and it follows `sky`, so
+   * underworlds sound dark and sky realms airy without being told.
+   */
+  music?: MusicMood
+  /**
    * World aspect ratio, X width / Z depth. Default 1 (square). Use >1 for a
    * map that is wider than it is tall — e.g. an equirectangular world map,
    * where 360° of longitude over ~140° of latitude wants ~2.57 — so the
@@ -86,6 +91,12 @@ export interface TerrainConfig {
    */
   aspect?: number
 }
+
+/**
+ * The colour of a world's ambient score. Each mood picks a musical mode, a
+ * root pitch and a pace; the music is synthesised live, never a file.
+ */
+export type MusicMood = 'calm' | 'epic' | 'dark' | 'mystic' | 'heaven' | 'wonder'
 
 export type MarkerKind =
   | 'capital'

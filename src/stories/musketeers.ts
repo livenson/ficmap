@@ -29,6 +29,7 @@ export const musketeers: Story = {
   surfaceName: 'France',
   ambient: { trees: 0.5, birds: 6, fish: 3 },
   terrain: {
+    music: 'calm',
     seed: 'france-dem',
     heightmap: franceHeight,
     seaLevel: 0.0385, // 0 m in the capped (−60..1500 m) DEM

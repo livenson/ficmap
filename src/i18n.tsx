@@ -51,6 +51,9 @@ const DICT: Dict = {
   hintChapters: { en: '← → chapters', et: '← → peatükid' },
   filterByBook: { en: 'Filter', et: 'Filter' },
   allBooks: { en: 'All', et: 'Kõik' },
+  music: { en: 'Music', et: 'Muusika' },
+  musicOn: { en: 'Turn music on', et: 'Lülita muusika sisse' },
+  musicOff: { en: 'Turn music off', et: 'Lülita muusika välja' },
   hidePanel: { en: 'Hide panel', et: 'Peida paneel' },
   showPanel: { en: 'Show panel', et: 'Näita paneeli' },
 }

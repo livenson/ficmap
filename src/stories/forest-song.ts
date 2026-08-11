@@ -27,6 +27,7 @@ export const forestSong: Story = {
     'three seasons of the tale around the lake.',
   surfaceName: 'The Forest',
   terrain: {
+    music: 'mystic',
     seed: 'polissia',
     heightmap: polissiaHeight,
     seaLevel: 0.24,

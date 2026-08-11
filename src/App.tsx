@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { MapScene, type ViewMode } from './components/MapScene'
 import { Toolbar } from './ui/Toolbar'
 import { InfoPanel } from './ui/InfoPanel'
@@ -15,6 +15,7 @@ import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
 import type { Story } from './types'
 import { LangProvider, translate, type Lang } from './i18n'
+import { AmbientMusic, moodFor } from './engine/music'
 
 /** URL query key for the view mode, e.g. `?view=2d`. */
 const VIEW_PARAM = 'view'
@@ -108,6 +109,10 @@ export default function App() {
   // Collapse the side/bottom panel to give the map the full stage. Works on
   // desktop (left sidebar) and mobile (bottom sheet) via the same toggle.
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  // Procedural ambient score. Off until asked for — browsers require a user
+  // gesture to start audio, and unrequested sound is unwelcome anyway.
+  const [musicOn, setMusicOn] = useState(false)
+  const musicRef = useRef<AmbientMusic | null>(null)
   // Toggleable map detail layers (strip back to a clean map).
   const [layers, setLayers] = useState<Layers>({
     labels: true,
@@ -167,6 +172,25 @@ export default function App() {
     () => story.elements?.find((e) => e.id === selectedElementId) ?? null,
     [story, selectedElementId],
   )
+  // --- Ambient score -------------------------------------------------------
+  // The mood follows the level, so descending into an underworld or climbing to
+  // a sky realm changes the music with the light.
+  const musicMood = moodFor(activeLevel.terrain.music, activeLevel.terrain.sky)
+  useEffect(() => {
+    const m = musicRef.current
+    if (!m) return
+    if (musicOn) m.start(musicMood)
+    else m.stop()
+  }, [musicOn, musicMood])
+  // Release the audio device when the app goes away.
+  useEffect(() => {
+    musicRef.current = new AmbientMusic()
+    return () => {
+      musicRef.current?.dispose()
+      musicRef.current = null
+    }
+  }, [])
+
   // Which chapters mention each place — computed once per story.
   const references = useMemo(() => buildPlaceReferences(story), [story])
 
@@ -284,6 +308,8 @@ export default function App() {
         onExitStory={exitStory}
         lang={lang}
         onLang={pickLang}
+        musicOn={musicOn}
+        onMusic={() => setMusicOn((v) => !v)}
       />
 
       <div className={`stage${sidebarOpen ? '' : ' stage--collapsed'}`}>

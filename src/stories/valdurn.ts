@@ -24,6 +24,7 @@ export const valdurn: Story = {
   surfaceName: 'Valdurn',
   ambient: { trees: 0.75, treeKind: 'broadleaf', birds: 7, fish: 4 },
   terrain: {
+    music: 'calm',
     seed: 'valdurn-5',
     frequency: 1.4,
     islandFalloff: 0.25,
