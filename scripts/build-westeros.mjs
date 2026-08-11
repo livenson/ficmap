@@ -27,8 +27,8 @@ import { createNoise2D } from 'simplex-noise'
 import alea from 'alea'
 import fs from 'fs'
 
-const W = 704
-const H = 640
+const W = 968
+const H = 880
 const OUT = new URL('../src/assets/westeros-height.png', import.meta.url)
 
 const n1 = createNoise2D(alea('westeros-fbm'))
@@ -78,7 +78,7 @@ for (let j = 0; j < H; j++) {
     // wander organically instead of exposing the rectangles underneath.
     // Ramp must stay narrower than the smallest lobe, or small lobes never
     // reach full strength and the threshold below erases them.
-    const E = 0.1
+    const E = 0.07
 
     // ---------------- WESTEROS (the western fifth of the world) ----------------
     // Every half-size must exceed E, or the lobe never reaches full strength
@@ -112,9 +112,34 @@ for (let j = 0; j < H; j++) {
     westeros *= 1 - strait
     essos *= 1 - strait
 
-    // Bays bitten out of the coasts.
-    westeros *= 1 - 0.9 * gauss(Math.hypot((wx + 0.45) / 0.05, (wz - 0.02) / 0.05)) // Blackwater
-    westeros *= 1 - 0.85 * gauss(Math.hypot((wx + 0.47) / 0.05, (wz + 0.30) / 0.05)) // the Bite
+    // ---------------- Westeros coastal detail ----------------
+    // The canonical coast is full of bays, capes and islands; without these the
+    // continent reads as a smooth blob. Applied AFTER the threshold so small
+    // features survive instead of being smoothed away.
+    // Bays (carved out of the land):
+    for (const [bx, bz, rx, rz, amt] of [
+      [-0.885, -0.62, 0.05, 0.085, 0.95], // Bay of Ice (west, below the Wall)
+      [-0.495, -0.60, 0.045, 0.065, 0.9], // Bay of Seals (east)
+      [-0.875, -0.33, 0.045, 0.06, 0.9], // Blazewater Bay (west)
+      [-0.845, -0.145, 0.055, 0.06, 0.85], // Ironman's Bay (west, off Pyke)
+      [-0.475, -0.30, 0.055, 0.055, 0.9], // the Bite (east, north of the Vale)
+      [-0.45, 0.02, 0.05, 0.05, 0.9], // Blackwater Bay
+      [-0.47, 0.225, 0.05, 0.045, 0.85], // Shipbreaker Bay (Stormlands)
+      [-0.53, 0.315, 0.07, 0.035, 0.85], // the Sea of Dorne
+    ]) {
+      westeros *= 1 - amt * gauss(Math.hypot((wx - bx) / rx, (wz - bz) / rz))
+    }
+    // Capes and points (added back onto the land):
+    for (const [cx2, cz2, rx, rz] of [
+      [-0.945, -0.50, 0.035, 0.05], // Sea Dragon Point (west)
+      [-0.935, -0.26, 0.03, 0.045], // Cape Kraken / Flint's Finger
+      [-0.442, -0.235, 0.045, 0.022], // the Fingers (east, thin)
+      [-0.437, 0.055, 0.032, 0.03], // Crackclaw Point
+      [-0.432, 0.135, 0.028, 0.04], // Massey's Hook
+      [-0.435, 0.275, 0.03, 0.035], // Cape Wrath
+    ]) {
+      westeros = Math.max(westeros, ell(wx, wz, cx2, cz2, rx, rz, 0.35))
+    }
     essos *= 1 - 0.9 * gauss(Math.hypot((wx - 0.4) / 0.09, (wz - 0.55) / 0.07)) // Slaver's Bay
     essos *= 1 - 0.75 * gauss(Math.hypot((wx - 0.2) / 0.1, (wz - 0.72) / 0.07)) // the Smoking Sea
 
@@ -124,6 +149,14 @@ for (let j = 0; j < H; j++) {
       ell(wx, wz, -0.94, -0.06, 0.03, 0.03),
     )
     const dragonstone = ell(wx, wz, -0.444, 0.065, 0.024, 0.024)
+    // Smaller named isles off the Westerosi coast, from the canonical map.
+    const westerosIsles = Math.max(
+      ell(wx, wz, -0.925, -0.665, 0.028, 0.024), // Bear Island (Bay of Ice)
+      ell(wx, wz, -0.455, -0.275, 0.022, 0.018), // the Three Sisters (the Bite)
+      ell(wx, wz, -0.86, 0.47, 0.032, 0.022), // the Arbor (south-west)
+      ell(wx, wz, -0.83, 0.395, 0.022, 0.016), // the Shield Islands
+      ell(wx, wz, -0.44, 0.33, 0.02, 0.016), // Estermont / the Stepstones side
+    )
     const ibben = ell(wx, wz, 0.08, -0.70, 0.07, 0.05)
     const summerIsles = Math.max(
       ell(wx, wz, -0.78, 0.95, 0.05, 0.035),
@@ -138,6 +171,7 @@ for (let j = 0; j < H; j++) {
       dragonstone,
       ibben,
       summerIsles,
+      westerosIsles,
       sothoryos,
     )
 

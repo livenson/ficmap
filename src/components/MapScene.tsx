@@ -27,6 +27,7 @@ import { Weather } from './Weather'
 import { Mosquitoes } from './Mosquitoes'
 import { Ripples } from './Ripples'
 import { Wisps } from './Wisps'
+import { Wights } from './Wights'
 import { SeaLife } from './SeaLife'
 import { Postprocess } from './Postprocess'
 
@@ -195,6 +196,14 @@ export function MapScene({
           ) : null}
           {level.ambient.wisps ? (
             <Wisps field={field} terrain={terrain} count={level.ambient.wisps} />
+          ) : null}
+          {level.ambient.wights ? (
+            <Wights
+              field={field}
+              terrain={terrain}
+              count={level.ambient.wights}
+              area={level.ambient.wightArea}
+            />
           ) : null}
         </>
       )}
