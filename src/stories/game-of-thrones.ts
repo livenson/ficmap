@@ -9,7 +9,10 @@ import westerosHeight from '../assets/westeros-height.png'
  * George R. R. Martin (and HBO for the series). This is user-authored,
  * paraphrased data — a fan-project use, not an official work.
  *
- * The map is a SHAPED heightmap (see scripts/build-westeros.mjs) laid out from
+ * Westeros's coastline is TRACED from the canonical map (see
+ * scripts/build-westeros.mjs), and every Westerosi marker below is placed from
+ * the same canonical pixel coordinates, so the silhouette and the places agree.
+ * The map is laid out from
  * the canonical world map: WESTEROS is only the western fifth — a long
  * north-south continent, the Wall across its top, the North above the pinched
  * Neck, then the Riverlands and Vale, the Westerlands, King's Landing on
@@ -43,7 +46,7 @@ export const gameOfThrones: Story = {
     dragons: 3,
     fish: 4,
     wights: 14,
-    wightArea: { x0: -0.95, x1: -0.45, z0: -0.98, z1: -0.7 },
+    wightArea: { x0: -0.93, x1: -0.55, z0: -0.81, z1: -0.774 },
   },
   terrain: {
     seed: 'westeros',
@@ -71,7 +74,7 @@ export const gameOfThrones: Story = {
       id: 'always-winter',
       name: 'The Lands of Always Winter',
       kind: 'danger',
-      at: { x: -0.62, z: -0.8 },
+      at: { x: -0.84, z: -0.7887 },
       description:
         'The frozen wastes north of the Wall, where the Free Folk range among ' +
         'the Frostfangs and the haunted forest — and where the Others and their ' +
@@ -81,7 +84,7 @@ export const gameOfThrones: Story = {
       id: 'castle-black',
       name: 'Castle Black — the Wall',
       kind: 'landmark',
-      at: { x: -0.562, z: -0.675 },
+      at: { x: -0.6299, z: -0.7542 },
       description:
         'Seven hundred feet of ice across the top of the world, held by the ' +
         'sworn brothers of the Night’s Watch. Castle Black guards the way ' +
@@ -91,7 +94,7 @@ export const gameOfThrones: Story = {
       id: 'winterfell',
       name: 'Winterfell',
       kind: 'capital',
-      at: { x: -0.574, z: -0.474 },
+      at: { x: -0.7074, z: -0.54 },
       description:
         'The ancient seat of House Stark, raised over hot springs so its walls ' +
         'stay warm in the deepest winter. Home of the direwolves — and where the ' +
@@ -101,7 +104,7 @@ export const gameOfThrones: Story = {
       id: 'dreadfort',
       name: 'The Dreadfort',
       kind: 'danger',
-      at: { x: -0.5, z: -0.5 },
+      at: { x: -0.6181, z: -0.5711 },
       description:
         'The Bolton seat east of Winterfell, whose flayed-man banner is no ' +
         'boast — a grim keep with a reputation to match.',
@@ -110,7 +113,7 @@ export const gameOfThrones: Story = {
       id: 'white-harbor',
       name: 'White Harbor',
       kind: 'port',
-      at: { x: -0.485, z: -0.338 },
+      at: { x: -0.631, z: -0.4039 },
       description:
         'The only true city of the North, at the mouth of the White Knife — ' +
         'House Manderly’s port, and the North’s window on the sea.',
@@ -119,7 +122,7 @@ export const gameOfThrones: Story = {
       id: 'moat-cailin',
       name: 'Moat Cailin — the Neck',
       kind: 'ruin',
-      at: { x: -0.562, z: -0.299 },
+      at: { x: -0.6983, z: -0.3603 },
       description:
         'Ruined towers commanding the causeway through the bogs of the Neck — ' +
         'the narrow throat of the continent, and the gate no southern army has ' +
@@ -130,7 +133,7 @@ export const gameOfThrones: Story = {
       id: 'the-twins',
       name: 'The Twins',
       kind: 'battle',
-      at: { x: -0.598, z: -0.221 },
+      at: { x: -0.732, z: -0.207 },
       description:
         'House Frey’s twin castles astride the Green Fork, and the only crossing ' +
         'for a hundred leagues. Here a wedding becomes the Red Wedding, and the ' +
@@ -140,7 +143,7 @@ export const gameOfThrones: Story = {
       id: 'riverrun',
       name: 'Riverrun',
       kind: 'city',
-      at: { x: -0.609, z: -0.182 },
+      at: { x: -0.7464, z: -0.0923 },
       description:
         'The Tully stronghold in the fork of two rivers, able to flood its moat ' +
         'and become an island — the seat of Catelyn Stark’s house.',
@@ -149,7 +152,7 @@ export const gameOfThrones: Story = {
       id: 'harrenhal',
       name: 'Harrenhal',
       kind: 'ruin',
-      at: { x: -0.55, z: -0.06 },
+      at: { x: -0.6555, z: -0.0508 },
       description:
         'The vast, half-melted castle by the God’s Eye, its towers run to slag ' +
         'by dragonfire on the day of Aegon’s conquest. Every house to hold it ' +
@@ -159,7 +162,7 @@ export const gameOfThrones: Story = {
       id: 'the-eyrie',
       name: 'The Eyrie',
       kind: 'city',
-      at: { x: -0.515, z: -0.221 },
+      at: { x: -0.5877, z: -0.1461 },
       description:
         'House Arryn’s castle high in the Mountains of the Moon, reached only by ' +
         'a narrow mule track — and holding the sky cells, whose fourth wall is a ' +
@@ -169,7 +172,7 @@ export const gameOfThrones: Story = {
       id: 'pyke',
       name: 'Pyke — the Iron Islands',
       kind: 'port',
-      at: { x: -0.893, z: -0.11 },
+      at: { x: -0.8737, z: -0.1365 },
       description:
         'The Greyjoy seat on wave-battered stacks off the west coast, home of ' +
         'the ironborn who pay the iron price and answer to no green-land king.',
@@ -179,7 +182,7 @@ export const gameOfThrones: Story = {
       id: 'casterly-rock',
       name: 'Casterly Rock',
       kind: 'city',
-      at: { x: -0.799, z: 0.0 },
+      at: { x: -0.8737, z: 0.0024 },
       description:
         'The Lannisters’ gold-veined fortress carved down through a mountain ' +
         'above Lannisport — the wealth that pays for the wars of the realm.',
@@ -188,7 +191,7 @@ export const gameOfThrones: Story = {
       id: 'kings-landing',
       name: "King's Landing",
       kind: 'capital',
-      at: { x: -0.491, z: 0.091 },
+      at: { x: -0.6058, z: 0.0646 },
       description:
         'The capital on Blackwater Bay: the Red Keep, the Iron Throne, and a ' +
         'million souls in the stink and squalor below. Every road in the game of ' +
@@ -198,7 +201,7 @@ export const gameOfThrones: Story = {
       id: 'dragonstone',
       name: 'Dragonstone',
       kind: 'landmark',
-      at: { x: -0.444, z: 0.065 },
+      at: { x: -0.5085, z: 0.0211 },
       description:
         'The Targaryens’ ancestral island fortress in the Narrow Sea, carved with ' +
         'gargoyles and dragons — the first foothold of the conquest, and the seat ' +
@@ -208,7 +211,7 @@ export const gameOfThrones: Story = {
       id: 'storms-end',
       name: "Storm's End",
       kind: 'city',
-      at: { x: -0.47, z: 0.234 },
+      at: { x: -0.5444, z: 0.2235 },
       description:
         'The Baratheon fortress on the storm coast, whose vast curtain wall has ' +
         'never fallen to siege or tempest.',
@@ -217,7 +220,7 @@ export const gameOfThrones: Story = {
       id: 'highgarden',
       name: 'Highgarden',
       kind: 'city',
-      at: { x: -0.704, z: 0.234 },
+      at: { x: -0.8143, z: 0.2581 },
       description:
         'The Tyrell seat amid the orchards and fields of the Reach — the richest ' +
         'harvest in Westeros, and the food that feeds the capital.',
@@ -226,7 +229,7 @@ export const gameOfThrones: Story = {
       id: 'oldtown',
       name: 'Oldtown',
       kind: 'city',
-      at: { x: -0.834, z: 0.39 },
+      at: { x: -0.8817, z: 0.3548 },
       description:
         'The oldest city in Westeros, at the mouth of the Honeywine — the ' +
         'Citadel of the maesters, and the Hightower burning its beacon over the ' +
@@ -236,7 +239,7 @@ export const gameOfThrones: Story = {
       id: 'sunspear',
       name: 'Sunspear, Dorne',
       kind: 'city',
-      at: { x: -0.444, z: 0.39 },
+      at: { x: -0.5262, z: 0.4419 },
       description:
         'Beyond the Red Mountains, the Martells hold the hot deserts of Dorne — ' +
         'never conquered, only wed into the realm, and slow to forget a wrong.',
@@ -362,12 +365,12 @@ export const gameOfThrones: Story = {
         'The great road down the spine of Westeros, from Castle Black at the Wall ' +
         'through Winterfell and the Neck to King’s Landing.',
       points: [
-        { x: -0.562, z: -0.675 },
-        { x: -0.574, z: -0.474 },
-        { x: -0.562, z: -0.299 },
-        { x: -0.598, z: -0.221 },
-        { x: -0.55, z: -0.06 },
-        { x: -0.491, z: 0.091 },
+        { x: -0.6299, z: -0.7542 },
+        { x: -0.7074, z: -0.54 },
+        { x: -0.6983, z: -0.3603 },
+        { x: -0.732, z: -0.207 },
+        { x: -0.6555, z: -0.0508 },
+        { x: -0.6058, z: 0.0646 },
       ],
     },
     {
@@ -385,19 +388,22 @@ export const gameOfThrones: Story = {
         { x: 0.586, z: 0.857 },
         { x: 0.503, z: 0.623 },
         { x: 0.550, z: 0.519 },
-        { x: -0.444, z: 0.065 },
+        { x: -0.5085, z: 0.0211 },
       ],
     },
   ],
   regions: [
-    { id: 'beyond', name: 'The Lands of Always Winter', at: { x: -0.68, z: -0.86 }, scale: 0.7 },
-    { id: 'the-north', name: 'The North', at: { x: -0.75, z: -0.5 }, scale: 0.85 },
-    { id: 'riverlands', name: 'The Riverlands', at: { x: -0.66, z: -0.15 }, scale: 0.6 },
-    { id: 'the-vale', name: 'The Vale', at: { x: -0.52, z: -0.24 }, scale: 0.55 },
-    { id: 'westerlands', name: 'The Westerlands', at: { x: -0.85, z: -0.02 }, scale: 0.6 },
-    { id: 'the-reach', name: 'The Reach', at: { x: -0.75, z: 0.2 }, scale: 0.65 },
-    { id: 'dorne-region', name: 'Dorne', at: { x: -0.63, z: 0.42 }, scale: 0.7 },
-    { id: 'narrow-sea', name: 'The Narrow Sea', at: { x: -0.4, z: -0.05 }, scale: 0.6 },
+    // Westerosi labels sit over the traced continent, from the canonical map.
+    { id: 'beyond', name: 'The Lands of Always Winter', at: { x: -0.79, z: -0.80 }, scale: 0.55 },
+    { id: 'the-north', name: 'The North', at: { x: -0.72, z: -0.44 }, scale: 0.7 },
+    { id: 'riverlands', name: 'The Riverlands', at: { x: -0.73, z: -0.12 }, scale: 0.5 },
+    { id: 'the-vale', name: 'The Vale of Arryn', at: { x: -0.58, z: -0.19 }, scale: 0.5 },
+    { id: 'westerlands', name: 'The Westerlands', at: { x: -0.84, z: -0.04 }, scale: 0.5 },
+    { id: 'crownlands', name: 'The Crownlands', at: { x: -0.58, z: 0.03 }, scale: 0.45 },
+    { id: 'the-reach', name: 'The Reach', at: { x: -0.77, z: 0.20 }, scale: 0.55 },
+    { id: 'stormlands', name: 'The Stormlands', at: { x: -0.56, z: 0.17 }, scale: 0.45 },
+    { id: 'dorne-region', name: 'Dorne', at: { x: -0.67, z: 0.43 }, scale: 0.6 },
+    { id: 'narrow-sea', name: 'The Narrow Sea', at: { x: -0.41, z: -0.05 }, scale: 0.55 },
     { id: 'free-cities-region', name: 'The Free Cities', at: { x: -0.18, z: 0.2 }, scale: 0.7 },
     { id: 'dothraki', name: 'The Dothraki Sea', at: { x: 0.34, z: 0.2 }, scale: 0.9 },
     { id: 'slavers-bay', name: "Slaver's Bay", at: { x: 0.5, z: 0.62 }, scale: 0.7 },
