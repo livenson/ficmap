@@ -33,7 +33,18 @@ export const gameOfThrones: Story = {
     'follow the game from Winterfell to the Long Night, or open any place to ' +
     'read what happens there.',
   surfaceName: 'The Known World',
-  ambient: { trees: 0.5, treeKind: 'conifer', birds: 6, dragons: 3, fish: 4 },
+  ambient: {
+    trees: 0.5,
+    treeKind: 'conifer',
+    // The maesters' ravens carry every message in Westeros; the dragons are
+    // Daenerys's, and breathe fire; the wights shamble beyond the Wall.
+    birds: 7,
+    birdKind: 'raven',
+    dragons: 3,
+    fish: 4,
+    wights: 14,
+    wightArea: { x0: -0.95, x1: -0.45, z0: -0.98, z1: -0.7 },
+  },
   terrain: {
     seed: 'westeros',
     heightmap: westerosHeight,

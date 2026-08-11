@@ -12,7 +12,7 @@ interface Props {
   heaven?: boolean
 }
 
-type CreatureType = 'bird' | 'dragon' | 'angel' | 'owl'
+type CreatureType = 'bird' | 'dragon' | 'angel' | 'owl' | 'raven'
 
 interface Creature {
   type: CreatureType
@@ -44,6 +44,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
   const birds = ambient.birds ?? 6
   const dragons = ambient.dragons ?? 0
   const owls = !heaven && ambient.birdKind === 'owl'
+  const ravens = !heaven && ambient.birdKind === 'raven'
   // Tawny by default, with the odd snowy owl (a Hedwig) among the flock.
   const owlColor = (i: number) => (i % 3 === 0 ? '#e7e2d6' : i % 3 === 1 ? '#6f5c46' : '#4f4436')
 
@@ -55,7 +56,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
       aspect <= 1 ? 0 : (((i * 0.61803) % 1) * 2 - 1) * WORLD_HALF * (aspect - 0.3)
     for (let i = 0; i < birds; i++) {
       list.push({
-        type: heaven ? 'angel' : owls ? 'owl' : 'bird',
+        type: heaven ? 'angel' : owls ? 'owl' : ravens ? 'raven' : 'bird',
         radius: WORLD_SIZE * (0.18 + (i % 4) * 0.09),
         cx: spread(i),
         // Owls beat lower and slower over the land, like post owls on a round.
@@ -65,7 +66,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
         dir: i % 2 === 0 ? 1 : -1,
         size: heaven ? 1.5 + (i % 3) * 0.3 : owls ? 1.15 + (i % 3) * 0.2 : 0.9 + (i % 3) * 0.25,
         flap: heaven ? 3 + (i % 2) : owls ? 4 + (i % 2) : 5 + (i % 3),
-        color: heaven ? '#fff6e2' : owls ? owlColor(i) : '#1c242c',
+        color: heaven ? '#fff6e2' : owls ? owlColor(i) : ravens ? '#12151a' : '#1c242c',
       })
     }
     for (let i = 0; i < dragons; i++) {
@@ -84,7 +85,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
       })
     }
     return list
-  }, [birds, dragons, aspect, heaven, owls])
+  }, [birds, dragons, aspect, heaven, owls, ravens])
 
   const groups = useRef<THREE.Group[]>([])
   const inners = useRef<THREE.Group[]>([])
@@ -259,7 +260,12 @@ function Body({
   scales: THREE.Texture
 }) {
   const tails = useMemo(
-    () => ({ bird: makeTail(0.32, 0.5), dragon: makeTail(0.55, 0.9), owl: makeTail(0.34, 0.36) }),
+    () => ({
+      bird: makeTail(0.32, 0.5),
+      dragon: makeTail(0.55, 0.9),
+      owl: makeTail(0.34, 0.36),
+      raven: makeTail(0.3, 0.62),
+    }),
     [],
   )
 
@@ -316,6 +322,40 @@ function Body({
         <mesh position={[0, -0.17, 0.16]} rotation-x={0.35}>
           <boxGeometry args={[0.24, 0.02, 0.17]} />
           <meshBasicMaterial color="#efe7d2" />
+        </mesh>
+      </group>
+    )
+  }
+
+  if (type === 'raven') {
+    // A maester's raven: slim glossy-black body, wedge tail, heavy beak.
+    return (
+      <group>
+        <mesh rotation-x={Math.PI / 2} scale={[1, 1, 1.15]}>
+          <capsuleGeometry args={[0.1, 0.62, 5, 9]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        {/* head + heavy wedge beak */}
+        <mesh position={[0, 0.04, 0.46]}>
+          <sphereGeometry args={[0.12, 10, 10]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+        <mesh position={[0, 0.02, 0.60]} rotation-x={Math.PI / 2}>
+          <coneGeometry args={[0.045, 0.2, 5]} />
+          <meshBasicMaterial color="#2a2a2e" />
+        </mesh>
+        {/* a pale eye, so the head reads at distance */}
+        <mesh position={[0.055, 0.07, 0.52]}>
+          <sphereGeometry args={[0.022, 6, 6]} />
+          <meshBasicMaterial color="#b9b2a4" />
+        </mesh>
+        <mesh position={[-0.055, 0.07, 0.52]}>
+          <sphereGeometry args={[0.022, 6, 6]} />
+          <meshBasicMaterial color="#b9b2a4" />
+        </mesh>
+        {/* long wedge tail */}
+        <mesh geometry={tails.raven} position={[0, 0, -0.56]}>
+          <meshBasicMaterial color={color} side={THREE.DoubleSide} />
         </mesh>
       </group>
     )
@@ -427,16 +467,18 @@ function Wing({
   const dragon = type === 'dragon'
   const angel = type === 'angel'
   const owl = type === 'owl'
+  const raven = type === 'raven'
 
   const geo = useMemo(() => {
     const sx = dragon ? 1.75 : angel ? 1.5 : 1
     // Owls have broad, rounded wings: wider chord, shorter, blunter span.
-    const cF = dragon ? 0.5 : owl ? 0.5 : 0.32 // chord at root, front
-    const cB = dragon ? 1.0 : owl ? 0.72 : 0.55 // chord at root, back
+    const cF = dragon ? 0.5 : owl ? 0.5 : raven ? 0.36 : 0.32 // chord at root, front
+    const cB = dragon ? 1.0 : owl ? 0.72 : raven ? 0.62 : 0.55 // chord at root, back
     const rf = [0, 0, cF]
     const rb = [0, 0, -cB]
-    const mid = [side * (owl ? 0.85 : 0.9) * sx, 0.04, owl ? -0.02 : -0.06]
-    const tip = [side * (owl ? 1.35 : 1.85) * sx, 0.06, owl ? -0.32 : -0.5]
+    const mid = [side * (owl ? 0.85 : raven ? 1.0 : 0.9) * sx, 0.04, owl ? -0.02 : -0.06]
+    // Ravens: long, fingered wings that sweep well back.
+    const tip = [side * (owl ? 1.35 : raven ? 2.05 : 1.85) * sx, 0.06, owl ? -0.32 : raven ? -0.62 : -0.5]
     const g = new THREE.BufferGeometry()
     // Two triangles: a swept-back, tapered wing.
     g.setAttribute(
@@ -450,7 +492,7 @@ function Wing({
     )
     g.computeVertexNormals()
     return g
-  }, [dragon, angel, owl, side])
+  }, [dragon, angel, owl, raven, side])
 
   if (dragon) {
     return (

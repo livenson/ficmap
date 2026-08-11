@@ -247,8 +247,11 @@ export interface Ambient {
   treeKind?: 'broadleaf' | 'conifer'
   /** Number of circling birds (default 6). */
   birds?: number
-  /** What the "birds" are: plain birds (default) or post owls (Harry Potter). */
-  birdKind?: 'bird' | 'owl'
+  /**
+   * What the "birds" are: plain birds (default), post owls (Harry Potter) or
+   * the maesters' ravens (Westeros).
+   */
+  birdKind?: 'bird' | 'owl' | 'raven'
   /** Number of circling dragons (default 0). */
   dragons?: number
   /** Number of mosquito swarms buzzing near the ground (default 0). */
@@ -259,6 +262,13 @@ export interface Ambient {
    * Song's Perelesnyk and poterchata.
    */
   wisps?: number
+  /**
+   * Number of undead figures shambling over the ground (default 0) — the
+   * wights of the army of the dead. Confine them with `wightArea`.
+   */
+  wights?: number
+  /** Map-space box the wights are scattered through (default the whole map). */
+  wightArea?: { x0: number; x1: number; z0: number; z1: number }
   /** Overcast clouds with animated rain (default false). */
   rain?: boolean
   /** Number of fish schools swimming under the sea (default 0). */
