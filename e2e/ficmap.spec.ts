@@ -13,6 +13,7 @@ const WORLDS = [
   { id: 'mistborn', title: 'Mistborn' },
   { id: 'forest-song', title: 'The Forest Song' },
   { id: 'eneida', title: 'Eneida' },
+  { id: 'game-of-thrones', title: 'A Song of Ice and Fire' },
 ]
 
 function trackErrors(page: Page): string[] {
