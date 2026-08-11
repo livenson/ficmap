@@ -33,6 +33,7 @@ export const eneida: Story = {
     'to Olympus or go down into Peklo.',
   surfaceName: 'The Voyage',
   terrain: {
+    music: 'wonder',
     seed: 'mediterranean-dem',
     heightmap: medHeight,
     aspect: 1.77, // the Mediterranean crop, kept in real proportion

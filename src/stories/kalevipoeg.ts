@@ -38,6 +38,7 @@ export const kalevipoeg: Story = {
     fish: 4,
   },
   terrain: {
+    music: 'mystic',
     seed: 'kalev-9', // unused: heightmap takes precedence
     heightmap: estoniaHeight,
     seaLevel: 0.18, // 0 m sits at this normalized height in the DEM

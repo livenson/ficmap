@@ -18,6 +18,8 @@ interface Props {
   onExitStory: () => void
   lang: Lang
   onLang: (l: Lang) => void
+  musicOn: boolean
+  onMusic: () => void
 }
 
 export function Toolbar({
@@ -34,6 +36,8 @@ export function Toolbar({
   onExitStory,
   lang,
   onLang,
+  musicOn,
+  onMusic,
 }: Props) {
   const t = useT()
   return (
@@ -94,6 +98,19 @@ export function Toolbar({
             3D
           </button>
         </div>
+
+        {/* Ambient score. Off by default — browsers require a gesture to start
+            audio anyway, and unasked-for sound is rude. */}
+        <button
+          className={`toolbar__music ${musicOn ? 'is-active' : ''}`}
+          onClick={onMusic}
+          aria-pressed={musicOn}
+          aria-label={t(musicOn ? 'musicOff' : 'musicOn')}
+          title={t(musicOn ? 'musicOff' : 'musicOn')}
+        >
+          <span className="toolbar__music-icon">{musicOn ? '♪' : '♪'}</span>
+          <span className="toolbar__music-text">{t('music')}</span>
+        </button>
 
         <LayersMenu layers={layers} onToggle={onToggleLayer} />
       </div>

@@ -28,6 +28,7 @@ export const centerEarth: Story = {
   surfaceName: 'Iceland',
   ambient: { trees: 0.3, treeKind: 'conifer', birds: 5, fish: 3 },
   terrain: {
+    music: 'wonder',
     seed: 'iceland-7',
     seaLevel: 0.32,
     islandFalloff: 0.14,
