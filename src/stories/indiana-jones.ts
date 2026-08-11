@@ -104,11 +104,21 @@ export const indianaJones: Story = {
       id: 'tanis',
       name: 'Tanis, Egypt',
       kind: 'landmark',
-      at: { x: 0.16, z: -0.35 }, // Nile delta (~30.6 N, 31.9 E); nudged SW for label spacing
+      at: { x: 0.177, z: -0.328 }, // Tanis / San el-Hagar, Nile delta (30.98 N, 31.88 E)
       description:
         'The buried Egyptian city where the Map Room casts a beam of light onto ' +
         'the Well of Souls. Here Indy digs up the Ark of the Covenant — and the ' +
         'Nazis take it from him.',
+    },
+    {
+      id: 'cairo',
+      name: 'Cairo',
+      kind: 'city',
+      at: { x: 0.174, z: -0.315 }, // Cairo, Egypt (30.04 N, 31.24 E)
+      description:
+        'The city of the monkey and the marketplace: a chase through the bazaar, ' +
+        'a swordsman met with a weary pistol-shot, and the base for the dig at ' +
+        'nearby Tanis where the Nazis race Indy to the Ark.',
     },
     {
       id: 'washington',
@@ -143,7 +153,7 @@ export const indianaJones: Story = {
       id: 'crescent-moon',
       name: 'Canyon of the Crescent Moon',
       kind: 'landmark',
-      at: { x: 0.215, z: -0.295 }, // Petra, Jordan (~30.3 N, 35.5 E); nudged NE for label spacing
+      at: { x: 0.197, z: -0.319 }, // Al-Khazneh at Petra, Jordan (30.33 N, 35.44 E)
       description:
         'The rose-red temple (Al-Khazneh at Petra) that hides the Holy Grail. ' +
         'Past the Breath of God, the Word of God, and the Path of God, an ancient ' +
@@ -183,7 +193,7 @@ export const indianaJones: Story = {
       id: 'syracuse',
       name: 'Syracuse, Sicily',
       kind: 'landmark',
-      at: { x: 0.072, z: -0.425 }, // Sicily (~37.1 N, 15.3 E); nudged SW for label spacing
+      at: { x: 0.085, z: -0.415 }, // Syracuse, eastern Sicily (37.07 N, 15.29 E)
       description:
         'Archimedes’ grave, and the reunited Dial of Destiny — which turns out to ' +
         'point not through space but through time, to the siege of Syracuse itself.',
@@ -193,7 +203,7 @@ export const indianaJones: Story = {
       id: 'delphi',
       name: 'Delphi',
       kind: 'ruin',
-      at: { x: 0.15, z: -0.455 }, // Greece (~38.5 N, 22.5 E); nudged SE for label spacing
+      at: { x: 0.125, z: -0.435 }, // Delphi, Greece (38.48 N, 22.50 E)
       description:
         'In "Peril at Delphi," the young Jones returns to Greece and the Oracle’s ' +
         'ruins, tangled with a secret society over the omphalos, the navel-stone ' +
@@ -236,11 +246,12 @@ export const indianaJones: Story = {
       name: 'Raiders of the Lost Ark (1936)',
       color: '#ffce54',
       style: 'solid',
-      description: 'Marshall College to Nepal to Tanis, and the Ark home to Washington.',
+      description: 'Marshall College to Nepal, on to Cairo and the dig at Tanis, and the Ark home to Washington.',
       points: [
         { x: -0.405, z: -0.476 }, // Marshall College
         { x: 0.474, z: -0.281 }, // Nepal
-        { x: 0.16, z: -0.35 }, // Tanis
+        { x: 0.174, z: -0.315 }, // Cairo
+        { x: 0.177, z: -0.328 }, // Tanis
         { x: -0.428, z: -0.441 }, // Washington
       ],
     },
@@ -253,7 +264,7 @@ export const indianaJones: Story = {
       points: [
         { x: 0.069, z: -0.535 }, // Venice
         { x: 0.074, z: -0.636 }, // Berlin
-        { x: 0.215, z: -0.295 }, // Crescent Moon (Petra)
+        { x: 0.197, z: -0.319 }, // Crescent Moon (Petra)
       ],
     },
     {
@@ -277,7 +288,7 @@ export const indianaJones: Story = {
         { x: -0.411, z: -0.467 }, // New York
         { x: -0.032, z: -0.397 }, // Tangier
         { x: 0.139, z: -0.414 }, // the Aegean dive
-        { x: 0.072, z: -0.425 }, // Syracuse
+        { x: 0.085, z: -0.415 }, // Syracuse
       ],
     },
     {
@@ -288,7 +299,7 @@ export const indianaJones: Story = {
       description: 'A thread through the Bantam novels: Stonehenge, Delphi, Ararat.',
       points: [
         { x: -0.01, z: -0.617 }, // Stonehenge
-        { x: 0.15, z: -0.455 }, // Delphi
+        { x: 0.125, z: -0.435 }, // Delphi
         { x: 0.246, z: -0.453 }, // Ararat
       ],
     },
@@ -415,7 +426,7 @@ export const indianaJones: Story = {
             'them. The Ark is shipped home, and boxed away in a Washington warehouse.',
           focus: { marker: 'tanis', distance: 42, pitch: 34 },
           reveal: {
-            markers: ['tanis', 'washington'],
+            markers: ['cairo', 'tanis', 'washington'],
             routes: ['route-raiders'],
             regions: ['med-arabia'],
           },
