@@ -10,6 +10,7 @@ import { indianaJones } from './indiana-jones'
 import { mistborn } from './mistborn'
 import { forestSong } from './forest-song'
 import { eneida } from './eneida'
+import { gameOfThrones } from './game-of-thrones'
 
 /**
  * The atlas registry. To add a world:
@@ -29,6 +30,7 @@ export const stories: Story[] = [
   mistborn,
   forestSong,
   eneida,
+  gameOfThrones,
 ]
 
 export function getStory(id: string | null | undefined): Story {
