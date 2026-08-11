@@ -204,6 +204,46 @@ export const harryPotter: Story = {
         'A cave in a cliff over black water — where the Dark Lord hid a locket ' +
         'among the Inferi, and Dumbledore drank the potion that guarded it.',
     },
+    {
+      id: 'forest-of-dean',
+      name: 'The Forest of Dean',
+      kind: 'forest',
+      at: { x: 0.09, z: 0.6 }, // Gloucestershire (~51.8 N, 2.55 W)
+      description:
+        'The Gloucestershire woods where Harry and Hermione camp on the run — ' +
+        'and where a silver doe leads Harry to the Sword of Gryffindor, waiting ' +
+        'at the bottom of a frozen pool.',
+    },
+    {
+      id: 'st-mungos',
+      name: "St Mungo's Hospital",
+      kind: 'landmark',
+      at: { x: 0.66, z: 0.67 }, // London, behind Purge & Dowse Ltd (~51.5 N)
+      description:
+        'The wizarding hospital hidden in London behind the shut-up shopfront of ' +
+        'Purge & Dowse Ltd — where Arthur Weasley is mended and the tortured ' +
+        'Longbottoms have long been kept.',
+    },
+    {
+      id: 'spinners-end',
+      name: "Spinner's End",
+      kind: 'town',
+      at: { x: 0.18, z: 0.47 }, // Cokeworth, the Midlands (~52.4 N, 2.1 W)
+      description:
+        'A street of deserted brick houses by a dead mill in Cokeworth, a grim ' +
+        'Midlands town. Here Snape keeps his book-lined house — and swears the ' +
+        'Unbreakable Vow to protect Draco.',
+    },
+    {
+      id: 'lovegood-house',
+      name: 'The Lovegood House',
+      kind: 'town',
+      at: { x: 0.0, z: 0.84 }, // a hill near Ottery St Catchpole, Devon
+      description:
+        'A black, cylindrical tower on a hill above Ottery St Catchpole, near the ' +
+        'Burrow — home of Xenophilius and Luna Lovegood, where the sign of the ' +
+        'Deathly Hallows is first explained.',
+    },
   ],
   routes: [
     {
@@ -224,6 +264,7 @@ export const harryPotter: Story = {
       color: '#6fae5a',
       style: 'dashed',
       points: [
+        { x: 0.09, z: 0.6 }, // Forest of Dean (the camp, the sword in the pool)
         { x: 0.16, z: 0.74 }, // Godric's Hollow
         { x: 0.22, z: 0.7 }, // Malfoy Manor
         { x: 0.61, z: 0.69 }, // Gringotts, Diagon Alley
@@ -248,7 +289,7 @@ export const harryPotter: Story = {
         'a Horcrux. Track it from the school to the hunt and back to the battle.',
       journey: [
         { marker: 'hogwarts', sinceChapter: 3, note: 'Drawn from the Sorting Hat in the Chamber.' },
-        { marker: 'forbidden-forest', sinceChapter: 8, note: 'Recovered from a frozen forest pool.' },
+        { marker: 'forest-of-dean', sinceChapter: 8, note: 'Recovered from a frozen pool in the Forest of Dean.' },
         { marker: 'hogwarts', sinceChapter: 10, note: 'Back for the last Horcruxes and the battle.' },
       ],
     },
@@ -378,7 +419,7 @@ export const harryPotter: Story = {
             'lured to the Department of Mysteries deep beneath the Ministry, where ' +
             'a prophecy shatters and a godfather falls.',
           focus: { marker: 'ministry', distance: 24, pitch: 34 },
-          reveal: { markers: ['grimmauld-place', 'ministry'], regions: ['the-south'] },
+          reveal: { markers: ['grimmauld-place', 'ministry', 'st-mungos'], regions: ['the-south'] },
           highlight: { markers: ['ministry', 'grimmauld-place'] },
         },
       ],
@@ -397,7 +438,7 @@ export const harryPotter: Story = {
             'Harry and Dumbledore take a locket at terrible cost — and on the ' +
             'Astronomy Tower, the headmaster falls.',
           focus: { marker: 'sea-cave', distance: 24, pitch: 34 },
-          reveal: { markers: ['sea-cave'], regions: ['west-country'] },
+          reveal: { markers: ['sea-cave', 'spinners-end'], regions: ['west-country'] },
           highlight: { markers: ['sea-cave', 'hogwarts'] },
         },
       ],
@@ -416,7 +457,7 @@ export const harryPotter: Story = {
             'in the dark.',
           focus: { marker: 'godrics-hollow', distance: 24, pitch: 36 },
           reveal: {
-            markers: ['godrics-hollow', 'burrow', 'shell-cottage'],
+            markers: ['godrics-hollow', 'burrow', 'shell-cottage', 'forest-of-dean', 'lovegood-house'],
             regions: ['west-country'],
           },
           highlight: { markers: ['godrics-hollow'] },
