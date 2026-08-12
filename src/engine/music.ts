@@ -8,8 +8,9 @@ import type { LevelMusic, MusicMood, MusicVoice } from '../types'
  * world (and each floor) carries a WRITTEN MELODY in its story data, as a short
  * string of `note:beats` tokens, and this module sequences and synthesises it.
  *
- * Every melody here is original. The real film and television themes are
- * copyrighted and are deliberately not reproduced or imitated.
+ * Every tune is either public domain (credited on screen while it plays) or
+ * written for this atlas. The real film and television themes are copyrighted
+ * and are deliberately not reproduced or imitated.
  */
 
 // --- note parsing ----------------------------------------------------------
@@ -98,7 +99,6 @@ export class AmbientMusic {
 
   /** Begin playing. Must be called from a user gesture (browser policy). */
   async start(cfg: LevelMusic) {
-    this.cfg = cfg
     if (!this.ctx) {
       const Ctx =
         window.AudioContext ??
@@ -107,10 +107,14 @@ export class AmbientMusic {
       this.ctx = new Ctx()
     }
     if (this.ctx.state === 'suspended') await this.ctx.resume()
+    // Already playing: this is a world/floor change, not a fresh start. Hand it
+    // to setMusic — which needs `this.cfg` still holding the OLD tune to notice
+    // the difference, so the assignment below must not run first.
     if (this.running) {
       this.setMusic(cfg)
       return
     }
+    this.cfg = cfg
     this.running = true
 
     const ctx = this.ctx
@@ -146,12 +150,22 @@ export class AmbientMusic {
 
   /** Swap to another level's tune without stopping playback. */
   setMusic(cfg: LevelMusic) {
-    if (cfg.melody === this.cfg.melody && cfg.voice === this.cfg.voice && cfg.tempo === this.cfg.tempo) {
-      this.cfg = cfg
-      return
-    }
+    const same =
+      cfg.melody === this.cfg.melody &&
+      cfg.bass === this.cfg.bass &&
+      cfg.voice === this.cfg.voice &&
+      cfg.tempo === this.cfg.tempo
     this.cfg = cfg
+    if (same) return
     this.loadMelody(cfg)
+    if (!this.running) return
+    // Take the new tune from the top straight away rather than waiting out the
+    // old note — otherwise a slow world holds the transition for seconds. The
+    // ringing tail of the previous note crosses over, which reads as a segue.
+    // This also revives the sequencer if it stopped on a level with no melody.
+    if (this.timer) clearTimeout(this.timer)
+    this.timer = null
+    this.tick()
   }
 
   setVolume(v: number) {
@@ -190,6 +204,9 @@ export class AmbientMusic {
 
   /** Play the next melody step (and any bass note falling due), then queue up. */
   private tick() {
+    // Cleared on entry so a silent level leaves no phantom timer behind: a
+    // later swap checks this to know whether the loop is still alive.
+    this.timer = null
     if (!this.running || !this.ctx || !this.bus || this.melody.length === 0) return
     const cfg = this.cfg
     const bpm = cfg.tempo ?? 58

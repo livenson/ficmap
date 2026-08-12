@@ -192,3 +192,51 @@ test('deep-links a subfloor via the ?floor= query param', async ({ page }) => {
   await page.getByRole('button', { name: 'Iceland', exact: true }).click()
   await expect(page).not.toHaveURL(/floor=/)
 })
+
+test('the score follows the world you switch to', async ({ page }) => {
+  // Web Audio is not audible under test, so listen at the source: record every
+  // pitch the sequencer schedules, then look for a note only the expected
+  // world's melody contains. A regression here is silent otherwise — the old
+  // sequencer kept playing the first world's tune under every later one.
+  await page.addInitScript(() => {
+    ;(window as any).__pitches = []
+    const mk = AudioContext.prototype.createOscillator
+    AudioContext.prototype.createOscillator = function (this: AudioContext) {
+      const osc = mk.call(this)
+      ;(osc.frequency as any).__pitch = true
+      return osc
+    }
+    const d = Object.getOwnPropertyDescriptor(AudioParam.prototype, 'value')!
+    Object.defineProperty(AudioParam.prototype, 'value', {
+      get: d.get,
+      set(v: number) {
+        // > 60 Hz skips the vibrato LFOs, which are oscillators too.
+        if ((this as any).__pitch && v > 60) (window as any).__pitches.push(Math.round(v))
+        d.set!.call(this, v)
+      },
+    })
+  })
+  await page.goto('/?world=center-earth')
+  await expect(page.locator('canvas')).toBeVisible()
+  await page.locator('.toolbar__music').click()
+
+  // Listen for a note unique to each world's melody among the twelve:
+  //   F#4 370 Hz — Middle-earth only    Ab3 208 Hz — Westeros only
+  const heard = async (hz: number, hold = 9000) => {
+    await page.evaluate(() => ((window as any).__pitches = []))
+    await page.waitForTimeout(hold)
+    const p: number[] = await page.evaluate(() => (window as any).__pitches)
+    expect(p.length, 'the score is silent').toBeGreaterThan(0)
+    // Each note is voiced as a stack of partials, so accept any multiple.
+    return p.some((v) => {
+      const r = v % hz
+      return r <= 2 || hz - r <= 2
+    })
+  }
+  expect(await heard(370), 'Middle-earth theme not playing').toBe(true)
+
+  await selectWorld(page, 'game-of-thrones')
+  await expect(page.locator('.nowplaying__title')).toHaveText('Theme for the Seven Kingdoms')
+  expect(await heard(208), 'still playing the previous world’s tune').toBe(true)
+  expect(await heard(370), 'Middle-earth theme leaked into Westeros').toBe(false)
+})
