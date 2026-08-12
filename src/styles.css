@@ -216,6 +216,60 @@ body,
   accent-color: var(--accent);
 }
 
+/* Now-playing credit */
+.nowplaying {
+  position: absolute;
+  left: 14px;
+  bottom: 52px;
+  z-index: 14;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: min(340px, calc(100% - 28px));
+  padding: 8px 10px 8px 12px;
+  background: rgba(16, 22, 28, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.nowplaying__icon {
+  color: var(--accent);
+  font-size: 14px;
+  line-height: 1;
+}
+.nowplaying__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+.nowplaying__title {
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nowplaying__credit {
+  font-size: 11px;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nowplaying__stop {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--ink-dim);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.nowplaying__stop:hover {
+  color: var(--ink);
+}
+
 /* Music toggle */
 .toolbar__music {
   display: inline-flex;
@@ -1025,6 +1079,13 @@ body,
     right: 12px;
     top: 12px;
     max-height: 50%;
+  }
+  /* Sit above the bottom sheet rather than behind it. */
+  .nowplaying {
+    bottom: auto;
+    top: 12px;
+    left: 12px;
+    max-width: calc(100% - 24px);
   }
   /* The panel is a bottom sheet here, so the tab rides its top edge and points
      down/up instead of left/right (the chevron is rotated a quarter turn). */

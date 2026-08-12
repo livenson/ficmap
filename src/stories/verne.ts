@@ -32,9 +32,12 @@ export const verne: Story = {
   ambient: { trees: 0.3, birds: 7, fish: 5 },
   terrain: {
     music: {
-      melody: 'D4:2 F#4:1 A4:1 D5:3 A4:1 F#4:2 E4:2 D4:4 r:2 E4:2 G4:2 F#4:2 E4:2 D4:4 A3:2 D4:6 r:2',
-      bass: 'D2:8 G2:8 A2:8 D2:8',
-      tempo: 62,
+      title: 'Largo, "From the New World"',
+      credit: 'Antonín Dvořák, 1893 · public domain',
+      melody:
+        'G3:2 A3:1 G3:3 E3:2 G3:2 A3:1 G3:3 E3:2 r:2 G3:2 A3:1 C4:1 A3:1 G3:3 E3:2 D3:2 E3:1 G3:1 E3:4 r:2',
+      bass: 'C2:8 A2:8 F2:8 C3:8',
+      tempo: 54,
       voice: 'horn',
       mood: 'wonder',
     },

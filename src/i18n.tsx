@@ -52,6 +52,7 @@ const DICT: Dict = {
   filterByBook: { en: 'Filter', et: 'Filter' },
   allBooks: { en: 'All', et: 'Kõik' },
   music: { en: 'Music', et: 'Muusika' },
+  untitledTheme: { en: 'Theme', et: 'Teema' },
   musicOn: { en: 'Turn music on', et: 'Lülita muusika sisse' },
   musicOff: { en: 'Turn music off', et: 'Lülita muusika välja' },
   hidePanel: { en: 'Hide panel', et: 'Peida paneel' },

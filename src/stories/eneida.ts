@@ -34,6 +34,8 @@ export const eneida: Story = {
   surfaceName: 'The Voyage',
   terrain: {
     music: {
+      title: 'Theme for the Eneida',
+      credit: 'Original, written for this atlas',
       melody: 'G3:1 A3:1 B3:2 D4:2 B3:2 G3:2 A3:2 B3:4 r:1 C4:1 D4:1 E4:2 D4:2 B3:2 A3:2 G3:6 r:2',
       bass: 'G2:8 C3:8 D3:8 G2:8',
       tempo: 68,

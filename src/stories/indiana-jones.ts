@@ -34,6 +34,8 @@ export const indianaJones: Story = {
   ambient: { trees: 0.3, birds: 6, fish: 4 },
   terrain: {
     music: {
+      title: 'Theme for the Adventures',
+      credit: 'Original, written for this atlas',
       melody: 'E4:2 G4:2 A4:3 B4:1 A4:2 G4:2 E4:4 r:2 B4:2 A4:2 G4:2 F#4:2 E4:4 D4:2 E4:6 r:2',
       bass: 'E2:8 C3:8 G2:8 B2:8',
       tempo: 64,

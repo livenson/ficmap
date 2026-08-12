@@ -30,10 +30,13 @@ export const harryPotter: Story = {
   ambient: { trees: 0.6, birds: 7, birdKind: 'owl', fish: 3 },
   terrain: {
     music: {
-      melody: 'A3:2 C4:2 B3:2 A3:2 E4:4 D4:2 C4:2 B3:4 r:2 C4:2 E4:2 D4:2 C4:2 A3:4 G3:2 A3:6 r:2',
-      bass: 'A2:8 F2:8 D2:8 E2:8',
-      tempo: 60,
-      voice: 'bell',
+      title: 'Scarborough Fair',
+      credit: 'English traditional · public domain',
+      melody:
+        'A3:3 A3:3 E4:3 E4:2 B3:1 C4:2 B3:1 A3:3 G3:3 A3:3 r:3 A3:3 C4:2 D4:1 E4:3 D4:2 C4:1 B3:3 A3:6 r:3',
+      bass: 'A2:6 G2:6 A2:6 E2:6',
+      tempo: 100,
+      voice: 'flute',
       mood: 'mystic',
     },
     seed: 'britain-dem',

@@ -108,6 +108,18 @@ export type MusicVoice = 'flute' | 'harp' | 'strings' | 'bell' | 'horn'
 export interface LevelMusic {
   /** The melody. Omit on a floor to inherit the world's surface tune. */
   melody?: string
+  /**
+   * What is playing, shown in the on-screen credit while the music runs — e.g.
+   * 'Greensleeves'. Always name the source honestly: a traditional tune, a
+   * public-domain composer, or an original written for this atlas.
+   */
+  title?: string
+  /**
+   * Who it is by, shown beside the title — e.g. 'English traditional',
+   * 'Edvard Grieg (1875)', 'Original'. Public-domain and traditional music
+   * only; copyrighted themes are not reproduced here.
+   */
+  credit?: string
   /** An optional slower bass line underneath, same notation. */
   bass?: string
   /** Beats per minute. Default 58. */

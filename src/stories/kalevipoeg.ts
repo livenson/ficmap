@@ -39,6 +39,8 @@ export const kalevipoeg: Story = {
   },
   terrain: {
     music: {
+      title: 'Runo-song of Kalev’s Son',
+      credit: 'After Estonian regilaul · original',
       melody: 'D4:2 E4:1 F4:1 E4:2 D4:2 C4:2 D4:4 r:2 F4:2 G4:1 A4:1 G4:2 F4:2 E4:2 D4:6 r:2',
       bass: 'D2:8 Bb1:8 F2:8 A2:8',
       tempo: 54,
