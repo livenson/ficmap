@@ -38,7 +38,13 @@ export const kalevipoeg: Story = {
     fish: 4,
   },
   terrain: {
-    music: 'mystic',
+    music: {
+      melody: 'D4:2 E4:1 F4:1 E4:2 D4:2 C4:2 D4:4 r:2 F4:2 G4:1 A4:1 G4:2 F4:2 E4:2 D4:6 r:2',
+      bass: 'D2:8 Bb1:8 F2:8 A2:8',
+      tempo: 54,
+      voice: 'flute',
+      mood: 'mystic',
+    },
     seed: 'kalev-9', // unused: heightmap takes precedence
     heightmap: estoniaHeight,
     seaLevel: 0.18, // 0 m sits at this normalized height in the DEM

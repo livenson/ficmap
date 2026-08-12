@@ -31,7 +31,13 @@ export const verne: Story = {
   surfaceName: 'The World',
   ambient: { trees: 0.3, birds: 7, fish: 5 },
   terrain: {
-    music: 'wonder',
+    music: {
+      melody: 'D4:2 F#4:1 A4:1 D5:3 A4:1 F#4:2 E4:2 D4:4 r:2 E4:2 G4:2 F#4:2 E4:2 D4:4 A3:2 D4:6 r:2',
+      bass: 'D2:8 G2:8 A2:8 D2:8',
+      tempo: 62,
+      voice: 'horn',
+      mood: 'wonder',
+    },
     seed: 'verne-dem',
     heightmap: worldHeight,
     // The DEM spans 360° of longitude over 140° of latitude, so the world is

@@ -24,7 +24,13 @@ export const valdurn: Story = {
   surfaceName: 'Valdurn',
   ambient: { trees: 0.75, treeKind: 'broadleaf', birds: 7, fish: 4 },
   terrain: {
-    music: 'calm',
+    music: {
+      melody: 'C4:2 D4:2 E4:3 G4:1 E4:2 D4:2 C4:4 r:2 G4:2 A4:2 G4:2 E4:2 D4:2 C4:2 C4:6 r:2',
+      bass: 'C2:8 A2:8 F2:8 G2:8',
+      tempo: 58,
+      voice: 'flute',
+      mood: 'calm',
+    },
     seed: 'valdurn-5',
     frequency: 1.4,
     islandFalloff: 0.25,

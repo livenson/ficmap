@@ -24,7 +24,13 @@ export const fotr: Story = {
     'A dark lord seeks an ancient ring of power. A small group of heroes must ' +
     'carry it across dangerous lands to prevent a global catastrophe.',
   terrain: {
-    music: 'epic',
+    music: {
+      melody: 'A3:3 B3:1 C4:2 D4:2 E4:4 D4:2 C4:2 B3:4 r:2 C4:3 D4:1 E4:2 F4:2 E4:4 D4:2 C4:2 A3:6 r:2',
+      bass: 'A2:8 F2:8 C3:8 G2:8',
+      tempo: 52,
+      voice: 'horn',
+      mood: 'epic',
+    },
     seed: 'middle-earth',
     heightmap: middleEarthHeight,
     seaLevel: 0.04,

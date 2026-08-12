@@ -1,128 +1,163 @@
-import type { MusicMood } from '../types'
+import type { LevelMusic, MusicMood, MusicVoice } from '../types'
 
 /**
- * Procedural ambient music.
+ * The score.
  *
- * Ficmap generates its worlds from a seed rather than shipping big assets, and
- * the score works the same way: there are no audio files. Everything here is
- * synthesised live with the Web Audio API — a sustained drone, a slow drift of
- * notes drawn from a mode chosen for the world's mood, and a long delay for
- * space. That keeps the bundle unchanged, sidesteps licensing entirely, and
- * lets every world (and every floor) have its own colour.
+ * Ficmap generates its worlds rather than shipping assets, and the music works
+ * the same way — there are no audio files. But the tunes are not random: each
+ * world (and each floor) carries a WRITTEN MELODY in its story data, as a short
+ * string of `note:beats` tokens, and this module sequences and synthesises it.
  *
- * It is deliberately slow and quiet: this is background for reading a map, not
- * a soundtrack. Playback only ever starts from a user gesture, as browsers
- * require.
+ * Every melody here is original. The real film and television themes are
+ * copyrighted and are deliberately not reproduced or imitated.
  */
 
-/** Scale degrees (semitones from the root) that give each mood its colour. */
-const SCALES: Record<MusicMood, number[]> = {
-  // Open major pentatonic — nothing can clash; gentle and pastoral.
-  calm: [0, 2, 4, 7, 9, 12, 14],
-  // Natural minor: weighty, heroic, a little sad.
-  epic: [0, 2, 3, 5, 7, 8, 10, 12],
-  // Phrygian, with the flat second that makes it feel wrong and close.
-  dark: [0, 1, 3, 5, 6, 8, 10],
-  // Dorian — folk-modal, the sound of old songs.
-  mystic: [0, 2, 3, 5, 7, 9, 10, 12],
-  // Lydian, with the raised fourth that floats upward.
-  heaven: [0, 2, 4, 6, 7, 9, 11, 12],
-  // Bright and wide-open, for maps of the whole world.
-  wonder: [0, 2, 4, 7, 9, 11, 12, 16],
+// --- note parsing ----------------------------------------------------------
+
+const NOTE_BASE: Record<string, number> = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 }
+
+/** `A4` → 440 Hz, `F#3`, `Bb4`, … Returns null for a rest. */
+export function noteToHz(name: string): number | null {
+  if (!name || name === 'r' || name === 'R') return null
+  const m = /^([A-Ga-g])([#b]?)(-?\d)$/.exec(name.trim())
+  if (!m) return null
+  const [, letter, accidental, octave] = m
+  let semis = NOTE_BASE[letter.toUpperCase()]
+  if (accidental === '#') semis += 1
+  else if (accidental === 'b') semis -= 1
+  semis += (Number(octave) - 4) * 12
+  return 440 * Math.pow(2, semis / 12)
 }
 
-/** Root pitch (Hz) per mood — lower for the heavy moods, higher for the airy. */
-const ROOTS: Record<MusicMood, number> = {
-  calm: 196.0, // G3
-  epic: 146.83, // D3
-  dark: 103.83, // G#2
-  mystic: 174.61, // F3
-  heaven: 261.63, // C4
-  wonder: 155.56, // D#3
+interface Step {
+  hz: number | null
+  beats: number
 }
 
-/** Seconds between notes; the slower moods breathe more. */
-const PACE: Record<MusicMood, [number, number]> = {
-  calm: [2.4, 4.6],
-  epic: [2.8, 5.4],
-  dark: [3.2, 6.5],
-  mystic: [2.2, 4.4],
-  heaven: [2.6, 5.2],
-  wonder: [2.4, 4.8],
+/** Parse `"A3:2 C4:1 r:1"` into steps. Bare tokens default to one beat. */
+export function parseMelody(src: string | undefined): Step[] {
+  if (!src) return []
+  return src
+    .trim()
+    .split(/\s+/)
+    .map((tok) => {
+      const [n, b] = tok.split(':')
+      return { hz: noteToHz(n), beats: Math.max(0.25, Number(b) || 1) }
+    })
 }
 
-const semitone = (root: number, n: number) => root * Math.pow(2, n / 12)
+// --- tone colours ----------------------------------------------------------
+
+interface VoiceSpec {
+  /** Partial multipliers and their relative levels. */
+  partials: [number, number][]
+  type: OscillatorType
+  attack: number
+  decay: number
+  /** Held fraction of the note's length before release. */
+  sustain: number
+  vibrato: number
+}
+
+const VOICES: Record<MusicVoice, VoiceSpec> = {
+  // Breathy and pure — a wooden flute.
+  flute: { partials: [[1, 1], [2, 0.12], [3, 0.05]], type: 'sine', attack: 0.16, decay: 0.5, sustain: 0.7, vibrato: 3.5 },
+  // Plucked: instant attack, long ring, no sustain.
+  harp: { partials: [[1, 1], [2, 0.3], [3, 0.14], [5, 0.05]], type: 'triangle', attack: 0.006, decay: 2.4, sustain: 0, vibrato: 0 },
+  // Bowed: slow swell, rich and slightly reedy.
+  strings: { partials: [[1, 1], [2, 0.35], [3, 0.18], [4, 0.08]], type: 'sawtooth', attack: 0.45, decay: 0.9, sustain: 0.65, vibrato: 4.5 },
+  // Struck metal with inharmonic partials.
+  bell: { partials: [[1, 1], [2.76, 0.28], [5.4, 0.1]], type: 'sine', attack: 0.004, decay: 3.2, sustain: 0, vibrato: 0 },
+  // Brassy and round.
+  horn: { partials: [[1, 1], [2, 0.5], [3, 0.22], [4, 0.1]], type: 'triangle', attack: 0.12, decay: 0.7, sustain: 0.7, vibrato: 2.5 },
+}
+
+/** Fallback voice when a world names only a mood. */
+const MOOD_VOICE: Record<MusicMood, MusicVoice> = {
+  calm: 'flute',
+  epic: 'horn',
+  dark: 'strings',
+  mystic: 'flute',
+  heaven: 'bell',
+  wonder: 'harp',
+}
 
 export class AmbientMusic {
   private ctx: AudioContext | null = null
   private master: GainNode | null = null
-  private filter: BiquadFilterNode | null = null
-  private wet: GainNode | null = null
-  private drones: { osc: OscillatorNode; gain: GainNode }[] = []
+  private bus: GainNode | null = null
   private timer: ReturnType<typeof setTimeout> | null = null
-  private mood: MusicMood = 'calm'
-  private volume = 0.5
+  private cfg: LevelMusic = {}
+  private melody: Step[] = []
+  private bass: Step[] = []
+  private mi = 0
+  private bi = 0
+  private bNext = 0 // beats until the bass line's next note
+  private volume = 0.6
   running = false
 
   /** Begin playing. Must be called from a user gesture (browser policy). */
-  async start(mood: MusicMood) {
-    this.mood = mood
+  async start(cfg: LevelMusic) {
+    this.cfg = cfg
     if (!this.ctx) {
       const Ctx =
-        window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-      if (!Ctx) return // no Web Audio — silently do nothing
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      if (!Ctx) return
       this.ctx = new Ctx()
     }
     if (this.ctx.state === 'suspended') await this.ctx.resume()
     if (this.running) {
-      this.setMood(mood)
+      this.setMusic(cfg)
       return
     }
     this.running = true
 
     const ctx = this.ctx
-    // master → a gentle low-pass → the speakers, with a long delay in parallel
-    // for a cave-like sense of space.
     this.master = ctx.createGain()
     this.master.gain.setValueAtTime(0, ctx.currentTime)
-    this.master.gain.linearRampToValueAtTime(this.volume * 0.5, ctx.currentTime + 3)
+    this.master.gain.linearRampToValueAtTime(this.volume * 0.42, ctx.currentTime + 2)
 
-    this.filter = ctx.createBiquadFilter()
-    this.filter.type = 'lowpass'
-    this.filter.frequency.value = 1400
-    this.filter.Q.value = 0.4
-
+    // A shared bus → gentle low-pass, with a long delay in parallel for air.
+    this.bus = ctx.createGain()
+    const filter = ctx.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.value = 2600
+    filter.Q.value = 0.3
     const delay = ctx.createDelay(4)
-    delay.delayTime.value = 0.62
-    const feedback = ctx.createGain()
-    feedback.gain.value = 0.42
-    this.wet = ctx.createGain()
-    this.wet.gain.value = 0.38
+    delay.delayTime.value = 0.44
+    const fb = ctx.createGain()
+    fb.gain.value = 0.34
+    const wet = ctx.createGain()
+    wet.gain.value = 0.3
 
-    this.filter.connect(this.master)
-    this.filter.connect(delay)
-    delay.connect(feedback)
-    feedback.connect(delay)
-    delay.connect(this.wet)
-    this.wet.connect(this.master)
+    this.bus.connect(filter)
+    filter.connect(this.master)
+    filter.connect(delay)
+    delay.connect(fb)
+    fb.connect(delay)
+    delay.connect(wet)
+    wet.connect(this.master)
     this.master.connect(ctx.destination)
 
-    this.buildDrone()
-    this.scheduleNote()
+    this.loadMelody(cfg)
+    this.tick()
   }
 
-  /** Swap the mood (a new world or floor) without stopping playback. */
-  setMood(mood: MusicMood) {
-    if (mood === this.mood) return
-    this.mood = mood
-    if (!this.running) return
-    this.buildDrone() // re-tune the drone to the new root
+  /** Swap to another level's tune without stopping playback. */
+  setMusic(cfg: LevelMusic) {
+    if (cfg.melody === this.cfg.melody && cfg.voice === this.cfg.voice && cfg.tempo === this.cfg.tempo) {
+      this.cfg = cfg
+      return
+    }
+    this.cfg = cfg
+    this.loadMelody(cfg)
   }
 
   setVolume(v: number) {
     this.volume = Math.max(0, Math.min(1, v))
     if (this.master && this.ctx) {
-      this.master.gain.linearRampToValueAtTime(this.volume * 0.5, this.ctx.currentTime + 0.4)
+      this.master.gain.linearRampToValueAtTime(this.volume * 0.42, this.ctx.currentTime + 0.3)
     }
   }
 
@@ -132,113 +167,115 @@ export class AmbientMusic {
     this.timer = null
     const ctx = this.ctx
     if (ctx && this.master) {
-      // Fade out, then tear the graph down.
       this.master.gain.cancelScheduledValues(ctx.currentTime)
       this.master.gain.setValueAtTime(this.master.gain.value, ctx.currentTime)
-      this.master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.2)
-      const drones = this.drones
-      this.drones = []
-      setTimeout(() => {
-        drones.forEach((d) => {
-          try {
-            d.osc.stop()
-          } catch {
-            /* already stopped */
-          }
-        })
-      }, 1400)
+      this.master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1)
     }
   }
 
-  /** Release the audio device entirely. */
   dispose() {
     this.stop()
     const ctx = this.ctx
     this.ctx = null
-    setTimeout(() => ctx?.close().catch(() => {}), 1600)
+    setTimeout(() => ctx?.close().catch(() => {}), 1400)
   }
 
-  /** A pair of detuned oscillators holding the root and fifth. */
-  private buildDrone() {
-    const ctx = this.ctx
-    if (!ctx || !this.filter) return
-    this.drones.forEach((d) => {
-      d.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5)
-      setTimeout(() => {
-        try {
-          d.osc.stop()
-        } catch {
-          /* already stopped */
-        }
-      }, 1800)
-    })
-    this.drones = []
-    const root = ROOTS[this.mood]
-    // root, root an octave down, and the fifth — slightly detuned so the drone
-    // beats gently instead of sitting still.
-    const voices: [number, number, number][] = [
-      [root / 2, 0.16, 0],
-      [root, 0.1, 4],
-      [semitone(root, 7), 0.07, -5],
-    ]
-    for (const [freq, amp, detune] of voices) {
-      const osc = ctx.createOscillator()
-      osc.type = this.mood === 'dark' ? 'sawtooth' : 'triangle'
-      osc.frequency.value = freq
-      osc.detune.value = detune
-      const gain = ctx.createGain()
-      gain.gain.setValueAtTime(0, ctx.currentTime)
-      gain.gain.linearRampToValueAtTime(amp * (this.mood === 'dark' ? 0.5 : 1), ctx.currentTime + 4)
-      osc.connect(gain)
-      gain.connect(this.filter)
-      osc.start()
-      this.drones.push({ osc, gain })
+  private loadMelody(cfg: LevelMusic) {
+    this.melody = parseMelody(cfg.melody)
+    this.bass = parseMelody(cfg.bass)
+    this.mi = 0
+    this.bi = 0
+    this.bNext = 0
+  }
+
+  /** Play the next melody step (and any bass note falling due), then queue up. */
+  private tick() {
+    if (!this.running || !this.ctx || !this.bus || this.melody.length === 0) return
+    const cfg = this.cfg
+    const bpm = cfg.tempo ?? 58
+    const beat = 60 / bpm
+    const voice = cfg.voice ?? MOOD_VOICE[cfg.mood ?? 'calm']
+
+    const step = this.melody[this.mi % this.melody.length]
+    this.mi++
+    if (step.hz) this.play(step.hz, step.beats * beat, voice, 1)
+
+    // The bass line runs on its own clock underneath.
+    if (this.bass.length) {
+      if (this.bNext <= 0) {
+        const b = this.bass[this.bi % this.bass.length]
+        this.bi++
+        if (b.hz) this.play(b.hz, b.beats * beat, 'strings', 0.5)
+        this.bNext = b.beats
+      }
+      this.bNext -= step.beats
     }
+
+    // A breath of rest between phrases keeps it from feeling mechanical.
+    const gap = this.mi % this.melody.length === 0 ? beat * 2 : 0
+    this.timer = setTimeout(() => this.tick(), (step.beats * beat + gap) * 1000)
   }
 
-  /** Play one soft note, then queue the next after a random rest. */
-  private scheduleNote() {
-    if (!this.running || !this.ctx || !this.filter) return
+  /** Synthesise one note: stacked partials under a shaped envelope. */
+  private play(hz: number, dur: number, voice: MusicVoice, level: number) {
     const ctx = this.ctx
-    const scale = SCALES[this.mood]
-    const root = ROOTS[this.mood]
-    const step = scale[Math.floor(Math.random() * scale.length)]
-    // Mostly the middle octave, occasionally an octave up for sparkle.
-    const oct = Math.random() < 0.25 ? 12 : 0
-    const freq = semitone(root * 2, step + oct)
-
-    const osc = ctx.createOscillator()
-    osc.type = 'sine'
-    osc.frequency.value = freq
-    const gain = ctx.createGain()
+    if (!ctx || !this.bus) return
+    const v = VOICES[voice]
     const t = ctx.currentTime
-    const peak = 0.1 + Math.random() * 0.06
-    // A slow bell-like swell: long attack, long tail.
-    gain.gain.setValueAtTime(0, t)
-    gain.gain.linearRampToValueAtTime(peak, t + 0.5 + Math.random() * 0.5)
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 3.4 + Math.random() * 2)
-    osc.connect(gain)
-    gain.connect(this.filter)
-    osc.start(t)
-    osc.stop(t + 6.5)
+    const hold = Math.max(0.25, dur * 0.92)
 
-    const [lo, hi] = PACE[this.mood]
-    this.timer = setTimeout(() => this.scheduleNote(), (lo + Math.random() * (hi - lo)) * 1000)
+    const env = ctx.createGain()
+    env.gain.setValueAtTime(0.0001, t)
+    env.gain.linearRampToValueAtTime(0.22 * level, t + v.attack)
+    if (v.sustain > 0) {
+      env.gain.linearRampToValueAtTime(0.22 * level * v.sustain, t + v.attack + v.decay)
+      env.gain.setValueAtTime(0.22 * level * v.sustain, t + hold)
+    }
+    env.gain.exponentialRampToValueAtTime(0.0001, t + hold + (v.sustain > 0 ? 0.5 : v.decay))
+    env.connect(this.bus)
+
+    // A slow vibrato shared by every partial of the note.
+    let lfo: OscillatorNode | null = null
+    let lfoGain: GainNode | null = null
+    if (v.vibrato > 0) {
+      lfo = ctx.createOscillator()
+      lfo.frequency.value = v.vibrato
+      lfoGain = ctx.createGain()
+      lfoGain.gain.setValueAtTime(0, t)
+      lfoGain.gain.linearRampToValueAtTime(hz * 0.004, t + v.attack + 0.3)
+      lfo.connect(lfoGain)
+      lfo.start(t)
+      lfo.stop(t + hold + 1.2)
+    }
+
+    const tail = hold + (v.sustain > 0 ? 0.6 : v.decay) + 0.1
+    for (const [mult, lvl] of v.partials) {
+      const osc = ctx.createOscillator()
+      osc.type = v.type
+      osc.frequency.value = hz * mult
+      const g = ctx.createGain()
+      g.gain.value = lvl
+      if (lfoGain) lfoGain.connect(osc.frequency)
+      osc.connect(g)
+      g.connect(env)
+      osc.start(t)
+      osc.stop(t + tail)
+    }
   }
 }
 
 /**
- * Pick a mood for a level: the explicit `music` setting wins, otherwise it
- * follows the sky, so an underworld sounds dark and a sky realm sounds airy
- * without every world having to say so.
+ * Resolve the music for the level being shown: its own settings if it has
+ * them, otherwise the world's, so a floor without its own tune inherits the
+ * surface's rather than falling silent.
  */
-export function moodFor(
-  music: MusicMood | undefined,
+export function musicFor(
+  level: LevelMusic | undefined,
+  surface: LevelMusic | undefined,
   sky: 'day' | 'dark' | 'cavern' | 'heaven' | undefined,
-): MusicMood {
-  if (music) return music
-  if (sky === 'dark') return 'dark'
-  if (sky === 'cavern') return 'mystic'
-  if (sky === 'heaven') return 'heaven'
-  return 'calm'
+): LevelMusic {
+  const base = level?.melody ? level : (surface ?? {})
+  const mood: MusicMood =
+    level?.mood ?? (sky === 'dark' ? 'dark' : sky === 'cavern' ? 'mystic' : sky === 'heaven' ? 'heaven' : base.mood ?? 'calm')
+  return { ...base, mood, voice: level?.voice ?? base.voice }
 }
