@@ -15,7 +15,7 @@ import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
 import type { Story } from './types'
 import { LangProvider, translate, type Lang } from './i18n'
-import { AmbientMusic, moodFor } from './engine/music'
+import { AmbientMusic, musicFor } from './engine/music'
 
 /** URL query key for the view mode, e.g. `?view=2d`. */
 const VIEW_PARAM = 'view'
@@ -175,13 +175,18 @@ export default function App() {
   // --- Ambient score -------------------------------------------------------
   // The mood follows the level, so descending into an underworld or climbing to
   // a sky realm changes the music with the light.
-  const musicMood = moodFor(activeLevel.terrain.music, activeLevel.terrain.sky)
+  // A floor without its own tune inherits the world's surface melody, with the
+  // instrument following the floor's sky.
+  const levelMusic = useMemo(
+    () => musicFor(activeLevel.terrain.music, story.terrain.music, activeLevel.terrain.sky),
+    [activeLevel.terrain.music, activeLevel.terrain.sky, story.terrain.music],
+  )
   useEffect(() => {
     const m = musicRef.current
     if (!m) return
-    if (musicOn) m.start(musicMood)
+    if (musicOn) m.start(levelMusic)
     else m.stop()
-  }, [musicOn, musicMood])
+  }, [musicOn, levelMusic])
   // Release the audio device when the app goes away.
   useEffect(() => {
     musicRef.current = new AmbientMusic()

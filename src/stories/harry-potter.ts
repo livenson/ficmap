@@ -29,7 +29,13 @@ export const harryPotter: Story = {
   surfaceName: 'Britain',
   ambient: { trees: 0.6, birds: 7, birdKind: 'owl', fish: 3 },
   terrain: {
-    music: 'mystic',
+    music: {
+      melody: 'A3:2 C4:2 B3:2 A3:2 E4:4 D4:2 C4:2 B3:4 r:2 C4:2 E4:2 D4:2 C4:2 A3:4 G3:2 A3:6 r:2',
+      bass: 'A2:8 F2:8 D2:8 E2:8',
+      tempo: 60,
+      voice: 'bell',
+      mood: 'mystic',
+    },
     seed: 'britain-dem',
     heightmap: britainHeight,
     aspect: 10 / 9,

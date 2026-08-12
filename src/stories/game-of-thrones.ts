@@ -49,7 +49,13 @@ export const gameOfThrones: Story = {
     wightArea: { x0: -0.93, x1: -0.55, z0: -0.81, z1: -0.774 },
   },
   terrain: {
-    music: 'epic',
+    music: {
+      melody: 'C4:3 G3:1 Ab3:2 Bb3:2 C4:4 Eb4:2 D4:2 C4:4 r:2 Eb4:2 F4:2 G4:3 F4:1 Eb4:2 D4:2 C4:6 r:2',
+      bass: 'C2:8 Ab2:8 Eb2:8 G2:8',
+      tempo: 50,
+      voice: 'strings',
+      mood: 'epic',
+    },
     seed: 'westeros',
     heightmap: westerosHeight,
     // The known world: Westeros is only the western fifth; Essos runs far east.

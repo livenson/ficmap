@@ -79,10 +79,11 @@ export interface TerrainConfig {
    */
   detail?: boolean
   /**
-   * Ambient music mood for this level. Omit and it follows `sky`, so
-   * underworlds sound dark and sky realms airy without being told.
+   * This level's written theme — a short looping melody, played live. Omit on
+   * a floor and it inherits the world's surface tune, with the instrument
+   * following `sky` so underworlds sound dark and sky realms airy.
    */
-  music?: MusicMood
+  music?: LevelMusic
   /**
    * World aspect ratio, X width / Z depth. Default 1 (square). Use >1 for a
    * map that is wider than it is tall — e.g. an equirectangular world map,
@@ -92,11 +93,30 @@ export interface TerrainConfig {
   aspect?: number
 }
 
-/**
- * The colour of a world's ambient score. Each mood picks a musical mode, a
- * root pitch and a pace; the music is synthesised live, never a file.
- */
+/** Tonal colour of a world's score, used to pick a default instrument. */
 export type MusicMood = 'calm' | 'epic' | 'dark' | 'mystic' | 'heaven' | 'wonder'
+
+/** The instrument a melody is played on. */
+export type MusicVoice = 'flute' | 'harp' | 'strings' | 'bell' | 'horn'
+
+/**
+ * A level's written theme. The melody is a short, looping tune given as
+ * space-separated `note:beats` tokens — `A3:2 C4:1 r:1` is A below middle C for
+ * two beats, C for one, then a one-beat rest. It is synthesised live (there are
+ * no audio files), but the tune itself is composed, not generated.
+ */
+export interface LevelMusic {
+  /** The melody. Omit on a floor to inherit the world's surface tune. */
+  melody?: string
+  /** An optional slower bass line underneath, same notation. */
+  bass?: string
+  /** Beats per minute. Default 58. */
+  tempo?: number
+  /** Instrument; defaults to one chosen from `mood`. */
+  voice?: MusicVoice
+  /** Tonal colour; defaults from the level's `sky`. */
+  mood?: MusicMood
+}
 
 export type MarkerKind =
   | 'capital'

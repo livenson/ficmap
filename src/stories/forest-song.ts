@@ -27,7 +27,13 @@ export const forestSong: Story = {
     'three seasons of the tale around the lake.',
   surfaceName: 'The Forest',
   terrain: {
-    music: 'mystic',
+    music: {
+      melody: 'D4:2 F4:1 G4:1 A4:3 G4:1 F4:2 E4:2 D4:4 r:2 A4:2 C5:1 A4:1 G4:2 F4:2 E4:2 D4:2 D4:6 r:2',
+      bass: 'D2:8 G2:8 A2:8 D2:8',
+      tempo: 56,
+      voice: 'flute',
+      mood: 'mystic',
+    },
     seed: 'polissia',
     heightmap: polissiaHeight,
     seaLevel: 0.24,

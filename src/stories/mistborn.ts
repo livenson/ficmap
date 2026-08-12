@@ -37,7 +37,13 @@ export const mistborn: Story = {
   surfaceName: 'The Final Empire',
   ambient: { trees: 0.12, treeColor: '#5d5236', treeKind: 'conifer', birds: 3 },
   terrain: {
-    music: 'dark',
+    music: {
+      melody: 'F3:4 Ab3:2 C4:2 Bb3:4 Ab3:4 r:2 C4:2 Db4:2 C4:2 Ab3:2 F3:8 r:2',
+      bass: 'F2:8 Db2:8 Ab2:8 C3:8',
+      tempo: 46,
+      voice: 'strings',
+      mood: 'dark',
+    },
     // Laid out to match the published Final Empire map (see build-scadrial.mjs):
     // the inland Southern Sea, the Terris mountains north, the ashmount cones,
     // and the Central lakes. 4:3, like the map.
