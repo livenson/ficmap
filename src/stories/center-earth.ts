@@ -29,10 +29,13 @@ export const centerEarth: Story = {
   ambient: { trees: 0.3, treeKind: 'conifer', birds: 5, fish: 3 },
   terrain: {
     music: {
-      melody: 'A4:2 G4:2 F4:2 E4:3 D4:1 C4:2 B3:2 A3:4 r:2 E4:2 D4:2 C4:2 B3:2 A3:4 E3:2 A3:6 r:2',
-      bass: 'A2:8 F2:8 D2:8 E2:8',
-      tempo: 54,
-      voice: 'flute',
+      title: 'In the Hall of the Mountain King',
+      credit: 'Edvard Grieg, 1875 · public domain',
+      melody:
+        'B3:1 C#4:1 D4:1 E4:1 F#4:1 D4:1 F#4:2 F4:1 D4:1 F4:2 E4:1 C#4:1 E4:2 B3:1 C#4:1 D4:1 E4:1 F#4:1 D4:1 F#4:1 B4:1 A4:1 F#4:1 D4:1 F#4:1 B4:2 r:2',
+      bass: 'B2:8 B2:8 F#2:8 B2:8',
+      tempo: 104,
+      voice: 'harp',
       mood: 'wonder',
     },
     seed: 'iceland-7',

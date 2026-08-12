@@ -10,6 +10,7 @@ import { Legend } from './ui/Legend'
 import { buildPlaceReferences } from './engine/references'
 import { flattenChapters, bookScopes } from './engine/story'
 import { BookFilter } from './ui/BookFilter'
+import { NowPlaying } from './ui/NowPlaying'
 import { getLevels, getLevel, allMarkers, SURFACE_ID } from './engine/levels'
 import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
@@ -376,6 +377,9 @@ export default function App() {
           {!inStory && (
             <BookFilter scopes={scopes} value={bookFilter} onChange={pickBook} />
           )}
+
+          {/* Credit whatever is playing, for as long as it plays. */}
+          {musicOn && <NowPlaying music={levelMusic} onStop={() => setMusicOn(false)} />}
 
           {/* In story mode the detail shows as an overlay so the tour panel
               stays put. In free mode the InfoPanel handles it. */}

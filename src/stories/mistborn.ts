@@ -38,9 +38,12 @@ export const mistborn: Story = {
   ambient: { trees: 0.12, treeColor: '#5d5236', treeKind: 'conifer', birds: 3 },
   terrain: {
     music: {
-      melody: 'F3:4 Ab3:2 C4:2 Bb3:4 Ab3:4 r:2 C4:2 Db4:2 C4:2 Ab3:2 F3:8 r:2',
-      bass: 'F2:8 Db2:8 Ab2:8 C3:8',
-      tempo: 46,
+      title: 'Dies Irae',
+      credit: 'Gregorian chant, 13th c. · public domain',
+      melody:
+        'F4:2 E4:1 F4:1 D4:2 E4:1 C4:1 D4:4 r:2 D4:2 C4:1 D4:1 Bb3:2 C4:1 A3:1 A3:4 r:2',
+      bass: 'D2:8 Bb1:8 F2:8 A2:8',
+      tempo: 64,
       voice: 'strings',
       mood: 'dark',
     },

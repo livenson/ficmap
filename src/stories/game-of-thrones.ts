@@ -50,6 +50,8 @@ export const gameOfThrones: Story = {
   },
   terrain: {
     music: {
+      title: 'Theme for the Seven Kingdoms',
+      credit: 'Original, written for this atlas',
       melody: 'C4:3 G3:1 Ab3:2 Bb3:2 C4:4 Eb4:2 D4:2 C4:4 r:2 Eb4:2 F4:2 G4:3 F4:1 Eb4:2 D4:2 C4:6 r:2',
       bass: 'C2:8 Ab2:8 Eb2:8 G2:8',
       tempo: 50,

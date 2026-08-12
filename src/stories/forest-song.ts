@@ -28,10 +28,13 @@ export const forestSong: Story = {
   surfaceName: 'The Forest',
   terrain: {
     music: {
-      melody: 'D4:2 F4:1 G4:1 A4:3 G4:1 F4:2 E4:2 D4:4 r:2 A4:2 C5:1 A4:1 G4:2 F4:2 E4:2 D4:2 D4:6 r:2',
-      bass: 'D2:8 G2:8 A2:8 D2:8',
-      tempo: 56,
-      voice: 'flute',
+      title: 'Shchedryk',
+      credit: 'Mykola Leontovych, 1916 · public domain',
+      melody:
+        'B4:1 A#4:1 B4:1 G#4:1 B4:1 A#4:1 B4:1 G#4:1 B4:1 A#4:1 B4:1 G#4:1 B4:1 A#4:1 B4:1 G#4:1 E4:1 F#4:1 G#4:1 F#4:1 E4:2 r:2',
+      bass: 'E3:4 C#3:4 A2:4 B2:4',
+      tempo: 132,
+      voice: 'bell',
       mood: 'mystic',
     },
     seed: 'polissia',

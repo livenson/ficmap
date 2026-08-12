@@ -30,9 +30,12 @@ export const musketeers: Story = {
   ambient: { trees: 0.5, birds: 6, fish: 3 },
   terrain: {
     music: {
-      melody: 'D4:2 G4:2 F#4:1 G4:1 A4:2 B4:4 A4:2 G4:4 r:2 B4:2 A4:2 G4:2 F#4:2 E4:2 D4:2 G4:6 r:2',
-      bass: 'G2:8 D3:8 E3:8 C3:8',
-      tempo: 66,
+      title: 'Marche pour la cérémonie des Turcs',
+      credit: 'Jean-Baptiste Lully, 1670 · public domain',
+      melody:
+        'D4:2 D4:1 D4:1 D4:2 C4:2 D4:2 E4:2 F4:4 r:2 E4:2 D4:2 C4:2 D4:2 A3:2 D4:2 D4:4 r:2',
+      bass: 'D3:8 A2:8 Bb2:8 D3:8',
+      tempo: 88,
       voice: 'harp',
       mood: 'calm',
     },
