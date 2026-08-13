@@ -14,6 +14,7 @@ export const valdurn: Story = {
   author: 'Ficmap original',
   region: 'A high-fantasy realm',
   epoch: 'Demo world',
+  group: 'original',
   intro:
     'Once a single crown united the Vale, the Ashen Reach and the fenlands of ' +
     'the west; now three powers watch the roads between them. But the realm runs ' +

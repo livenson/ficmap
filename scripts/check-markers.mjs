@@ -10,7 +10,9 @@
  *
  * It then checks ROUTE COVERAGE: every place should have some line of travel
  * running to it, or it sits on the map as a dot nobody ever goes to. Markers
- * further than `reach` (in map units) from every route are reported.
+ * further than `reach` (in map units) from every route are reported, except
+ * those listed as `scenic` — summits and the like, which are on the map to be
+ * looked at rather than travelled to.
  *
  * Usage:
  *   node scripts/check-markers.mjs latvia
@@ -39,6 +41,18 @@ const WORLDS = {
       // The point of this one is that it is under a lake.
       'sunken-castle',
     ]),
+  },
+  lucerne: {
+    png: '../src/assets/lucerne-height.png',
+    story: '../src/stories/tell.ts',
+    bbox: { lonMin: 8.15, lonMax: 8.95, latMin: 46.75, latMax: 47.15 },
+    // No sea here: the waterline is Lake Lucerne's own surface.
+    seaLevel: 0.0025,
+    reach: 0.09,
+    wet: new Set([]),
+    // Summits, not destinations. Nobody in the play climbs them — they are on
+    // the map because you can see them from everywhere on it.
+    scenic: new Set(['pilatus', 'uri-rotstock', 'rigi']),
   },
 }
 
@@ -108,7 +122,7 @@ for (const m of surface.matchAll(re)) {
   const wet = wantWet ? true : land
   if (!wet) bad++
   const d = distToRoutes(x, z)
-  const linked = d <= w.reach
+  const linked = d <= w.reach || (w.scenic?.has(id) ?? false)
   if (!linked) stranded++
   console.log(
     `${wet && linked ? '  ' : '!!'} ${id.padEnd(16)} ${kind.padEnd(9)} ` +

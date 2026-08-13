@@ -91,6 +91,14 @@ export interface TerrainConfig {
    * terrain keeps real proportions instead of stretching into the square.
    */
   aspect?: number
+  /**
+   * Start the 3D view well overhead instead of at the usual low, relief-
+   * revealing angle. Wide world maps already do this because they are
+   * unreadable edge-on; a world with extreme relief has the same problem for
+   * the opposite reason — Lake Lucerne's mountains stand as a wall in front of
+   * the lake everything in the play happens on. You can still orbit down.
+   */
+  overhead?: boolean
 }
 
 /** Tonal colour of a world's score, used to pick a default instrument. */
@@ -375,6 +383,12 @@ export interface Story {
   region?: string
   /** When it is from — publication or era (e.g. "Published 1997–2007"). */
   epoch?: string
+  /**
+   * Which section of the world picker this belongs under. With a dozen-plus
+   * worlds a flat list reads as arbitrary; the picker groups by this and shows
+   * the sections in a fixed order. Anything unset falls under "Other worlds".
+   */
+  group?: 'epic' | 'adventure' | 'fantasy' | 'original'
   terrain: TerrainConfig
   /** Ambient 3D life (trees, birds, dragons). */
   ambient?: Ambient

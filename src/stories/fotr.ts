@@ -20,6 +20,7 @@ export const fotr: Story = {
   author: 'J. R. R. Tolkien',
   region: 'Middle-earth (Eriador)',
   epoch: 'Published 1954',
+  group: 'fantasy',
   intro:
     'A dark lord seeks an ancient ring of power. A small group of heroes must ' +
     'carry it across dangerous lands to prevent a global catastrophe.',

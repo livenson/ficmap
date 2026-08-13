@@ -29,6 +29,7 @@ export const gameOfThrones: Story = {
   author: 'George R. R. Martin',
   region: 'Westeros · Essos',
   epoch: 'Published from 1996',
+  group: 'fantasy',
   intro:
     'Winter is coming. From the Wall in the frozen north to the dragon-queen ' +
     'rising in the east, the Seven Kingdoms tear themselves apart over the Iron ' +

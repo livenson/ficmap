@@ -47,6 +47,31 @@ const PRESETS = {
     lakes: true,
     out: '../src/assets/latvia-height.png',
   },
+  lucerne: {
+    // Wilhelm Tell country: Lake Lucerne and the three founding cantons. Uri
+    // in the south-east (Bürglen, Altdorf, Flüelen), Lake Uri with the Rütli
+    // and the Tellsplatte, Schwyz over the Axen, Unterwalden west of the lake,
+    // and Küssnacht with the Hohle Gasse in the north. Small — about 61 km by
+    // 44 km — so this needs a much deeper zoom than the country-sized presets.
+    z: 11,
+    bbox: { lonMin: 8.15, lonMax: 8.95, latMin: 46.75, latMax: 47.15 },
+    w: 1024,
+    h: 748,
+    // The lake sits at 434 m and the peaks run past 3,000. Cap the very top so
+    // the valleys and the lake shore keep some dynamic range; this is the first
+    // world in the atlas with real mountains rather than capped or flat ones.
+    capM: 2800,
+    // Natural Earth's lake polygons have nothing at this scale, so the water
+    // is set by elevation instead: Vierwaldstättersee sits at 434 m and the
+    // DEM records it as a flat plateau, so everything at or below 437 m is
+    // lake. Without this the water Tell is rowed across renders as ground.
+    seaM: 437,
+    // A lake at 434 m in a range that runs to 2,800 occupies almost none of the
+    // vertical, so the shore would be crushed against the waterline. The gamma
+    // spreads the low ground back out — see `landGamma` below.
+    landGamma: 0.5,
+    out: '../src/assets/lucerne-height.png',
+  },
   france: {
     z: 6,
     bbox: { lonMin: -6, lonMax: 6, latMin: 42, latMax: 53 },
@@ -234,6 +259,10 @@ for (let j = 0; j < H; j++)
     if (preset.capM) m = Math.min(m, preset.capM)
     // Optionally flatten the whole sea to one depth for an even ocean colour.
     if (preset.flatOceanM != null && m < 0) m = preset.flatOceanM
+    // Inland worlds have no sea: `seaM` names the elevation of the water — a
+    // lake surface, which a DEM records as a flat plateau — and everything at
+    // or below it is carved just under, so it renders as water.
+    if (preset.seaM != null && m <= preset.seaM) m = preset.seaM - 6
     // Carve real inland lakes below sea level so they render as water.
     if (lakePolys && m > LAKE_M && inLake(lon, lat, lakePolys)) m = LAKE_M
     out[j * W + i] = m
@@ -241,8 +270,10 @@ for (let j = 0; j < H; j++)
     if (m > mx) mx = m
   }
 
-// Where 0 m sits once the range is normalized — the shoreline.
-const SEA = (0 - mn) / (mx - mn)
+// Where the waterline sits once the range is normalized: 0 m for a coastal
+// world, or the named lake surface for an inland one.
+const SEA_M = preset.seaM ?? 0
+const SEA = (SEA_M - mn) / (mx - mn)
 
 /**
  * Optional hypsometric exaggeration of the LAND only.

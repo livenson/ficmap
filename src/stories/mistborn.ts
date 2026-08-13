@@ -27,6 +27,7 @@ export const mistborn: Story = {
   author: 'Brandon Sanderson',
   region: 'Scadrial',
   epoch: 'Mistborn · 2006–2022',
+  group: 'fantasy',
   intro:
     'One planet, two ages. Under a red sun and falling ash, the immortal Lord ' +
     'Ruler’s FINAL EMPIRE turns on the city of Luthadel — where a crew of thieves ' +

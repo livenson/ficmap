@@ -19,6 +19,7 @@ export const forestSong: Story = {
   author: 'Lesya Ukrainka',
   region: 'Volhynia · Polissia',
   epoch: 'Written 1911',
+  group: 'epic',
   intro:
     'In a hoary Volhynian forest, by a still dark lake, the wood-spirit Mavka ' +
     'wakes to a shepherd’s reed and loves a mortal boy. A lyric fairy-tale of ' +
