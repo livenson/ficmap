@@ -189,7 +189,9 @@ export function MapScene({
           {level.ambient.mosquitoes ? (
             <Mosquitoes swarms={level.ambient.mosquitoes} field={field} terrain={terrain} />
           ) : null}
-          {level.ambient.rain ? <Weather /> : null}
+          {level.ambient.rain ? (
+            <Weather terrain={terrain} area={level.ambient.rainArea} />
+          ) : null}
           {level.ambient.rain ? <Ripples field={field} terrain={terrain} /> : null}
           {level.ambient.fish ? (
             <SeaLife field={field} terrain={terrain} fish={level.ambient.fish} />
