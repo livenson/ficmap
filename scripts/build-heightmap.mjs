@@ -72,6 +72,26 @@ const PRESETS = {
     landGamma: 0.5,
     out: '../src/assets/lucerne-height.png',
   },
+  nibelungen: {
+    // The Nibelungenlied's road: Xanten on the Lower Rhine in the north-west,
+    // Worms and the Odenwald in the middle, then the whole Danube run east
+    // through Passau, Pöchlarn and Vienna to Etzel's hall in Hungary. The poem
+    // is a journey, so the box has to hold both rivers at once.
+    z: 8,
+    bbox: { lonMin: 5.8, lonMax: 19.5, latMin: 47.0, latMax: 52.2 },
+    w: 1024,
+    h: 599,
+    // Clip the Alps along the southern edge. They are not in the story and at
+    // full height they would take the whole range from two river valleys that
+    // never rise above 300 m.
+    capM: 1600,
+    flatOceanM: -6,
+    // Worms stands about 90 m up. That is comfortable, but the gamma still
+    // helps the flood plains read as separate from the uplands around them.
+    landGamma: 0.8,
+    lakes: true,
+    out: '../src/assets/nibelungen-height.png',
+  },
   france: {
     z: 6,
     bbox: { lonMin: -6, lonMax: 6, latMin: 42, latMax: 53 },

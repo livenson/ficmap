@@ -54,6 +54,16 @@ const WORLDS = {
     // the map because you can see them from everywhere on it.
     scenic: new Set(['pilatus', 'uri-rotstock', 'rigi']),
   },
+  nibelungen: {
+    png: '../src/assets/nibelungen-height.png',
+    story: '../src/stories/nibelungen.ts',
+    bbox: { lonMin: 5.8, lonMax: 19.5, latMin: 47.0, latMax: 52.2 },
+    seaLevel: 0.0037,
+    reach: 0.09,
+    // Isenstein is over the sea and the Rhine mouth is the sea.
+    wet: new Set(['isenstein', 'rhine-mouth']),
+    scenic: new Set(['alps', 'bohemia']),
+  },
 }
 
 const name = process.argv[2] ?? 'latvia'

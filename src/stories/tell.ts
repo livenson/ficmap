@@ -138,9 +138,23 @@ export const tell: Story = {
       at: { x: 0.195, z: 0.42 },
       description:
         'The castle of the old baron Werner von Attinghausen, the last of the ' +
-        'free nobles, who dies telling the peasants that their day is coming ' +
-        'and his class is finished. The one aristocrat in the play on the ' +
-        'country’s side.',
+        'free nobles. He dies in Act IV telling the peasants around his bed ' +
+        'that their day is coming and his own class is finished — and his ' +
+        'heir Ulrich von Rudenz, who has spent the play in Austrian service, ' +
+        'arrives too late to be forgiven in person.',
+    },
+    {
+      id: 'rudenz-tower',
+      name: 'Rudenz’s Road to Altdorf',
+      kind: 'landmark',
+      at: { x: 0.222, z: 0.395 },
+      description:
+        'Ulrich von Rudenz is Attinghausen’s nephew and heir, and he has gone ' +
+        'over to Austria — partly for advancement, mostly for Bertha von ' +
+        'Bruneck. His uncle calls him a traitor to his face and he rides off ' +
+        'anyway. It is Bertha who turns him back: she tells him she will not ' +
+        'have a man who helps enslave his own country, and that she wants to be ' +
+        'free herself. He changes sides between one scene and the next.',
     },
     {
       id: 'rutli',
@@ -293,6 +307,18 @@ export const tell: Story = {
         'rope a serving girl let down for a lover, which the risen men used ' +
         'instead. The mountain itself came down on the valley in 1806, two ' +
         'years after Schiller wrote.',
+    },
+    {
+      id: 'bertha',
+      name: 'Where Bertha Was Held',
+      kind: 'danger',
+      at: { x: -0.72, z: 0.24 },
+      description:
+        'Bertha von Bruneck, an Austrian heiress with lands in Uri, is seized ' +
+        'and shut up in one of the bailiffs’ castles. Rudenz gets her out of ' +
+        'the burning building on the night the strongholds fall — which is how ' +
+        'a man who spent three acts on the wrong side ends the play as the one ' +
+        'who frees his own serfs.',
     },
     {
       id: 'gersau',
@@ -627,6 +653,19 @@ export const tell: Story = {
           highlight: { markers: ['zwing-uri'] },
         },
         {
+          id: 'ii-1b',
+          title: 'Rudenz changes sides',
+          narration:
+            'Attinghausen’s nephew Ulrich has taken Austrian service for the ' +
+            'sake of Bertha von Bruneck, and his uncle tells him what he is. It ' +
+            'is Bertha who actually turns him: she will not marry a man who ' +
+            'helps hold his own country down, and she says so with the ' +
+            'bailiffs’ men in earshot. He comes back over.',
+          focus: { marker: 'rudenz-tower', distance: 30, pitch: 40 },
+          reveal: { markers: ['rudenz-tower', 'bertha'] },
+          highlight: { markers: ['rudenz-tower'] },
+        },
+        {
           id: 'ii-2',
           title: 'The hat on the pole',
           narration:
@@ -727,10 +766,13 @@ export const tell: Story = {
             'made on the Rütli. Sarnen falls at dawn to men carrying New Year ' +
             'gifts with steel underneath, Rossberg to a rope let down for ' +
             'somebody else, and the Curb of Uri comes down stone by stone. ' +
-            'Nobody is killed in the castles. That was in the oath too.',
+            'Nobody is killed in the castles — that was in the oath too — and ' +
+            'Rudenz carries Bertha out of one of them as it burns. Word also ' +
+            'comes that the emperor Albrecht has been murdered by his own ' +
+            'nephew, and that his widow Elisabeth has let the cantons alone.',
           focus: { marker: 'sarnen', distance: 50, pitch: 46 },
           reveal: { routes: ['castles-fall'] },
-          highlight: { routes: ['castles-fall'] },
+          highlight: { routes: ['castles-fall'], markers: ['bertha'] },
         },
         {
           id: 'iii-6',

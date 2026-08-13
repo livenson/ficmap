@@ -16,6 +16,7 @@ const WORLDS = [
   { id: 'game-of-thrones', title: 'A Song of Ice and Fire' },
   { id: 'lacplesis', title: 'Lāčplēsis' },
   { id: 'tell', title: 'Wilhelm Tell' },
+  { id: 'nibelungen', title: 'The Nibelungenlied' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -316,5 +317,20 @@ test('runs Wilhelm Tell from the lake to the sunken lane', async ({ page }) => {
   await page.getByRole('button', { name: /The Hohle Gasse/ }).first().click()
   await expect(page.getByRole('heading', { name: 'The Hohle Gasse' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Mentioned in' })).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('rides the Nibelungenlied east twice', async ({ page }) => {
+  // The poem's shape is one road travelled to a wedding and then, thirteen
+  // years later, to a slaughter — so both routes have to be on the map.
+  const errors = trackErrors(page)
+  await page.goto('/?world=nibelungen')
+  await expect(page.locator('canvas')).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Worms/ }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: /Etzelburg/ }).first()).toBeVisible()
+  // The hoard's journey ends in the river and stays there.
+  await page.getByRole('button', { name: /The Nibelung Hoard/ }).first().click()
+  await expect(page.getByRole('heading', { name: 'Its journey' })).toBeVisible()
+  await expect(page.getByText(/nobody says where/)).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
 })
