@@ -53,22 +53,43 @@ export const peergynt: Story = {
   },
   terrain: {
     music: {
-      // Grieg wrote the incidental music in 1875 and it is public domain, but
-      // no score was read while building this world, so nothing here is
-      // presented as his. This is written to the halling — the Norwegian
-      // dance in duple time that Peer's own wedding scene calls for — and is
-      // an original tune, honestly credited as one.
-      title: 'Halling for a liar',
-      credit: 'After the Norwegian halling · original',
+      // Grieg's own Peer Gynt music, written 1874–75 for Ibsen's play; Grieg
+      // died in 1907, so it is public domain. This is the flute statement that
+      // opens Morgenstemning — Peer Gynt Suite No. 1, Op. 46 No. 1 — bars 1–4
+      // and then bars 9–12, where the same phrase is sequenced up a major
+      // third. Bars 5–8 are skipped: they are the identical phrase handed to
+      // the oboe an octave down, which a single-voice engine cannot show.
+      //
+      // Transcribed, not remembered. Two independent machine-readable sources
+      // were parsed and agreed note for note: notehead glyph coordinates
+      // extracted from an engraved PDF of Loveridge's piano transcription
+      // (IMSLP333906) against the DEM-style staff geometry, and the Flute 1
+      // track of an orchestral MIDI of Op. 46. Both were then checked against
+      // the printed score — E major, 6/8, Allegretto pastorale, and a first
+      // bar of B–G#–F#–E–F#–G# that is symmetric about its lowest note.
+      //
+      // Counted in eighths so the written-out turns survive: the melody parser
+      // floors a step at 0.25 beats, and the turn is in 32nds. tempo 180
+      // eighths per minute is exactly Grieg's marked dotted-crotchet = 60.
+      title: 'Morgenstemning',
+      credit: 'Edvard Grieg · Peer Gynt Suite No. 1, Op. 46 · public domain',
       melody:
-        'A4:2 A4:1 B4:1 C5:2 A4:2 E4:2 A4:2 B4:2 C5:2 ' +
-        'D5:2 C5:1 B4:1 A4:2 G4:2 E4:4 r:2 ' +
-        'C5:2 C5:1 D5:1 E5:2 C5:2 A4:2 C5:2 B4:2 A4:2 ' +
-        'G4:2 E4:2 A4:4 r:4',
-      bass: 'A2:8 E2:8 F2:8 A2:8',
-      tempo: 76,
-      voice: 'strings',
-      mood: 'wonder',
+        'B5:1 G#5:1 F#5:1 E5:1 F#5:1 G#5:1 ' +
+        'B5:0.5 G#5:0.25 A5:0.25 G#5:1 F#5:1 E5:1 ' +
+        'F#5:0.5 G#5:0.5 F#5:0.5 G#5:0.25 A5:0.25 ' +
+        'B5:1 G#5:1 B5:1 C#6:1 G#5:1 C#6:1 ' +
+        'B5:1 G#5:1 F#5:1 E5:2 r:1 ' +
+        'D#6:1 C6:1 A#5:1 G#5:1 A#5:1 C6:1 ' +
+        'D#6:0.75 C#6:0.25 C6:1 A#5:1 G#5:1 ' +
+        'A#5:0.5 C6:0.5 A#5:0.5 C6:0.25 C#6:0.25 ' +
+        'D#6:1 C6:1 D#6:1 E6:1 C6:1 E6:1 ' +
+        'D#6:1 C6:1 A#5:1 G#5:2 r:1',
+      // The open fifth the cellos hold under the statement, one note a bar:
+      // an E pedal for the first phrase, G# for the sequence.
+      bass: 'E2:6 E2:6 E2:6 E2:6 G#2:6 G#2:6 G#2:6 G#2:6',
+      tempo: 180,
+      voice: 'flute',
+      mood: 'calm',
     },
     seed: 'peergynt-1', // unused: the heightmap takes precedence
     heightmap: norwayHeight,

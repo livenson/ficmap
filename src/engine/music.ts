@@ -213,17 +213,41 @@ export class AmbientMusic {
     const beat = 60 / bpm
     const voice = cfg.voice ?? MOOD_VOICE[cfg.mood ?? 'calm']
 
+    // True when this step is the first of the tune, so the bass can come round
+    // to the top with it. Read before `mi` advances.
+    const atTop = this.mi % this.melody.length === 0
+
     const step = this.melody[this.mi % this.melody.length]
     this.mi++
     if (step.hz) this.play(step.hz, step.beats * beat, voice, 1)
 
-    // The bass line runs on its own clock underneath.
+    // The bass keeps its own note lengths underneath, but it is LOCKED to the
+    // melody rather than running free. Two things used to pull it away:
+    //
+    //  - Most tunes are not a whole number of bass notes long (a 38-beat
+    //    melody over a 32-beat bass), so every repeat started the bass six
+    //    beats further into the harmony. Within a couple of loops the low part
+    //    was playing a chord that had nothing to do with the tune above it —
+    //    which is what made the bass sound unrelated in almost every world.
+    //  - When a melody step overran the end of a bass note, the leftover was
+    //    thrown away by assigning `bNext` instead of adding to it, so the bass
+    //    also drifted a little later every time that happened.
     if (this.bass.length) {
-      if (this.bNext <= 0) {
+      if (atTop) {
+        this.bi = 0
+        this.bNext = 0
+      }
+      // Start every bass note whose beat falls inside this melody step, at its
+      // exact offset within it. The bass could previously only change when a
+      // melody note happened to begin, so over a long melody note a chord
+      // change could land up to four beats late. The guard is a belt-and-braces
+      // stop; `parseMelody` floors a step at 0.25 beats, so this always ends.
+      let guard = 0
+      while (this.bNext < step.beats && guard++ < 32) {
         const b = this.bass[this.bi % this.bass.length]
         this.bi++
-        if (b.hz) this.play(b.hz, b.beats * beat, 'strings', 0.5)
-        this.bNext = b.beats
+        if (b.hz) this.play(b.hz, b.beats * beat, 'strings', 0.5, Math.max(0, this.bNext) * beat)
+        this.bNext += b.beats
       }
       this.bNext -= step.beats
     }
@@ -233,12 +257,18 @@ export class AmbientMusic {
     this.timer = setTimeout(() => this.tick(), (step.beats * beat + gap) * 1000)
   }
 
-  /** Synthesise one note: stacked partials under a shaped envelope. */
-  private play(hz: number, dur: number, voice: MusicVoice, level: number) {
+  /**
+   * Synthesise one note: stacked partials under a shaped envelope.
+   *
+   * `delay` (seconds) starts the note that far into the future on the audio
+   * clock rather than immediately — the bass uses it to land on its own beat
+   * instead of on whichever melody note happens to be starting.
+   */
+  private play(hz: number, dur: number, voice: MusicVoice, level: number, delay = 0) {
     const ctx = this.ctx
     if (!ctx || !this.bus) return
     const v = VOICES[voice]
-    const t = ctx.currentTime
+    const t = ctx.currentTime + Math.max(0, delay)
     const hold = Math.max(0.25, dur * 0.92)
 
     const env = ctx.createGain()
