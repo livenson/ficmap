@@ -83,6 +83,55 @@ const WORLDS = {
     wet: new Set(['brielle', 'flushing', 'middelburg', 'ostend']),
     scenic: new Set(['ardennes', 'spanish-road']),
   },
+  kalevala: {
+    png: '../src/assets/karelia-height.png',
+    story: '../src/stories/kalevala.ts',
+    bbox: { lonMin: 15.0, lonMax: 44.0, latMin: 59.5, latMax: 70.5 },
+    seaLevel: 0.0066,
+    reach: 0.09,
+    // Water on purpose: the poem opens on the open sea, Aino drowns, the
+    // Sampo sinks, and the lakes are lakes.
+    wet: new Set([
+      'saimaa',
+      'saari',
+      'bothnia',
+      'inari',
+      'sampo-wreck',
+      'aino',
+      'departure',
+      'alue',
+      'pike-shoal',
+    ]),
+    scenic: new Set(['kullervo', 'kaleva-oak']),
+  },
+  peergynt: {
+    png: '../src/assets/norway-height.png',
+    story: '../src/stories/peergynt.ts',
+    bbox: { lonMin: 3.0, lonMax: 15.0, latMin: 58.0, latMax: 63.5 },
+    seaLevel: 0.003,
+    reach: 0.09,
+    // Act IV is off the bottom of the map, out over the water.
+    wet: new Set(['africa']),
+    // Named from a ship's deck, not climbed.
+    scenic: new Set(['ronde', 'gendin', 'oslo', 'jokel']),
+  },
+  nils: {
+    png: '../src/assets/sweden-height.png',
+    story: '../src/stories/nils.ts',
+    bbox: { lonMin: 10.0, lonMax: 25.0, latMin: 55.0, latMax: 69.5 },
+    seaLevel: 0.0033,
+    reach: 0.09,
+    // Lakes, a sunken city, a seal skerry and a bare island in the West Sea.
+    wet: new Set([
+      'malaren',
+      'vanern',
+      'takern',
+      'vineta',
+      'karls-island',
+      'treasure-isle',
+    ]),
+    scenic: new Set(['omberg', 'smaland']),
+  },
 }
 
 const name = process.argv[2] ?? 'latvia'

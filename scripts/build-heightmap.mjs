@@ -127,6 +127,55 @@ const PRESETS = {
     lakes: true,
     out: '../src/assets/flanders-height.png',
   },
+  karelia: {
+    // Kalevala country. The poem's own geography is two places and a road:
+    // Wainola/Kalevala in the south and Pohyola — Northland, Sariola — in the
+    // far north, "the dark and dismal country". The box holds Finland, Karelia
+    // and the White Sea, plus the Gulf of Bothnia and enough of Lapland and
+    // Kola for the north to be genuinely far away.
+    z: 7,
+    bbox: { lonMin: 15.0, lonMax: 44.0, latMin: 59.5, latMax: 70.5 },
+    w: 1024,
+    h: 918,
+    // The Scandes along the western edge are not in the poem; cap them so
+    // Finland's lakes and coasts keep the dynamic range.
+    capM: 900,
+    flatOceanM: -6,
+    landGamma: 0.6,
+    lakes: true,
+    out: '../src/assets/karelia-height.png',
+  },
+  norway: {
+    // Peer Gynt country: southern Norway. Gudbrandsdalen and the Rondane in
+    // the middle, Jotunheimen west of them, and the western fjord coast where
+    // Act V comes home past Hallingskarvet and the Folgefonna.
+    z: 8,
+    bbox: { lonMin: 3.0, lonMax: 15.0, latMin: 58.0, latMax: 63.5 },
+    w: 1024,
+    h: 966,
+    capM: 2000,
+    flatOceanM: -6,
+    landGamma: 0.75,
+    lakes: true,
+    out: '../src/assets/norway-height.png',
+  },
+  sweden: {
+    // Nils Holgersson country: the whole of Sweden, because the book is a
+    // school geography and the journey runs its entire length — Skåne in the
+    // south to Kebnekaise in Lapland and back. Sweden is far taller than it is
+    // wide, so this is the atlas's first world with an aspect BELOW 1.
+    z: 7,
+    bbox: { lonMin: 10.0, lonMax: 25.0, latMin: 55.0, latMax: 69.5 },
+    w: 624,
+    h: 1280,
+    // Kebnekaise is 2,097 m and is where the goose leader comes from; cap just
+    // below it so the mountain is the roof of the map.
+    capM: 1800,
+    flatOceanM: -6,
+    landGamma: 0.6,
+    lakes: true,
+    out: '../src/assets/sweden-height.png',
+  },
   france: {
     z: 6,
     bbox: { lonMin: -6, lonMax: 6, latMin: 42, latMax: 53 },

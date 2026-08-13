@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { WORLD_SIZE, aspectOf } from '../engine/terrain'
+import { WORLD_SIZE, aspectOf, frameScale } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -53,9 +53,12 @@ export function Water({ terrain }: Props) {
   return (
     <mesh rotation-x={-Math.PI / 2} position-y={y}>
       <planeGeometry
+        // 1.5x the world in each direction, or as far as the camera is pulled
+        // back for this aspect — whichever is further, so the sea never ends
+        // inside the view and shows its own straight edge.
         args={[
-          WORLD_SIZE * 1.5 * aspectOf(terrain),
-          WORLD_SIZE * 1.5,
+          WORLD_SIZE * 1.5 * Math.max(aspectOf(terrain), frameScale(aspectOf(terrain))),
+          WORLD_SIZE * 1.5 * frameScale(aspectOf(terrain)),
           // Keep segment density uniform on a widened world so the wave shader
           // doesn't alias into big, unevenly-lit facets.
           Math.round(80 * aspectOf(terrain)),

@@ -19,6 +19,9 @@ const WORLDS = [
   { id: 'nibelungen', title: 'The Nibelungenlied' },
   { id: 'faust', title: 'Faust' },
   { id: 'uilenspiegel', title: 'Tijl Uilenspiegel' },
+  { id: 'kalevala', title: 'The Kalevala' },
+  { id: 'peergynt', title: 'Peer Gynt' },
+  { id: 'nils', title: 'Nils Holgersson' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -362,5 +365,52 @@ test('turns Uilenspiegel from the land to the sea', async ({ page }) => {
   await page.getByRole('button', { name: /The Ashes of Claes/ }).first().click()
   await expect(page.getByRole('heading', { name: 'Its journey' })).toBeVisible()
   await expect(page.getByText(/still not buried/)).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('crosses the Kalevala into Tuonela and back', async ({ page }) => {
+  // The one world here whose underworld is reached from a marker as well as
+  // from the floor switcher — the river of Tuoni has a bank on each floor.
+  const errors = trackErrors(page)
+  await page.goto('/?world=kalevala')
+  await expect(page.locator('canvas')).toBeVisible()
+
+  await page.getByRole('button', { name: /The River of Tuoni/ }).first().click()
+  await page.getByRole('button', { name: /The far bank/ }).click()
+  await expect(page).toHaveURL(/floor=tuonela/)
+  await expect(page.getByRole('heading', { name: 'The Far Bank' })).toBeVisible()
+
+  // And the return trip, which in the poem takes an otter and a snake.
+  await page.getByRole('button', { name: /Back to the living bank/ }).click()
+  await expect(page).not.toHaveURL(/floor=tuonela/)
+  await expect(page.getByRole('heading', { name: 'The River of Tuoni' })).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('takes Peer Gynt down into the Dovre-King’s hall', async ({ page }) => {
+  const errors = trackErrors(page)
+  await page.goto('/?world=peergynt')
+  await expect(page.locator('canvas')).toBeVisible()
+  await expect(page.getByRole('button', { name: /Halling for a liar/ }).first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'The Dovre-King’s Hall', exact: true }).click()
+  await expect(page).toHaveURL(/floor=trollhall/)
+  // The line the whole play turns on is a place on this floor.
+  await page.getByRole('button', { name: /The Difference/ }).first().click()
+  await expect(page.getByText(/to thyself be — enough/)).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('flies Nils the length of Sweden', async ({ page }) => {
+  // The atlas's first world that is taller than it is wide (aspect 0.482), so
+  // this also guards the framing: the far south has to be reachable.
+  const errors = trackErrors(page)
+  await page.goto('/?world=nils')
+  await expect(page.locator('canvas')).toBeVisible()
+
+  await page.getByRole('button', { name: /West Vemminghög/ }).first().click()
+  await expect(page.getByRole('heading', { name: 'West Vemminghög' })).toBeVisible()
+  await page.getByRole('button', { name: /^Kebnekaise/ }).first().click()
+  await expect(page.getByText(/highest mountain in Sweden/)).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
 })

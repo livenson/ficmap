@@ -64,7 +64,7 @@ The Vite `base` is already set to `./` so assets resolve correctly under the
 
 ## The worlds
 
-Seventeen worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
+Twenty worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
 terrain:
 
 - **The Realm of Valdurn** — an original demo kingdom that climbs to the
@@ -99,6 +99,14 @@ terrain:
   text itself supplies: **the Mothers** below and **the Mountain Gorges** above.
 - **Tijl Uilenspiegel** — De Coster's Belgian epic across Flanders and the
   Zeeland estuaries: a book that starts on land and wins at sea.
+- **The Kalevala** — Lönnrot's Finnish epic over Karelia, built around the one
+  road the whole poem travels, Wainola to Pohyola, with **Tuonela** below.
+- **Peer Gynt** — Ibsen's five acts over southern Norway, framed by the three
+  mountains Peer greets from a ship's deck in Act V, with **the Dovre-King's
+  Hall** below.
+- **Nils Holgersson** — Lagerlöf's school geography reader flown end to end,
+  Skåne to Lapland and home the western way. The first world here that is
+  taller than it is wide.
 
 The picker groups them into sections (national epics, classic adventure, modern
 fantasy, original) with a filter box, since a flat list stopped being readable
@@ -172,8 +180,8 @@ or below it into water.
 | `terrain.heightScale` | Vertical exaggeration of the 3D mesh. |
 | `terrain.biomes[]` | Elevation → color bands (low to high). |
 | `terrain.rivers` | Number of rivers traced downhill from highlands to sea (`riverColor` to tint — e.g. lava-orange). |
-| `terrain.heightmap` | Optional grayscale image URL — sampled elevation instead of noise. Some worlds use a **real DEM**: **Kalevipoeg** (Estonia), **The d'Artagnan Romances** (France + England), **Harry Potter** (Britain), **The Extraordinary Voyages** and **The Adventures of Indiana Jones** (the whole Earth), **Eneida** (the Mediterranean), **Lāčplēsis** (Latvia), **Wilhelm Tell** (Lake Lucerne), **The Nibelungenlied** (the Rhine + Danube), **Faust** (the Harz), **Tijl Uilenspiegel** (Flanders). Build these with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world\|mediterranean\|latvia\|lucerne\|nibelungen\|harz\|flanders]` (some presets also carve real lakes from Natural Earth data). Others use a **shaped** heightmap — hand-built to echo a canonical map — via their own script: **The Fellowship of the Ring** (`build-middle-earth.mjs`), **Mistborn** (`build-scadrial.mjs`), **The Forest Song** (`build-polissia.mjs`). Place markers at real `lon/lat` mapped into the DEM's box. |
-| `terrain.aspect` | World width ÷ depth (default 1 = square). Use >1 for a map wider than it is tall — **The Extraordinary Voyages** sets `360/140` so the equirectangular Earth keeps real proportions instead of stretching into the square. |
+| `terrain.heightmap` | Optional grayscale image URL — sampled elevation instead of noise. Some worlds use a **real DEM**: **Kalevipoeg** (Estonia), **The d'Artagnan Romances** (France + England), **Harry Potter** (Britain), **The Extraordinary Voyages** and **The Adventures of Indiana Jones** (the whole Earth), **Eneida** (the Mediterranean), **Lāčplēsis** (Latvia), **Wilhelm Tell** (Lake Lucerne), **The Nibelungenlied** (the Rhine + Danube), **Faust** (the Harz), **Tijl Uilenspiegel** (Flanders), **The Kalevala** (Karelia), **Peer Gynt** (southern Norway), **Nils Holgersson** (Sweden). Build these with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world\|mediterranean\|latvia\|lucerne\|nibelungen\|harz\|flanders\|karelia\|norway\|sweden]` (some presets also carve real lakes from Natural Earth data). Others use a **shaped** heightmap — hand-built to echo a canonical map — via their own script: **The Fellowship of the Ring** (`build-middle-earth.mjs`), **Mistborn** (`build-scadrial.mjs`), **The Forest Song** (`build-polissia.mjs`). Place markers at real `lon/lat` mapped into the DEM's box. |
+| `terrain.aspect` | World width ÷ depth (default 1 = square). Use >1 for a map wider than it is tall — **The Extraordinary Voyages** sets `360/140` so the equirectangular Earth keeps real proportions instead of stretching into the square — or <1 for one taller than it is wide: **Nils Holgersson** sets `0.482` because Sweden is 777 km across and 1,611 km down. The camera, the haze, the sea plane and the shadow frustum all scale off it. |
 | `terrain.detail` | Adds fine surface relief (a tiled procedural bump map) so light picks out rockiness up close. On for the shaped-terrain worlds (FOTR, Mistborn, The Forest Song). |
 | `terrain.sky` | Sky mood: `'day'` (default), `'dark'` (warm hellfire underworld), `'cavern'` (cool phosphorescence), `'heaven'` (a luminous cloud-sea sky realm). |
 | `markers[]` | Labeled points of interest (`capital`, `city`, `port`, `ruin`, …). |
