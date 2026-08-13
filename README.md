@@ -153,6 +153,20 @@ resolves back to, and fails if a land marker is under water. Markers that are
 the script's `wet` set. This is how Burtnieks was caught sitting in the middle
 of its own lake rather than on its shore.
 
+Route coverage is checked across the **whole atlas**, not just the DEM worlds:
+
+```bash
+node scripts/check-routes.mjs          # every world, every floor
+node scripts/check-routes.mjs kalevala # just one
+```
+
+It bundles the real story data with esbuild and imports it, so it sees exactly
+what the app sees — every level, every marker, no regex guesswork. A place
+counts as connected when a route passes within 0.09 map units of it, or when it
+is declared scenic in the script (a summit you only ever look at). This found 71
+places with no route to them, including a whole world — The Forest Song — that
+had no routes at all.
+
 Scores get the same treatment. The tunes are synthesised live, so a test cannot
 hear them — but it can check that the written bass actually lands where the
 score says it does, underneath the melody:

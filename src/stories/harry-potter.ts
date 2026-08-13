@@ -282,6 +282,77 @@ export const harryPotter: Story = {
         { x: -0.42, z: -0.511 }, // Hogwarts
       ],
     },
+    {
+      id: 'order-errands',
+      name: 'The Order’s Errands',
+      color: '#8fb4d8',
+      style: 'solid',
+      description:
+        'The Order of the Phoenix moving people about between safe houses: ' +
+        'the Dursleys’ front step, headquarters in London, the Weasleys’ ' +
+        'burrow, the Lovegoods next valley over, and Bill and Fleur’s cottage ' +
+        'on the coast when nowhere else is left.',
+      points: [
+        { x: 0.49, z: 0.75 },
+        { x: 0.57, z: 0.66 },
+        { x: 0.22, z: 0.7 },
+        { x: 0.16, z: 0.74 },
+        { x: -0.06, z: 0.8 },
+        { x: 0.0, z: 0.84 },
+        { x: -0.24, z: 0.9 },
+        { x: -0.46, z: 0.94 },
+      ],
+    },
+    {
+      id: 'dumbledore-errands',
+      name: 'What Dumbledore Went to Fetch',
+      color: '#c8a0d8',
+      style: 'dashed',
+      description:
+        'The horcrux trail before the hunt proper: the ring in the Gaunt ' +
+        'shack at Little Hangleton, Slughorn talked out of retirement, and ' +
+        'the locket in the sea cave — the errand he does not come back from ' +
+        'in one piece.',
+      points: [
+        { x: -0.36, z: -0.46 },
+        { x: 0.12, z: 0.48 },
+        { x: 0.18, z: 0.47 },
+        { x: 0.3, z: 0.33 },
+        { x: -0.1, z: 0.66 },
+        { x: -0.52, z: 0.9 },
+      ],
+    },
+    {
+      id: 'azkaban-run',
+      name: 'The Azkaban Breakout',
+      color: '#7a8a99',
+      style: 'dashed',
+      description:
+        'The fortress in the North Sea that nobody visits willingly. The ' +
+        'Death Eaters come out of it in the middle of the series and go ' +
+        'straight back to work.',
+      points: [
+        { x: 0.84, z: -0.32 },
+        { x: 0.78, z: 0.1 },
+        { x: 0.66, z: 0.67 },
+        { x: 0.57, z: 0.66 },
+      ],
+    },
+    {
+      id: 'into-the-forest',
+      name: 'Into the Forest',
+      color: '#6f9b57',
+      style: 'solid',
+      description:
+        'Out of the castle, past the shack under the Whomping Willow, and ' +
+        'down into the trees — detention in the first book, the walk to meet ' +
+        'Voldemort in the last.',
+      points: [
+        { x: -0.42, z: -0.511 },
+        { x: -0.33, z: -0.43 },
+        { x: -0.5, z: -0.44 },
+      ],
+    },
   ],
   regions: [
     { id: 'scotland', name: 'The Highlands', at: { x: -0.4, z: -0.66 }, scale: 1.0 },

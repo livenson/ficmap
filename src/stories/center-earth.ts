@@ -114,6 +114,8 @@ export const centerEarth: Story = {
         { x: 0.1, z: -0.12 },
         { x: 0.26, z: -0.28 },
         { x: 0.32, z: -0.34 },
+        { x: 0.44, z: -0.06 },
+        { x: 0.5, z: 0.12 },
       ],
     },
   ],
@@ -299,6 +301,7 @@ export const centerEarth: Story = {
           color: '#5fb0c0',
           style: 'dashed',
           points: [
+            { x: -0.4, z: 0.28 },
             { x: -0.6, z: -0.2 },
             { x: 0.16, z: -0.05 },
             { x: 0.42, z: 0.18 },

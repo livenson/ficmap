@@ -297,6 +297,62 @@ export const mistborn: Story = {
         { x: 0.2, z: -0.07 },
         { x: 0.19, z: -0.35 },
         { x: 0.18, z: -0.63 },
+        { x: 0.33, z: -0.72 },
+      ],
+    },
+    {
+      id: 'southern-canals',
+      name: 'The Southern Canals',
+      color: '#8fa8c8',
+      style: 'solid',
+      description:
+        'The canal boats south out of Luthadel through the skaa towns of the ' +
+        'Central Dominance and on to the Canton stronghold at Seran — the ' +
+        'route the crew take when they need to be somewhere without an army ' +
+        'noticing.',
+      points: [
+        { x: 0.2, z: -0.07 },
+        { x: -0.01, z: 0.07 },
+        { x: -0.07, z: 0.11 },
+        { x: 0.07, z: 0.16 },
+        { x: 0.45, z: 0.26 },
+        { x: 0.49, z: 0.35 },
+        { x: 0.53, z: 0.43 },
+      ],
+    },
+    {
+      id: 'western-towns',
+      name: 'The Western Dominance',
+      color: '#c8a86b',
+      style: 'dashed',
+      description:
+        'Off the main road: Mantiz and the mining country west of Fadrex, ' +
+        'and the pits that were the Lord Ruler’s only source of atium.',
+      points: [
+        { x: -0.37, z: -0.24 },
+        { x: -0.22, z: -0.31 },
+        { x: -0.23, z: -0.14 },
+        { x: -0.35, z: -0.09 },
+        { x: -0.28, z: -0.02 },
+        { x: -0.2, z: 0.06 },
+      ],
+    },
+    {
+      id: 'atium-road',
+      name: 'The Road to the Pits',
+      color: '#b0a0d0',
+      style: 'dashed',
+      description:
+        'The one place in the empire where atium came from, worked by skaa ' +
+        'who did not come back, with the Arguois caverns and the ashmounts ' +
+        'along the way.',
+      points: [
+        { x: 0.2, z: -0.07 },
+        { x: 0.08, z: -0.21 },
+        { x: 0.0, z: -0.16 },
+        { x: 0.0, z: -0.43 },
+        { x: 0.22, z: -0.26 },
+        { x: 0.33, z: -0.33 },
       ],
     },
   ],
@@ -427,6 +483,7 @@ export const mistborn: Story = {
             { x: -0.25, z: -0.12 },
             { x: 0.12, z: 0.18 },
             { x: 0.5, z: 0.5 },
+            { x: 0.62, z: 0.62 },
           ],
         },
         {
@@ -435,6 +492,8 @@ export const mistborn: Story = {
           color: '#e0a25a',
           style: 'dashed',
           points: [
+            { x: -0.06, z: -0.54 },
+            { x: -0.12, z: -0.4 },
             { x: -0.25, z: -0.12 },
             { x: 0.2, z: -0.32 },
             { x: 0.5, z: -0.48 },

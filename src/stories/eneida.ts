@@ -292,6 +292,28 @@ export const eneida: Story = {
             'through the wrangling of the gods’ table, to the throne of Jove ' +
             'where his fate is decreed.',
         },
+        {
+          id: 'errands',
+          name: 'The Gods’ Errands',
+          points: [
+            { x: -0.1, z: -0.5 },
+            { x: 0.18, z: -0.46 },
+            { x: 0.42, z: -0.4 },
+            { x: 0.32, z: 0.02 },
+            { x: 0.16, z: 0.36 },
+            { x: -0.14, z: 0.38 },
+            { x: -0.42, z: 0.34 },
+            { x: -0.22, z: 0.0 },
+            { x: 0.0, z: -0.2 },
+          ],
+          color: '#c8b0e0',
+          style: 'solid',
+          description:
+            'Nothing on this floor stays still. Juno goes to Aeolus to buy a ' +
+            'storm, Neptune has to be fetched to put the sea back, Venus ' +
+            'goes down to Vulcan’s forge for armour, and all of it ends up ' +
+            'back at Jove’s hall being argued over.',
+        },
       ],
       regions: [
         { id: 'heaven', name: 'Olympus', at: { x: 0.0, z: 0.0 }, scale: 1.3 },

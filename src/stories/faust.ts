@@ -691,6 +691,24 @@ export const faust: Story = {
       ],
       routes: [
         {
+          id: 'the-roses-fall',
+          name: 'The Angels’ Descent',
+          style: 'dashed',
+          color: '#f0c8d8',
+          points: [
+            { x: 0.34, z: 0.5 },
+            { x: 0.3, z: 0.16 },
+            { x: 0.18, z: -0.2 },
+            { x: 0.08, z: -0.42 },
+            { x: 0.0, z: -0.56 },
+          ],
+          description:
+            'The younger angels come down scattering roses, which burn ' +
+            'Mephistopheles wherever they touch him and distract him so ' +
+            'thoroughly that Faust’s immortal part is carried off while he ' +
+            'is busy lusting after them. He loses the wager to flowers.',
+        },
+        {
           id: 'ascent',
           name: 'The ascent',
           color: '#f0e2b0',

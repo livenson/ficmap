@@ -141,6 +141,65 @@ export const forestSong: Story = {
         'which Lukash forsakes his forest-love.',
     },
   ],
+  routes: [
+    {
+      id: 'coming-to-the-forest',
+      name: 'Lukash Comes to the Forest',
+      style: 'solid',
+      color: '#e8c56a',
+      points: [
+        { x: -0.4, z: -0.12 },
+        { x: -0.28, z: -0.09 },
+        { x: -0.14, z: -0.05 },
+        { x: 0.08, z: -0.11 },
+        { x: 0.28, z: -0.16 },
+      ],
+      description:
+        'Uncle Lev and his nephew come up to the lake to clear a place and ' +
+        'keep bees. Lukash cuts a reed to make a flute by the water, plays ' +
+        'it, and wakes Mavka out of the willow — which is the whole of the ' +
+        'first act and the cause of everything after it.',
+    },
+    {
+      id: 'mavkas-year',
+      name: 'Mavka’s Year',
+      style: 'solid',
+      color: '#8fc27a',
+      points: [
+        { x: 0.28, z: -0.16 },
+        { x: 0.06, z: -0.34 },
+        { x: -0.1, z: -0.5 },
+        { x: 0.2, z: -0.58 },
+        { x: 0.45, z: -0.55 },
+        { x: 0.58, z: -0.1 },
+        { x: 0.6, z: 0.42 },
+      ],
+      description:
+        'Spring to winter, told through the wood itself: the willow she comes ' +
+        'out of, the old oak Lev will not let anyone fell, the deeps where the ' +
+        'forest keeps its own counsel — and at last the rock, where He Who ' +
+        'Sits in the Rock takes her when she has nothing left to lose.',
+    },
+    {
+      id: 'the-farm',
+      name: 'The Farm Encroaches',
+      style: 'dashed',
+      color: '#c8a86b',
+      points: [
+        { x: -0.4, z: -0.12 },
+        { x: -0.52, z: 0.02 },
+        { x: -0.66, z: 0.18 },
+        { x: -0.6, z: 0.36 },
+        { x: -0.55, z: 0.5 },
+      ],
+      description:
+        'The other pull on Lukash: a scythe, a field, and Kylyna, who is ' +
+        'practical and wants the meadow mown. Every step the farm takes into ' +
+        'the wood costs Mavka something, and the play never pretends the ' +
+        'farm is wrong to need it.',
+    },
+  ],
+
   regions: [
     { id: 'polissia', name: 'Polissia', at: { x: -0.22, z: 0.02 }, scale: 1.4 },
     { id: 'lake-region', name: 'Lake Nechimne', at: { x: 0.04, z: 0.06 }, scale: 0.9 },

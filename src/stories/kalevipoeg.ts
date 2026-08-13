@@ -293,6 +293,59 @@ export const kalevipoeg: Story = {
         { x: 0.53, z: 0.59 },
       ],
     },
+    {
+      id: 'plank-road',
+      name: 'The Road of Planks',
+      color: '#c8a86b',
+      style: 'solid',
+      description:
+        'Kalevipoeg hauling his shipload of timber south from the coast and ' +
+        'laying it across the bogs — the causeway roads that the poem says ' +
+        'are why you can cross that country at all.',
+      points: [
+        { x: -0.05, z: -0.13 },
+        { x: 0.04, z: -0.02 },
+        { x: 0.29, z: 0.08 },
+        { x: 0.2, z: 0.42 },
+        { x: 0.41, z: 0.37 },
+        { x: 0.58, z: 0.5 },
+        { x: 0.64, z: 0.18 },
+      ],
+    },
+    {
+      id: 'island-voyage',
+      name: 'The Voyage to the World’s End',
+      color: '#6fa8c8',
+      style: 'dashed',
+      description:
+        'The sea-going half of the poem: west to the island where he wrongs ' +
+        'the maiden, north across to Tuuslar’s shore to burn the sorcerer ' +
+        'out, and on to the edge of the world to find where the sky is ' +
+        'fastened.',
+      points: [
+        { x: -0.08, z: -0.18 },
+        { x: -0.4, z: -0.05 },
+        { x: -0.62, z: 0.02 },
+        { x: -0.5, z: -0.4 },
+        { x: -0.2, z: -0.88 },
+        { x: 0.03, z: -0.82 },
+        { x: -0.15, z: -0.75 },
+      ],
+    },
+    {
+      id: 'southern-march',
+      name: 'The Southern March',
+      color: '#e0a05a',
+      style: 'solid',
+      description:
+        'The campaign south into the marches, where the map touches the ' +
+        'country of the other Baltic epic.',
+      points: [
+        { x: 0.2, z: 0.44 },
+        { x: 0.224, z: 0.722 },
+        { x: 0.37, z: 0.82 },
+      ],
+    },
   ],
   regions: [
     { id: 'homeland', name: 'The Homeland', at: { x: 0.05, z: -0.05 }, scale: 1.15 },

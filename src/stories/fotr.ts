@@ -130,6 +130,7 @@ export const fotr: Story = {
       id: 'fellowship-path',
       name: 'Path of the Ringbearer',
       points: [
+        { x: -0.82, z: -0.27 },
         { x: -0.6, z: -0.13 },
         { x: -0.4, z: -0.1 },
         { x: -0.24, z: -0.13 },

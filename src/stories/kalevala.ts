@@ -755,6 +755,23 @@ export const kalevala: Story = {
             'go there on purpose.',
         },
         {
+          id: 'the-fields',
+          name: 'Across the Fields of Kalma',
+          style: 'dashed',
+          color: '#6f8296',
+          points: [
+            { x: -0.22, z: 0.02 },
+            { x: -0.16, z: 0.24 },
+            { x: -0.05, z: 0.42 },
+            { x: 0.12, z: 0.3 },
+            { x: 0.26, z: 0.14 },
+          ],
+          description:
+            'What Tuoni’s daughter shows him on the way to his bed: the low ' +
+            'ground where the dead are laid, which is the same reeds and the ' +
+            'same fishing as the living bank, only colder.',
+        },
+        {
           id: 'raking',
           name: 'The Mother’s Raking',
           style: 'solid',
