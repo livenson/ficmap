@@ -61,18 +61,23 @@ export const lacplesis: Story = {
   },
   terrain: {
     music: {
-      // A daina is sung on a short, narrow melody over a drone; the kokle that
-      // accompanies it is a plucked zither, which is why the voice is a harp.
-      // No specific folk tune is claimed here — this is written for the atlas.
-      title: 'Daina for the Bear-Slayer',
-      credit: 'After Latvian daina singing · original',
+      // The real thing at last: the Daugava boatmen's song, transcribed from
+      // Andrejs Jurjāns' 1884 four-part setting (Jurjāns d. 1922 → public
+      // domain). E major, 3/4, quarter = 70, eight bars and repeat. The whole
+      // song is one shape: up to the C#5 at "dzen laiviņu", then a long walk
+      // down to the tonic on "Kurzemē".
+      title: 'Pūt, vējiņi',
+      credit: 'Latvian folk song · arr. Andrejs Jurjāns, 1884 · public domain',
       melody:
-        'D4:2 F4:1 E4:1 D4:2 C4:2 D4:4 r:1 F4:2 G4:1 A4:1 G4:2 F4:2 E4:4 r:1 ' +
-        'A4:2 G4:1 F4:1 E4:2 D4:2 C4:2 D4:6 r:2',
-      bass: 'D2:8 D2:8 A2:8 D2:8',
-      tempo: 62,
-      voice: 'harp',
-      mood: 'mystic',
+        'F#4:1 A4:2 G#4:0.5 F#4:0.5 E4:2 G#4:1 B4:2 C#5:1 B4:2 ' +
+        'F#4:0.5 G#4:0.5 A4:2 A4:1 G#4:2 A4:0.5 G#4:0.5 F#4:2 E4:3 r:2',
+      // Roots under the phrase: tonic, dominant, subdominant, and home.
+      bass: 'E2:6 B2:6 A2:6 B2:3 E2:3',
+      tempo: 70,
+      // Sung, not plucked — the words read like a drinking song but the tune
+      // is always given reverently, closer to a hymn.
+      voice: 'flute',
+      mood: 'calm',
     },
     seed: 'lacplesis-1', // unused: the heightmap takes precedence
     heightmap: latviaHeight,

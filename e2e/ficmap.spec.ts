@@ -236,6 +236,11 @@ test('the score follows the world you switch to', async ({ page }) => {
   }
   expect(await heard(370), 'Middle-earth theme not playing').toBe(true)
 
+  // Lāčplēsis plays Pūt, vējiņi — the only tune in the atlas with a C#5 in it.
+  await selectWorld(page, 'lacplesis')
+  await expect(page.locator('.nowplaying__title')).toHaveText('Pūt, vējiņi')
+  expect(await heard(554), 'Pūt, vējiņi not playing').toBe(true)
+
   await selectWorld(page, 'game-of-thrones')
   await expect(page.locator('.nowplaying__title')).toHaveText('Theme for the Seven Kingdoms')
   expect(await heard(208), 'still playing the previous world’s tune').toBe(true)

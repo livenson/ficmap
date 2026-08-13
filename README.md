@@ -284,7 +284,9 @@ A few more conveniences in the viewer:
   the northern, Estonian end.
 - **Music.** A toggle plays a written melody per world and floor, synthesised
   live — no audio files. Public-domain and traditional tunes are credited on
-  screen while they play; the rest are originals and say so.
+  screen while they play (**Lāčplēsis** plays *Pūt, vējiņi*, the Daugava
+  boatmen's song, transcribed from Andrejs Jurjāns' 1884 setting); the rest are
+  originals and say so.
 - **Collapsible panel.** A tab on the seam hides the side panel (a bottom sheet
   on mobile) to give the map the whole stage.
 - **Deep-links.** State lives in the URL: `?world=`, `?floor=`, `?view=2d`,
