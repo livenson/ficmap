@@ -14,7 +14,7 @@ import { NowPlaying } from './ui/NowPlaying'
 import { getLevels, getLevel, allMarkers, SURFACE_ID } from './engine/levels'
 import { stories, getStory } from './stories'
 import type { Layers } from './ui/LayersMenu'
-import type { Story } from './types'
+import type { MarkerLink, Story } from './types'
 import { LangProvider, translate, type Lang } from './i18n'
 import { AmbientMusic, musicFor } from './engine/music'
 
@@ -220,6 +220,21 @@ export default function App() {
     writeWorldToUrl(id)
   }
 
+  // Cross to the same event on another world's map — the two national epics
+  // that share the duel hand the reader back and forth here. Land on the named
+  // place with its card already open, so the crossing lands somewhere, not just
+  // on the other world's default view.
+  function crossWorld(link: MarkerLink) {
+    const target = getStory(link.world)
+    if (target.id !== link.world) return
+    pickStory(link.world)
+    if (link.level) {
+      setLevelId(link.level)
+      writeFloorToUrl(link.level)
+    }
+    if (link.marker) setSelectedId(link.marker)
+  }
+
   // Filter to a book/film; a place no longer on the map loses its open card.
   const pickBook = (index: number | null) => {
     setBookFilter(index)
@@ -293,6 +308,7 @@ export default function App() {
       marker={selected}
       references={references[selected.id] ?? []}
       onJumpToChapter={jumpToChapter}
+      onCrossWorld={crossWorld}
       onClose={() => selectMarker(null)}
     />
   ) : null
@@ -355,6 +371,7 @@ export default function App() {
             onJumpTo={selectMarker}
             onSelectElement={selectElement}
             onJumpToChapter={jumpToChapter}
+            onCrossWorld={crossWorld}
           />
         )}
 

@@ -14,6 +14,7 @@ const WORLDS = [
   { id: 'forest-song', title: 'The Forest Song' },
   { id: 'eneida', title: 'Eneida' },
   { id: 'game-of-thrones', title: 'A Song of Ice and Fire' },
+  { id: 'lacplesis', title: 'Lāčplēsis' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -239,4 +240,44 @@ test('the score follows the world you switch to', async ({ page }) => {
   await expect(page.locator('.nowplaying__title')).toHaveText('Theme for the Seven Kingdoms')
   expect(await heard(208), 'still playing the previous world’s tune').toBe(true)
   expect(await heard(370), 'Middle-earth theme leaked into Westeros').toBe(false)
+})
+
+test('crosses between the two Baltic epics at the shared duel', async ({ page }) => {
+  // Lāčplēsis and Kalevipoeg both carry the duel between the Bear-Slayer and
+  // Kalev's son, so each map offers a door to the other at that place.
+  const errors = trackErrors(page)
+  await page.goto('/?world=lacplesis')
+  await expect(page.locator('canvas')).toBeVisible()
+
+  await page.getByRole('button', { name: /The Estonian March/ }).first().click()
+  await expect(page.locator('.place__cross-world')).toHaveText('Kalevipoeg')
+  await page.locator('.place__cross').click()
+
+  // Landed in the other world, on the named place, with its card open.
+  await expect(page.locator('.worldpicker__current')).toHaveText('Kalevipoeg')
+  await expect(page.getByRole('heading', { name: 'The Southern March' })).toBeVisible()
+  await expect(page).toHaveURL(/world=kalevipoeg/)
+
+  // And back again, so the link is a door and not a one-way trip.
+  await expect(page.locator('.place__cross-world')).toHaveText('Lāčplēsis')
+  await page.locator('.place__cross').click()
+  await expect(page.locator('.worldpicker__current')).toHaveText('Lāčplēsis')
+  await expect(page.getByRole('heading', { name: 'The Estonian March' })).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('climbs Lāčplēsis to the sky palace and down to the crystal castle', async ({ page }) => {
+  await page.goto('/?world=lacplesis')
+  await expect(page.locator('canvas')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Pērkons’s Hall', exact: true }).click()
+  await expect(page).toHaveURL(/floor=perkona-pils/)
+  await expect(page.getByRole('button', { name: 'The Council Table' }).first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'The Crystal Castle', exact: true }).click()
+  await expect(page).toHaveURL(/floor=kristala-pils/)
+  await expect(page.getByRole('button', { name: 'The Crystal Hall' }).first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'The Daugava Lands', exact: true }).click()
+  await expect(page).not.toHaveURL(/floor=/)
 })

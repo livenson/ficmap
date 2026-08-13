@@ -1,5 +1,6 @@
-import type { Marker } from '../types'
+import type { Marker, MarkerLink } from '../types'
 import type { PlaceReference } from '../engine/references'
+import { getStory } from '../stories'
 import { useT, useKind } from '../i18n'
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
   references: PlaceReference[]
   /** Jump to (and play) a chapter that mentions this place. */
   onJumpToChapter: (index: number) => void
+  /** Cross to the same event on another world's map. */
+  onCrossWorld?: (link: MarkerLink) => void
   /** Optional close affordance (used by the story-mode overlay). */
   onClose?: () => void
 }
@@ -20,10 +23,13 @@ export function PlaceDetail({
   marker,
   references,
   onJumpToChapter,
+  onCrossWorld,
   onClose,
 }: Props) {
   const t = useT()
   const kind = useKind()
+  const link = marker.link
+  const other = link ? getStory(link.world) : null
   return (
     <div className="place">
       {onClose && (
@@ -35,6 +41,14 @@ export function PlaceDetail({
       <h2 className="panel__title">{marker.name}</h2>
 
       {marker.description && <p className="panel__body">{marker.description}</p>}
+
+      {link && other && other.id === link.world && onCrossWorld && (
+        <button className="place__cross" onClick={() => onCrossWorld(link)}>
+          <span className="place__cross-label">{t('alsoTold')}</span>
+          <span className="place__cross-world">{other.title}</span>
+          {link.note && <span className="place__cross-note">{link.note}</span>}
+        </button>
+      )}
 
       <div className="place__refs">
         <h3 className="panel__section">{t('mentionedIn')}</h3>
