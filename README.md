@@ -103,7 +103,7 @@ terrain:
   road the whole poem travels, Wainola to Pohyola, with **Tuonela** below.
 - **Peer Gynt** — Ibsen's five acts over southern Norway, framed by the three
   mountains Peer greets from a ship's deck in Act V, with **the Dovre-King's
-  Hall** below.
+  Hall** below. Plays Grieg's own *Morgenstemning*, transcribed from the score.
 - **Nils Holgersson** — Lagerlöf's school geography reader flown end to end,
   Skåne to Lapland and home the western way. The first world here that is
   taller than it is wide.
@@ -152,6 +152,20 @@ resolves back to, and fails if a land marker is under water. Markers that are
 *meant* to be wet (islands, sea roads, a castle sunk in a lake) are listed in
 the script's `wet` set. This is how Burtnieks was caught sitting in the middle
 of its own lake rather than on its shore.
+
+Scores get the same treatment. The tunes are synthesised live, so a test cannot
+hear them — but it can check that the written bass actually lands where the
+score says it does, underneath the melody:
+
+```bash
+node scripts/check-music.mjs
+```
+
+It replays the sequencer over every world's melody/bass pair and reports the
+worst gap between a bass note's written beat and where it really sounds. This
+is how the bass was caught wandering: most melodies are not a whole number of
+bass notes long, the bass ran on its own clock, and within a couple of loops
+the low part was playing a chord that had nothing to do with the tune above it.
 
 It also checks **route coverage** — every place should have some line of travel
 running to it, or it is a dot nobody ever goes to. Markers further than `reach`
