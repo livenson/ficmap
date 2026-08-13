@@ -333,6 +333,13 @@ export interface Ambient {
   wightArea?: { x0: number; x1: number; z0: number; z1: number }
   /** Overcast clouds with animated rain (default false). */
   rain?: boolean
+  /**
+   * Confine the rain to one box of the map instead of the whole world, so a
+   * storm can sit over one quarter of it and the weather visibly worsens as
+   * you travel that way. Omit for weather everywhere. The lightning goes local
+   * with it — a light over the storm rather than a flash across the scene.
+   */
+  rainArea?: { x0: number; x1: number; z0: number; z1: number }
   /** Number of fish schools swimming under the sea (default 0). */
   fish?: number
 }

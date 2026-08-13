@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 /**
- * Sanity-check a DEM world's markers against its own heightmap.
+ * Sanity-check a DEM world's markers against its own heightmap and routes.
  *
  * For each marker it samples the heightmap at the marker's map coordinate and
  * reports the normalized height and whether that is land or water, so a town
  * that has drifted into the sea (or a port stranded inland) shows up before a
  * reader finds it. Also prints the lon/lat each marker resolves to, so the
  * coordinates can be checked against a real map.
+ *
+ * It then checks ROUTE COVERAGE: every place should have some line of travel
+ * running to it, or it sits on the map as a dot nobody ever goes to. Markers
+ * further than `reach` (in map units) from every route are reported.
  *
  * Usage:
  *   node scripts/check-markers.mjs latvia
@@ -20,7 +24,9 @@ const WORLDS = {
     png: '../src/assets/latvia-height.png',
     story: '../src/stories/lacplesis.ts',
     bbox: { lonMin: 19.2, lonMax: 28.8, latMin: 55.2, latMax: 58.6 },
-    seaLevel: 0.1219,
+    seaLevel: 0.0547,
+    // How close a route must pass for a place to count as connected.
+    reach: 0.09,
     // Markers that are meant to be at sea (voyages, islands, off-map roads).
     wet: new Set([
       'enchanted-isle',
@@ -62,7 +68,36 @@ const toLat = (z) => latMax - ((z + 1) / 2) * (latMax - latMin)
 const surface = src.slice(0, src.indexOf('levels:'))
 const re = /id: '([^']+)',\s*\n\s*name: '([^']*)',\s*\n\s*kind: '([^']+)',\s*\n\s*at: \{ x: (-?[\d.]+), z: (-?[\d.]+) \}/g
 
+// Every route's waypoints, so a marker can be measured against the lines.
+const routes = []
+for (const block of surface.matchAll(/id: '([^']+)',\s*\n\s*name: '[^']*',\s*\n(?:.|\n)*?points: \[((?:.|\n)*?)\]/g)) {
+  const pts = [...block[2].matchAll(/x: (-?[\d.]+), z: (-?[\d.]+)/g)].map((p) => [
+    Number(p[1]),
+    Number(p[2]),
+  ])
+  if (pts.length > 1) routes.push({ id: block[1], pts })
+}
+
+/** Shortest distance from a point to a polyline, in map units. */
+function distToRoutes(x, z) {
+  let best = Infinity
+  for (const r of routes) {
+    for (let i = 1; i < r.pts.length; i++) {
+      const [ax, az] = r.pts[i - 1]
+      const [bx, bz] = r.pts[i]
+      const dx = bx - ax
+      const dz = bz - az
+      const len = dx * dx + dz * dz
+      const t = len === 0 ? 0 : Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / len))
+      const d = Math.hypot(x - (ax + t * dx), z - (az + t * dz))
+      if (d < best) best = d
+    }
+  }
+  return best
+}
+
 let bad = 0
+let stranded = 0
 for (const m of surface.matchAll(re)) {
   const [, id, , kind, xs, zs] = m
   const x = Number(xs)
@@ -70,13 +105,19 @@ for (const m of surface.matchAll(re)) {
   const h = heightAt(x, z)
   const land = h > w.seaLevel
   const wantWet = w.wet.has(id)
-  const ok = wantWet ? true : land
-  if (!ok) bad++
+  const wet = wantWet ? true : land
+  if (!wet) bad++
+  const d = distToRoutes(x, z)
+  const linked = d <= w.reach
+  if (!linked) stranded++
   console.log(
-    `${ok ? '  ' : '!!'} ${id.padEnd(16)} ${kind.padEnd(9)} ` +
+    `${wet && linked ? '  ' : '!!'} ${id.padEnd(16)} ${kind.padEnd(9)} ` +
       `lon ${toLon(x).toFixed(2).padStart(6)} lat ${toLat(z).toFixed(2)} ` +
-      `h=${h.toFixed(3)} ${land ? 'land' : 'WATER'}${wantWet ? ' (at sea, as intended)' : ''}`,
+      `h=${h.toFixed(3)} ${land ? 'land ' : 'WATER'}${wantWet && !land ? '*' : ' '} ` +
+      `route ${d.toFixed(3)}${linked ? '' : ' ← NO ROUTE'}`,
   )
 }
-console.log(bad === 0 ? '\nall land markers are on land' : `\n${bad} marker(s) in the water`)
-process.exit(bad === 0 ? 0 : 1)
+console.log(`\n${routes.length} routes checked`)
+console.log(bad === 0 ? 'all land markers are on land' : `${bad} marker(s) in the water`)
+console.log(stranded === 0 ? 'every place has a route to it' : `${stranded} place(s) with no route`)
+process.exit(bad === 0 && stranded === 0 ? 0 : 1)

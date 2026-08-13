@@ -132,6 +132,17 @@ resolves back to, and fails if a land marker is under water. Markers that are
 the script's `wet` set. This is how Burtnieks was caught sitting in the middle
 of its own lake rather than on its shore.
 
+It also checks **route coverage** — every place should have some line of travel
+running to it, or it is a dot nobody ever goes to. Markers further than `reach`
+from every route are reported.
+
+A country as flat as Latvia needs one more thing. Rīga stands about 13 m above
+the sea in a DEM whose range is several hundred metres, so the coastal plain
+lands a hair above the shoreline and the rendered water plane swallows it. The
+`latvia` preset sets `landGamma`, which lifts low ground far more than high
+ground and leaves the coastline exactly where the DEM puts it. Reach for it
+whenever a lowland world looks flooded.
+
 ## The data model (`src/types.ts`)
 
 | Field | What it does |
@@ -268,6 +279,9 @@ A few more conveniences in the viewer:
   **Kalevipoeg** use it at the duel the two national epics share: Pumpurs sends
   his hero north to fight a giant called Kalapuisis, who is Kalev's son, so each
   map hands the reader to the other there.
+- **Local weather.** `ambient.rainArea` confines a storm to one box of the map,
+  so weather is something you travel into — **Lāčplēsis** keeps its rain over
+  the northern, Estonian end.
 - **Music.** A toggle plays a written melody per world and floor, synthesised
   live — no audio files. Public-domain and traditional tunes are credited on
   screen while they play; the rest are originals and say so.

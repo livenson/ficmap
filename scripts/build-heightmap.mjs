@@ -38,6 +38,12 @@ const PRESETS = {
     // is 9.6° of longitude at ~57°N (≈584 km) by 3.4° of latitude (≈376 km).
     w: 1024,
     h: 659,
+    // Clip the deepest Baltic so the sea does not eat a fifth of the range,
+    // and lift the land off the shoreline — see `landGamma` below. Without it
+    // Rīga and Zemgale, which really are a dozen metres above the sea, render
+    // underneath the water plane.
+    floorM: -25,
+    landGamma: 0.6,
     lakes: true,
     out: '../src/assets/latvia-height.png',
   },
@@ -235,9 +241,27 @@ for (let j = 0; j < H; j++)
     if (m > mx) mx = m
   }
 
+// Where 0 m sits once the range is normalized — the shoreline.
+const SEA = (0 - mn) / (mx - mn)
+
+/**
+ * Optional hypsometric exaggeration of the LAND only.
+ *
+ * A country as flat as Latvia has a problem the Alps do not: Rīga stands about
+ * 13 m above the sea in a DEM whose range is several hundred metres, so the
+ * coastal plain lands a hair above the shoreline and the rendered water plane
+ * swallows it. A gamma below 1 lifts low ground far more than high ground,
+ * pulling the lowlands clear of the sea while leaving the coastline itself
+ * exactly where the DEM puts it (the sea fraction is untouched).
+ */
+const shape = (g) => {
+  if (!preset.landGamma || g <= SEA) return g
+  return SEA + Math.pow((g - SEA) / (1 - SEA), preset.landGamma) * (1 - SEA)
+}
+
 const png = new PNG({ width: W, height: H })
 for (let k = 0; k < W * H; k++) {
-  const g = Math.round(((out[k] - mn) / (mx - mn)) * 255)
+  const g = Math.round(shape((out[k] - mn) / (mx - mn)) * 255)
   png.data[k * 4] = g
   png.data[k * 4 + 1] = g
   png.data[k * 4 + 2] = g
@@ -245,4 +269,8 @@ for (let k = 0; k < W * H; k++) {
 }
 fs.writeFileSync(OUT, PNG.sync.write(png))
 console.log(`wrote ${OUT.pathname} (${W}x${H})`)
-console.log(`minM=${mn.toFixed(1)} maxM=${mx.toFixed(1)} → set terrain.seaLevel = ${((0 - mn) / (mx - mn)).toFixed(4)}`)
+console.log(`minM=${mn.toFixed(1)} maxM=${mx.toFixed(1)} → set terrain.seaLevel = ${SEA.toFixed(4)}`)
+if (preset.landGamma) {
+  const at = (m) => shape((m - mn) / (mx - mn)).toFixed(3)
+  console.log(`landGamma=${preset.landGamma}: 5m→${at(5)} 20m→${at(20)} 60m→${at(60)} 150m→${at(150)} 300m→${at(300)}`)
+}

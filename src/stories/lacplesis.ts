@@ -36,7 +36,7 @@ export const lacplesis: Story = {
   subtitle: 'The Bear-Slayer, mapped along the Daugava',
   author: 'Andrejs Pumpurs',
   region: 'Latvia, the sky palace & the crystal castle',
-  epoch: 'Latvian national epic · 1888',
+  epoch: 'Latvian national epic · 1888 · set in the 13th c.',
   intro:
     'The Bear-Slayer — torn from a she-bear, raised at Lielvārde, strong ' +
     'enough to pull a bear’s jaws apart, and undone in the end by the two ' +
@@ -51,6 +51,13 @@ export const lacplesis: Story = {
     treeKind: 'conifer',
     birds: 5,
     fish: 4,
+    // The weather worsens as you go north. Rain sits over the top of the map —
+    // the Gulf's northern reach, the Estonian isles and the border where the
+    // levies march — so the country the hero crosses into is visibly colder and
+    // wetter than the Daugava valley he starts in. Overcast everywhere would
+    // just hide the map.
+    rain: true,
+    rainArea: { x0: -0.62, x1: 1.0, z0: -1.0, z1: -0.46 },
   },
   terrain: {
     music: {
@@ -69,21 +76,24 @@ export const lacplesis: Story = {
     },
     seed: 'lacplesis-1', // unused: the heightmap takes precedence
     heightmap: latviaHeight,
-    // Printed by scripts/build-heightmap.mjs for this DEM.
-    seaLevel: 0.1219,
+    // Printed by scripts/build-heightmap.mjs for this DEM. The build applies a
+    // land-only gamma (see the `latvia` preset), which lifts Rīga and Zemgale —
+    // both barely a dozen metres up — clear of the water plane without moving
+    // the coastline.
+    seaLevel: 0.0547,
     // 584 km across by 376 km down — the box in real proportion, so Kurzeme
     // is not stretched to fill a square.
     aspect: 1.553,
     // Latvia's high point is Gaiziņkalns at 312 m. Keep the relief gentle and
     // legible rather than inventing mountains.
-    heightScale: 12,
+    heightScale: 14,
     rivers: 5,
     biomes: [
-      { maxHeight: 0.1219, color: '#2b5871', name: 'The Baltic' },
-      { maxHeight: 0.17, color: '#d8cca4', name: 'Dunes' },
-      { maxHeight: 0.3, color: '#6c9a58', name: 'Lowlands' },
+      { maxHeight: 0.0547, color: '#2b5871', name: 'The Baltic' },
+      { maxHeight: 0.14, color: '#d8cca4', name: 'Dunes' },
+      { maxHeight: 0.34, color: '#6c9a58', name: 'Lowlands' },
       { maxHeight: 0.5, color: '#4c874a', name: 'Pine forest' },
-      { maxHeight: 0.74, color: '#7b8a5b', name: 'Uplands' },
+      { maxHeight: 0.65, color: '#7b8a5b', name: 'Uplands' },
       { maxHeight: 1.0, color: '#b3ab93', name: 'Highlands' },
     ],
   },
@@ -120,8 +130,9 @@ export const lacplesis: Story = {
         'The cliff over the Daugava and the water turning below it. Spīdala ' +
         'throws Lāčplēsis in here to be rid of him — and the goddess ' +
         'Staburadze takes him instead, down to her crystal castle. Descend a ' +
-        'floor to stand in it. (The real cliff drowned in 1965 under the ' +
-        'Pļaviņas reservoir; the map shows where it stood.)',
+        'floor to stand in it. The real Staburags was an 18-metre cliff built ' +
+        'up by lime-rich springs; the Pļaviņas dam drowned it in 1965 and it ' +
+        'now lies six and a half metres under. The map shows where it stood.',
     },
     {
       id: 'koknese',
@@ -129,9 +140,10 @@ export const lacplesis: Story = {
       kind: 'city',
       at: { x: 0.299, z: 0.149 },
       description:
-        'A stronghold on the Daugava, and the name Lāčplēsis’s sworn friend ' +
-        'Koknesis — the Wood-Bearer — carries. The two of them study together ' +
-        'at Burtnieks and are not parted again until Germany takes him.',
+        'A stronghold on the Daugava, sharing its name with Lāčplēsis’s sworn ' +
+        'friend Koknesis, the Wood-Bearer — though the poem never says the man ' +
+        'comes from the place. The two of them study together at Burtnieks and ' +
+        'are not parted until Germany takes him.',
     },
     {
       id: 'burtnieki',
@@ -150,9 +162,10 @@ export const lacplesis: Story = {
       kind: 'ruin',
       at: { x: 0.354, z: -0.382 },
       description:
-        'The hill-fort of the old songs, whose bard is said to have stopped a ' +
-        'battle by singing. The chronicles name it but never fix it; this is ' +
-        'the Vidzeme ground it is usually looked for on, near Trikāta.',
+        'The stronghold of Tālava, whose bard — the chronicle says — stopped a ' +
+        'siege by singing from the ramparts until the besiegers lost heart. ' +
+        'The chronicles name Beverīna but never fix it; the Trikāta castle ' +
+        'mound, here, is the site most often argued for.',
     },
     {
       id: 'riga',
@@ -282,7 +295,7 @@ export const lacplesis: Story = {
       id: 'saaremaa',
       name: 'The Estonian Isles',
       kind: 'landmark',
-      at: { x: -0.3125, z: -0.882 },
+      at: { x: -0.375, z: -0.676 },
       description:
         'Saaremaa and its neighbours across the mouth of the gulf — the ' +
         'northern seamark, and Kalapuisis’s country beyond it.',
@@ -381,23 +394,48 @@ export const lacplesis: Story = {
       ],
     },
     {
+      id: 'germany-road',
+      name: 'The course he set',
+      color: '#8fb8d8',
+      style: 'dashed',
+      description:
+        'Out of the Daugava’s mouth after Laimdota, north up the gulf, round ' +
+        'the horn at Kolka and down the Kurzeme coast — then south-west for ' +
+        'Germany. This is the voyage he meant to make.',
+      points: [
+        { x: 0.006, z: -0.091 },
+        { x: -0.1, z: -0.28 },
+        { x: -0.22, z: -0.44 },
+        { x: -0.293, z: -0.501 },
+        { x: -0.42, z: -0.42 },
+        { x: -0.508, z: -0.288 },
+        { x: -0.62, z: 0.05 },
+        { x: -0.78, z: 0.4 },
+        { x: -0.93, z: 0.72 },
+      ],
+    },
+    {
       id: 'sea-road',
-      name: 'The voyage west',
+      name: 'The voyage he made',
       color: '#6fb3d6',
       style: 'dashed',
       description:
-        'Out of the Daugava’s mouth after Laimdota, round Kolka into the open ' +
-        'Baltic, blown north to the hall of the North Wind’s daughter, and ' +
-        'home the long way by the Enchanted Island.',
+        'The storm takes him the other way entirely: north up the open Baltic ' +
+        'to the hall of the North Wind’s daughter, back down by the Enchanted ' +
+        'Island, and home through the strait under Saaremaa into the gulf.',
       points: [
-        { x: 0.006, z: -0.091 },
-        { x: -0.12, z: -0.3 },
-        { x: -0.293, z: -0.501 },
-        { x: -0.55, z: -0.62 },
+        { x: -0.93, z: 0.72 },
+        { x: -0.97, z: 0.2 },
+        { x: -0.94, z: -0.4 },
         { x: -0.88, z: -0.85 },
-        { x: -0.82, z: -0.55 },
+        { x: -0.82, z: -0.6 },
         { x: -0.75, z: -0.3 },
-        { x: -0.5, z: -0.16 },
+        { x: -0.6, z: -0.44 },
+        { x: -0.48, z: -0.6 },
+        { x: -0.4, z: -0.66 },
+        { x: -0.31, z: -0.62 },
+        { x: -0.24, z: -0.5 },
+        { x: -0.12, z: -0.28 },
         { x: 0.006, z: -0.091 },
       ],
     },
@@ -416,6 +454,67 @@ export const lacplesis: Story = {
         { x: 0.2, z: 0.02 },
         { x: 0.262, z: 0.175 },
         { x: 0.168, z: 0.105 },
+      ],
+    },
+    {
+      id: 'daugava',
+      name: 'The Daugava',
+      color: '#7fc4dd',
+      style: 'solid',
+      description:
+        'The river the whole poem runs along, from where it comes in out of ' +
+        'the south-east to where it gives out into the gulf. Every castle in ' +
+        'the story stands on it, and both the hero and the Dark Knight end in ' +
+        'it. The boatmen of this river gave Latvia “Pūt, vējiņi” — blow, wind ' +
+        '— a Livonian rowing song whose words were first written down in 1807 ' +
+        'and whose melody Jānis Cimze printed in 1872.',
+      points: [
+        { x: 0.66, z: 0.591 },
+        { x: 0.528, z: 0.603 },
+        { x: 0.45, z: 0.42 },
+        { x: 0.39, z: 0.235 },
+        { x: 0.328, z: 0.209 },
+        { x: 0.299, z: 0.149 },
+        { x: 0.262, z: 0.175 },
+        { x: 0.168, z: 0.105 },
+        { x: 0.125, z: 0.03 },
+        { x: 0.022, z: -0.029 },
+        { x: 0.006, z: -0.091 },
+      ],
+    },
+    {
+      id: 'castle-road',
+      name: 'The ride to the sunken castle',
+      color: '#a8c47a',
+      style: 'solid',
+      description:
+        'East out of Burtnieks, past Beverīna and over the roof of the ' +
+        'country, to sit out a night in a cursed castle under a lake — and on ' +
+        'into the lake country beyond it.',
+      points: [
+        { x: 0.275, z: -0.459 },
+        { x: 0.354, z: -0.382 },
+        { x: 0.4, z: -0.18 },
+        { x: 0.4125, z: 0.0235 },
+        { x: 0.52, z: 0.03 },
+        { x: 0.604, z: 0.059 },
+        { x: 0.67, z: 0.2 },
+        { x: 0.698, z: 0.341 },
+      ],
+    },
+    {
+      id: 'zemgale-levy',
+      name: 'The southern levies',
+      color: '#c98a5a',
+      style: 'solid',
+      description:
+        'Up out of Zemgale to the war: the Semigallian hill-forts sending men ' +
+        'north across the plain to the Daugava.',
+      points: [
+        { x: -0.142, z: 0.253 },
+        { x: -0.056, z: 0.147 },
+        { x: 0.0, z: 0.05 },
+        { x: 0.022, z: -0.029 },
       ],
     },
     {
@@ -752,6 +851,7 @@ export const lacplesis: Story = {
           focus: { marker: 'lielvarde', distance: 40, pitch: 44 },
           reveal: {
             markers: ['lielvarde', 'riga', 'daugavgriva'],
+            routes: ['daugava'],
             regions: ['r-vidzeme', 'r-zemgale', 'r-daugava'],
           },
           highlight: { markers: ['lielvarde'] },
@@ -851,7 +951,11 @@ export const lacplesis: Story = {
             'night without flinching, and at dawn the enchantment gives and ' +
             'the whole thing comes up out of the lake into the air.',
           focus: { marker: 'sunken-castle', distance: 38, pitch: 42 },
-          reveal: { markers: ['sunken-castle', 'razna', 'daugavpils', 'gaizinkalns'], regions: ['r-latgale'] },
+          reveal: {
+            markers: ['sunken-castle', 'razna', 'daugavpils', 'gaizinkalns'],
+            routes: ['castle-road'],
+            regions: ['r-latgale'],
+          },
           highlight: { markers: ['sunken-castle'] },
         },
         {
@@ -863,8 +967,12 @@ export const lacplesis: Story = {
             'willingly and were lovers. It is a lie, and he believes it, and ' +
             'goes after them anyway.',
           focus: { marker: 'german-road', distance: 56, pitch: 48 },
-          reveal: { markers: ['german-road', 'kurzeme-shore', 'kolka'], regions: ['r-kurzeme', 'r-baltic', 'r-gulf'] },
-          highlight: { markers: ['german-road'] },
+          reveal: {
+            markers: ['german-road', 'kurzeme-shore', 'kolka'],
+            routes: ['germany-road'],
+            regions: ['r-kurzeme', 'r-baltic', 'r-gulf'],
+          },
+          highlight: { markers: ['german-road'], routes: ['germany-road'] },
         },
         {
           id: 'ii-5',
@@ -918,7 +1026,10 @@ export const lacplesis: Story = {
             'for: the conquest is now a crusade, and men will come from all ' +
             'over Europe to join it.',
           focus: { marker: 'rome-road', distance: 58, pitch: 50 },
-          reveal: { markers: ['rome-road', 'tervete', 'jelgava'], routes: ['rome-road'] },
+          reveal: {
+            markers: ['rome-road', 'tervete', 'jelgava'],
+            routes: ['rome-road', 'zemgale-levy'],
+          },
           highlight: { routes: ['rome-road'], markers: ['turaida'] },
         },
         {
@@ -940,7 +1051,7 @@ export const lacplesis: Story = {
             'among them the Dark Knight — and Kangars finally sells the thing ' +
             'he has been sitting on: the hero’s mother was a she-bear, and his ' +
             'strength is not in his arms. It is in his ears.',
-          focus: { marker: 'aizkraukle', distance: 34, pitch: 40 },
+          focus: { marker: 'lielvarde', distance: 40, pitch: 42 },
           highlight: { markers: ['aizkraukle', 'lielvarde'] },
         },
         {
@@ -958,12 +1069,12 @@ export const lacplesis: Story = {
           id: 'iii-5',
           title: 'Into the Daugava',
           narration:
-            'No sword and no strength, so they wrestle, at the edge of the ' +
-            'cliff, and he gets the Knight up and throws him into the river — ' +
-            'and the Knight holds on. The water takes both of them. In that ' +
-            'same hour, Laimdota dies.',
-          focus: { marker: 'staburags', distance: 24, pitch: 34 },
-          highlight: { markers: ['staburags', 'lielvarde'] },
+            'No sword and no strength left, so they wrestle — and at the ' +
+            'river’s edge he gets the Knight up and throws him into the ' +
+            'Daugava, and the Knight holds on. The water takes both of them. ' +
+            'In that same hour, Laimdota dies.',
+          focus: { marker: 'lielvarde', distance: 24, pitch: 34 },
+          highlight: { markers: ['lielvarde'], routes: ['daugava'] },
         },
         {
           id: 'iii-6',
@@ -972,11 +1083,13 @@ export const lacplesis: Story = {
             'The poem does not end with a death. It ends with a claim: the two ' +
             'of them are down there still, locked together, and one day the ' +
             'Bear-Slayer will get the upper hand and put the Knight under for ' +
-            'good — and that day the country comes back. Pumpurs published this ' +
-            'in 1888. Latvia declared independence on 18 November 1918, and the ' +
-            'highest decoration it awarded was the Order of Lāčplēsis.',
+            'good — and that day the country comes back. Pumpurs published ' +
+            'that in 1888. Latvia declared independence on 18 November 1918, ' +
+            'and its highest military decoration, founded the next year and ' +
+            'first awarded on 11 November 1920, was the Order of Lāčplēsis — ' +
+            'a medal showing a man wrestling a bear.',
           focus: { marker: 'daugavgriva', distance: 50, pitch: 48 },
-          highlight: { markers: ['daugavgriva', 'staburags'] },
+          highlight: { markers: ['daugavgriva', 'lielvarde'], routes: ['daugava'] },
         },
       ],
     },
