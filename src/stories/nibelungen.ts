@@ -45,7 +45,11 @@ export const nibelungen: Story = {
     trees: 0.6,
     treeKind: 'broadleaf',
     birds: 6,
+    // One dragon, and it belongs to the Dragon's Rock — Siegfried killed it
+    // there and bathed in its blood, so it circles that marker rather than
+    // ranging over a map where nothing else in the poem is supernatural.
     dragons: 1,
+    dragonAt: { x: -0.794, z: -0.41 },
     fish: 3,
   },
   terrain: {

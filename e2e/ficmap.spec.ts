@@ -17,6 +17,8 @@ const WORLDS = [
   { id: 'lacplesis', title: 'Lāčplēsis' },
   { id: 'tell', title: 'Wilhelm Tell' },
   { id: 'nibelungen', title: 'The Nibelungenlied' },
+  { id: 'faust', title: 'Faust' },
+  { id: 'uilenspiegel', title: 'Tijl Uilenspiegel' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -332,5 +334,33 @@ test('rides the Nibelungenlied east twice', async ({ page }) => {
   await page.getByRole('button', { name: /The Nibelung Hoard/ }).first().click()
   await expect(page.getByRole('heading', { name: 'Its journey' })).toBeVisible()
   await expect(page.getByText(/nobody says where/)).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('takes Faust down to the Mothers and up to the gorges', async ({ page }) => {
+  // The only world here whose extra floors come out of the text itself.
+  const errors = trackErrors(page)
+  await page.goto('/?world=faust')
+  await expect(page.locator('canvas')).toBeVisible()
+  await expect(page.getByRole('button', { name: /Auerbach/ }).first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'The Mothers', exact: true }).click()
+  await expect(page).toHaveURL(/floor=mothers/)
+  await expect(page.getByRole('button', { name: /Nothing to Stand On/ }).first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'The Mountain Gorges', exact: true }).click()
+  await expect(page).toHaveURL(/floor=gorges/)
+  await expect(page.getByRole('button', { name: /Chorus Mysticus/ }).first()).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('turns Uilenspiegel from the land to the sea', async ({ page }) => {
+  const errors = trackErrors(page)
+  await page.goto('/?world=uilenspiegel')
+  await expect(page.locator('canvas')).toBeVisible()
+  // The ashes are the spine of the book and the spine of the map.
+  await page.getByRole('button', { name: /The Ashes of Claes/ }).first().click()
+  await expect(page.getByRole('heading', { name: 'Its journey' })).toBeVisible()
+  await expect(page.getByText(/still not buried/)).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
 })

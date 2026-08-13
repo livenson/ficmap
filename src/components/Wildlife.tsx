@@ -19,6 +19,8 @@ interface Creature {
   radius: number
   /** X center the creature circles around (spread across the world width). */
   cx: number
+  /** Z center. 0 for the ranging flocks; a marker's position for a tied one. */
+  cz: number
   height: number
   speed: number
   phase: number
@@ -59,6 +61,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
         type: heaven ? 'angel' : owls ? 'owl' : ravens ? 'raven' : 'bird',
         radius: WORLD_SIZE * (0.18 + (i % 4) * 0.09),
         cx: spread(i),
+        cz: 0,
         // Owls beat lower and slower over the land, like post owls on a round.
         height: owls ? 20 + (i % 5) * 4 : 26 + (i % 5) * 5,
         speed: heaven ? 0.14 + (i % 3) * 0.04 : owls ? 0.16 + (i % 3) * 0.04 : 0.22 + (i % 3) * 0.06,
@@ -69,13 +72,18 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
         color: heaven ? '#fff6e2' : owls ? owlColor(i) : ravens ? '#12151a' : '#1c242c',
       })
     }
+    // A dragon tied to one place circles it tightly instead of ranging.
+    const at = ambient.dragonAt
     for (let i = 0; i < dragons; i++) {
       list.push({
         type: 'dragon',
-        radius: WORLD_SIZE * (0.14 + (i % 2) * 0.12),
-        cx: spread(i + 3),
-        // Fly lower than the birds so they sweep in view over the crags.
-        height: 22 + i * 6,
+        radius: at ? WORLD_SIZE * (0.045 + (i % 2) * 0.02) : WORLD_SIZE * (0.14 + (i % 2) * 0.12),
+        cx: at ? at.x * WORLD_HALF * aspect : spread(i + 3),
+        cz: at ? at.z * WORLD_HALF : 0,
+        // Fly lower than the birds so they sweep in view over the crags, and
+        // lower still over a named lair so the marker and the dragon read as
+        // the same thing.
+        height: at ? 12 + i * 4 : 22 + i * 6,
         speed: 0.12 + (i % 2) * 0.04,
         phase: i * GOLDEN + 1.2,
         dir: i % 2 === 0 ? -1 : 1,
@@ -85,7 +93,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
       })
     }
     return list
-  }, [birds, dragons, aspect, heaven, owls, ravens])
+  }, [birds, dragons, aspect, heaven, owls, ravens, ambient.dragonAt])
 
   const groups = useRef<THREE.Group[]>([])
   const inners = useRef<THREE.Group[]>([])
@@ -100,7 +108,7 @@ export function Wildlife({ ambient, aspect = 1, heaven = false }: Props) {
       if (!g) return
       const theta = t * c.speed * c.dir + c.phase
       const px = c.cx + Math.cos(theta) * c.radius
-      const pz = Math.sin(theta) * c.radius
+      const pz = c.cz + Math.sin(theta) * c.radius
       // Gentle bob so flight feels alive.
       const py = c.height + Math.sin(t * 0.8 + c.phase) * 2
       g.position.set(px, py, pz)

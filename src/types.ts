@@ -324,6 +324,13 @@ export interface Ambient {
   birdKind?: 'bird' | 'owl' | 'raven'
   /** Number of circling dragons (default 0). */
   dragons?: number
+  /**
+   * Map point the dragons circle over, on a tight orbit, instead of ranging
+   * across the whole world. Use it when a dragon belongs to one place — the
+   * Nibelungenlied's Dragon's Rock is a marker, and the dragon should be
+   * visibly on it rather than somewhere over Bavaria.
+   */
+  dragonAt?: MapPoint
   /** Number of mosquito swarms buzzing near the ground (default 0). */
   mosquitoes?: number
   /**
