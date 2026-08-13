@@ -42,8 +42,11 @@ export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Pro
         </span>
       </div>
       <h2 className="panel__title">{current.chapter.title}</h2>
-      <p className="panel__body story__narration">{current.chapter.narration}</p>
 
+      {/* Above the narration, not below it. Chapter texts differ in length by
+          several lines, so a nav underneath moved every time you advanced and
+          you had to chase the Next button down the panel. Up here only the
+          title sits above it, and that is held to a fixed height in CSS. */}
       <div className="story__nav">
         <button onClick={onPrev} disabled={atStart} className="story__btn">
           {t('prev')}
@@ -55,6 +58,8 @@ export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Pro
           {atEnd ? t('finish') : t('next')}
         </button>
       </div>
+
+      <p className="panel__body story__narration">{current.chapter.narration}</p>
 
       <div className="story__rail">
         {flat.map((f, i) => {

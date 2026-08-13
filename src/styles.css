@@ -468,12 +468,24 @@ body,
 .story__narration {
   font-size: 16px;
   color: var(--ink);
+  /* Holds the chapter rail below roughly still between short and long
+     chapters. The nav no longer sits under this, so it no longer matters
+     to the Next button. */
   min-height: 120px;
+}
+/*
+ * The chapter title sits between the counter and the nav, so its height is the
+ * only thing that can move the Next button. Two lines at 26px/1.15 covers every
+ * chapter title in the atlas; a shorter one is padded rather than shifting the
+ * buttons up under it.
+ */
+.panel--story .panel__title {
+  min-height: calc(26px * 1.15 * 2);
 }
 .story__nav {
   display: flex;
   gap: 10px;
-  margin: 8px 0 20px;
+  margin: 10px 0 16px;
 }
 .story__btn {
   flex: 1;

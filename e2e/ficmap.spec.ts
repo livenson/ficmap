@@ -79,6 +79,28 @@ test('plays a chapter tour and exits', async ({ page }) => {
   expect(errors, errors.join('\n')).toHaveLength(0)
 })
 
+test('keeps the Next button still as chapters change', async ({ page }) => {
+  // Chapter narrations differ by several lines, and the nav used to sit under
+  // them, so Next slid down the panel on every advance and you had to chase it.
+  await selectWorld(page, 'kalevala')
+  await page.getByRole('button', { name: 'Play story' }).click()
+  const next = page.getByRole('button', { name: /Next/ })
+  await expect(next).toBeVisible()
+
+  const ys: number[] = []
+  const lengths: number[] = []
+  for (let i = 0; i < 6; i++) {
+    ys.push(Math.round((await next.boundingBox())!.y))
+    lengths.push((await page.locator('.story__narration').innerText()).length)
+    await next.click()
+    await page.waitForTimeout(900)
+  }
+  // The narration really does vary, so this is a meaningful test and not a
+  // tautology on six identical chapters.
+  expect(Math.max(...lengths) - Math.min(...lengths), 'narration lengths are all alike').toBeGreaterThan(40)
+  expect(new Set(ys).size, `Next moved between y = ${ys.join(', ')}`).toBe(1)
+})
+
 test('shows cross-chapter place references', async ({ page }) => {
   await selectWorld(page, 'valdurn')
   // Duskwater recurs across chapters.
