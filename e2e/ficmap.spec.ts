@@ -391,7 +391,7 @@ test('takes Peer Gynt down into the Dovre-King’s hall', async ({ page }) => {
   const errors = trackErrors(page)
   await page.goto('/?world=peergynt')
   await expect(page.locator('canvas')).toBeVisible()
-  await expect(page.getByRole('button', { name: /Halling for a liar/ }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: /The Gendin-Edge/ }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'The Dovre-King’s Hall', exact: true }).click()
   await expect(page).toHaveURL(/floor=trollhall/)
