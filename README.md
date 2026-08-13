@@ -64,7 +64,7 @@ The Vite `base` is already set to `./` so assets resolve correctly under the
 
 ## The worlds
 
-Eleven worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
+Thirteen worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
 terrain:
 
 - **The Realm of Valdurn** — an original demo kingdom that climbs to the
@@ -86,6 +86,10 @@ terrain:
   drifting will-o'-the-wisp spirits.
 - **Eneida** — Kotliarevsky's Cossack *Aeneid*: a Mediterranean voyage with
   **Olympus** above and **Peklo** below.
+- **A Song of Ice and Fire** — Westeros traced from the canonical map, with
+  ravens, wights and fire-breathing dragons.
+- **Lāčplēsis** — the Latvian national epic over a real Latvia, following the
+  Daugava, with **Pērkons's Hall** above and **the Crystal Castle** below.
 
 ## Add your own world
 
@@ -114,6 +118,20 @@ node scripts/preview.mjs <seed> <seaLevel> <islandFalloff> <frequency>
 It prints an ASCII map (`~` = sea) plus a list of verified land coordinates you
 can paste straight into your story.
 
+For a **real-DEM** world the coordinates come from a real map instead, so the
+risk is the reverse — a town that quietly lands in the sea. Check a finished
+world against its own heightmap:
+
+```bash
+node scripts/check-markers.mjs latvia
+```
+
+It samples the DEM at every surface marker, prints the `lon/lat` each one
+resolves back to, and fails if a land marker is under water. Markers that are
+*meant* to be wet (islands, sea roads, a castle sunk in a lake) are listed in
+the script's `wet` set. This is how Burtnieks was caught sitting in the middle
+of its own lake rather than on its shore.
+
 ## The data model (`src/types.ts`)
 
 | Field | What it does |
@@ -125,7 +143,7 @@ can paste straight into your story.
 | `terrain.heightScale` | Vertical exaggeration of the 3D mesh. |
 | `terrain.biomes[]` | Elevation → color bands (low to high). |
 | `terrain.rivers` | Number of rivers traced downhill from highlands to sea (`riverColor` to tint — e.g. lava-orange). |
-| `terrain.heightmap` | Optional grayscale image URL — sampled elevation instead of noise. Some worlds use a **real DEM**: **Kalevipoeg** (Estonia), **The d'Artagnan Romances** (France + England), **Harry Potter** (Britain), **The Extraordinary Voyages** and **The Adventures of Indiana Jones** (the whole Earth), **Eneida** (the Mediterranean). Build these with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world\|mediterranean]` (some presets also carve real lakes from Natural Earth data). Others use a **shaped** heightmap — hand-built to echo a canonical map — via their own script: **The Fellowship of the Ring** (`build-middle-earth.mjs`), **Mistborn** (`build-scadrial.mjs`), **The Forest Song** (`build-polissia.mjs`). Place markers at real `lon/lat` mapped into the DEM's box. |
+| `terrain.heightmap` | Optional grayscale image URL — sampled elevation instead of noise. Some worlds use a **real DEM**: **Kalevipoeg** (Estonia), **The d'Artagnan Romances** (France + England), **Harry Potter** (Britain), **The Extraordinary Voyages** and **The Adventures of Indiana Jones** (the whole Earth), **Eneida** (the Mediterranean), **Lāčplēsis** (Latvia). Build these with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world\|mediterranean\|latvia]` (some presets also carve real lakes from Natural Earth data). Others use a **shaped** heightmap — hand-built to echo a canonical map — via their own script: **The Fellowship of the Ring** (`build-middle-earth.mjs`), **Mistborn** (`build-scadrial.mjs`), **The Forest Song** (`build-polissia.mjs`). Place markers at real `lon/lat` mapped into the DEM's box. |
 | `terrain.aspect` | World width ÷ depth (default 1 = square). Use >1 for a map wider than it is tall — **The Extraordinary Voyages** sets `360/140` so the equirectangular Earth keeps real proportions instead of stretching into the square. |
 | `terrain.detail` | Adds fine surface relief (a tiled procedural bump map) so light picks out rockiness up close. On for the shaped-terrain worlds (FOTR, Mistborn, The Forest Song). |
 | `terrain.sky` | Sky mood: `'day'` (default), `'dark'` (warm hellfire underworld), `'cavern'` (cool phosphorescence), `'heaven'` (a luminous cloud-sea sky realm). |
@@ -245,6 +263,14 @@ A few more conveniences in the viewer:
 - **Per-source filter.** Worlds built from several books or films get a
   **Filter** dropdown that pares the map down to one source's own places and
   routes — see **The Adventures of Indiana Jones**.
+- **Cross-world links.** A place can carry a `link` to the same event on
+  another world's map, rendered as a door in its place card. **Lāčplēsis** and
+  **Kalevipoeg** use it at the duel the two national epics share: Pumpurs sends
+  his hero north to fight a giant called Kalapuisis, who is Kalev's son, so each
+  map hands the reader to the other there.
+- **Music.** A toggle plays a written melody per world and floor, synthesised
+  live — no audio files. Public-domain and traditional tunes are credited on
+  screen while they play; the rest are originals and say so.
 - **Collapsible panel.** A tab on the seam hides the side panel (a bottom sheet
   on mobile) to give the map the whole stage.
 - **Deep-links.** State lives in the URL: `?world=`, `?floor=`, `?view=2d`,

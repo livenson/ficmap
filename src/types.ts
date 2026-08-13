@@ -143,6 +143,23 @@ export type MarkerKind =
   | 'danger'
 
 /** A labeled point of interest on the map. */
+/**
+ * A crossing from this place to another world's map — for an event two books
+ * tell from opposite sides. The Latvian and Estonian national epics both carry
+ * the duel between Lāčplēsis and Kalapuisis/Kalevipoeg, so each atlas map can
+ * hand the reader over to the other at that point.
+ */
+export interface MarkerLink {
+  /** Story id of the world to open. */
+  world: string
+  /** Marker to select once there (default: none). */
+  marker?: string
+  /** Level to open once there (default: the surface). */
+  level?: string
+  /** One line on what waits at the other end, shown on the jump button. */
+  note?: string
+}
+
 export interface Marker {
   id: string
   name: string
@@ -152,6 +169,8 @@ export interface Marker {
   description?: string
   /** Optional chapter/act tag used for story filtering later. */
   chapter?: string
+  /** The same event on another world's map, offered as a jump. */
+  link?: MarkerLink
 }
 
 /** A path across the world (a journey, road, border of travel, etc.). */

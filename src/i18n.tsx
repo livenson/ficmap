@@ -29,6 +29,7 @@ const DICT: Dict = {
   artifacts: { en: 'Artifacts', et: 'Esemed' },
   places: { en: 'Places', et: 'Kohad' },
   track: { en: 'track', et: 'jälgi' },
+  alsoTold: { en: 'Also told in', et: 'Räägitud ka' },
   mentionedIn: { en: 'Mentioned in', et: 'Mainitud' },
   notReferenced: { en: 'Not referenced in the story yet.', et: 'Loos veel mainimata.' },
   itsJourney: { en: 'Its journey', et: 'Selle teekond' },

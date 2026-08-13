@@ -189,6 +189,25 @@ export const kalevipoeg: Story = {
         'may pass.',
     },
     {
+      id: 'lacplesis-duel',
+      name: 'The Southern March',
+      kind: 'battle',
+      at: { x: 0.224, z: 0.722 },
+      description:
+        'The Latvian border, and the one place where this epic and its ' +
+        'southern neighbour touch. Pumpurs’ Lāčplēsis (1888) sends its hero up ' +
+        'here to fight a giant called Kalapuisis — Kalev’s son — and the two of ' +
+        'them go at it all day, get nowhere, shake hands and turn on the ' +
+        'crusaders together. The duel is in the Latvian poem, not this one: ' +
+        'Estonia’s giant is a guest in someone else’s epic. His side of it is a ' +
+        'click away.',
+      link: {
+        world: 'lacplesis',
+        marker: 'estonian-march',
+        note: 'Pumpurs’ Latvian epic, where this duel is actually written.',
+      },
+    },
+    {
       id: 'virumaa',
       name: 'The Shores of Viru',
       kind: 'landmark',
@@ -521,6 +540,20 @@ export const kalevipoeg: Story = {
           focus: { marker: 'pihkva', distance: 36, pitch: 34, heading: -15 },
           reveal: { markers: ['pihkva', 'tartu'] },
           highlight: { markers: ['pihkva'] },
+        },
+        {
+          id: 'lacplesis',
+          title: 'A Guest in Another Epic',
+          narration:
+            'South of here, in a poem written thirty years later on the other ' +
+            'side of the border, Kalev’s son turns up again — as Kalapuisis, ' +
+            'the Estonian giant Lāčplēsis fights to a standstill and then ' +
+            'befriends. Estonia’s hero is a supporting character in Latvia’s ' +
+            'national epic. Open the place card to cross over and read it from ' +
+            'his side.',
+          focus: { marker: 'lacplesis-duel', distance: 36, pitch: 36 },
+          reveal: { markers: ['lacplesis-duel'] },
+          highlight: { markers: ['lacplesis-duel'] },
         },
         {
           id: 'peipus',

@@ -1,4 +1,4 @@
-import type { Story, Marker, StoryElement } from '../types'
+import type { Story, Marker, MarkerLink, StoryElement } from '../types'
 import type { PlaceReference } from '../engine/references'
 import { PlaceDetail } from './PlaceDetail'
 import { ElementDetail } from './ElementDetail'
@@ -16,6 +16,7 @@ interface Props {
   onJumpTo: (id: string) => void
   onSelectElement: (id: string) => void
   onJumpToChapter: (index: number) => void
+  onCrossWorld: (link: MarkerLink) => void
 }
 
 /**
@@ -35,6 +36,7 @@ export function InfoPanel({
   onJumpTo,
   onSelectElement,
   onJumpToChapter,
+  onCrossWorld,
 }: Props) {
   const t = useT()
   const kind = useKind()
@@ -63,6 +65,7 @@ export function InfoPanel({
             marker={selected}
             references={references[selected.id] ?? []}
             onJumpToChapter={onJumpToChapter}
+            onCrossWorld={onCrossWorld}
           />
         </div>
       ) : (

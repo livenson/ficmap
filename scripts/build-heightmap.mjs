@@ -27,6 +27,20 @@ const PRESETS = {
     lakes: true,
     out: '../src/assets/estonia-height.png',
   },
+  latvia: {
+    // Lāčplēsis country: Latvia entire, the Gulf of Riga, the eastern Baltic
+    // out past Kurzeme (for the sea voyage), southern Estonia and Saaremaa
+    // (where Lāčplēsis duels the giant Kalapuisis), and the Daugava as far
+    // upriver as Krāslava. Latvia's high point is 312 m, so no cap is needed.
+    z: 8,
+    bbox: { lonMin: 19.2, lonMax: 28.8, latMin: 55.2, latMax: 58.6 },
+    // Sized so a pixel is the same distance on the ground both ways: the box
+    // is 9.6° of longitude at ~57°N (≈584 km) by 3.4° of latitude (≈376 km).
+    w: 1024,
+    h: 659,
+    lakes: true,
+    out: '../src/assets/latvia-height.png',
+  },
   france: {
     z: 6,
     bbox: { lonMin: -6, lonMax: 6, latMin: 42, latMax: 53 },
