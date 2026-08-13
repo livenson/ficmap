@@ -64,7 +64,7 @@ The Vite `base` is already set to `./` so assets resolve correctly under the
 
 ## The worlds
 
-Fourteen worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
+Fifteen worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
 terrain:
 
 - **The Realm of Valdurn** — an original demo kingdom that climbs to the
@@ -92,6 +92,9 @@ terrain:
   Daugava, with **Pērkons's Hall** above and **the Crystal Castle** below.
 - **Wilhelm Tell** — Schiller's play over a real Lake Lucerne; the first world
   here built on genuine mountains rather than flat or capped terrain.
+- **The Nibelungenlied** — the German epic as what it is, a road: the Rhine at
+  Xanten and Worms, then the whole Danube east to Etzel's hall, drawn twice
+  because the poem travels it twice.
 
 The picker groups them into sections (national epics, classic adventure, modern
 fantasy, original) with a filter box, since a flat list stopped being readable
@@ -165,7 +168,7 @@ or below it into water.
 | `terrain.heightScale` | Vertical exaggeration of the 3D mesh. |
 | `terrain.biomes[]` | Elevation → color bands (low to high). |
 | `terrain.rivers` | Number of rivers traced downhill from highlands to sea (`riverColor` to tint — e.g. lava-orange). |
-| `terrain.heightmap` | Optional grayscale image URL — sampled elevation instead of noise. Some worlds use a **real DEM**: **Kalevipoeg** (Estonia), **The d'Artagnan Romances** (France + England), **Harry Potter** (Britain), **The Extraordinary Voyages** and **The Adventures of Indiana Jones** (the whole Earth), **Eneida** (the Mediterranean), **Lāčplēsis** (Latvia), **Wilhelm Tell** (Lake Lucerne). Build these with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world\|mediterranean\|latvia\|lucerne]` (some presets also carve real lakes from Natural Earth data). Others use a **shaped** heightmap — hand-built to echo a canonical map — via their own script: **The Fellowship of the Ring** (`build-middle-earth.mjs`), **Mistborn** (`build-scadrial.mjs`), **The Forest Song** (`build-polissia.mjs`). Place markers at real `lon/lat` mapped into the DEM's box. |
+| `terrain.heightmap` | Optional grayscale image URL — sampled elevation instead of noise. Some worlds use a **real DEM**: **Kalevipoeg** (Estonia), **The d'Artagnan Romances** (France + England), **Harry Potter** (Britain), **The Extraordinary Voyages** and **The Adventures of Indiana Jones** (the whole Earth), **Eneida** (the Mediterranean), **Lāčplēsis** (Latvia), **Wilhelm Tell** (Lake Lucerne), **The Nibelungenlied** (the Rhine + Danube). Build these with `node scripts/build-heightmap.mjs [estonia\|france\|britain\|world\|mediterranean\|latvia\|lucerne\|nibelungen]` (some presets also carve real lakes from Natural Earth data). Others use a **shaped** heightmap — hand-built to echo a canonical map — via their own script: **The Fellowship of the Ring** (`build-middle-earth.mjs`), **Mistborn** (`build-scadrial.mjs`), **The Forest Song** (`build-polissia.mjs`). Place markers at real `lon/lat` mapped into the DEM's box. |
 | `terrain.aspect` | World width ÷ depth (default 1 = square). Use >1 for a map wider than it is tall — **The Extraordinary Voyages** sets `360/140` so the equirectangular Earth keeps real proportions instead of stretching into the square. |
 | `terrain.detail` | Adds fine surface relief (a tiled procedural bump map) so light picks out rockiness up close. On for the shaped-terrain worlds (FOTR, Mistborn, The Forest Song). |
 | `terrain.sky` | Sky mood: `'day'` (default), `'dark'` (warm hellfire underworld), `'cavern'` (cool phosphorescence), `'heaven'` (a luminous cloud-sea sky realm). |
