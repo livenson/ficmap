@@ -153,6 +153,20 @@ resolves back to, and fails if a land marker is under water. Markers that are
 the script's `wet` set. This is how Burtnieks was caught sitting in the middle
 of its own lake rather than on its shore.
 
+The 3D scene can be profiled per world, on the production build, with no hooks
+in the source — the WebGL context's own methods are patched in the page, so
+every draw call, buffer and texture upload is counted as it happens:
+
+```bash
+npm run build && npx vite preview --port 5210 &
+node scripts/profile-worlds.mjs             # all worlds
+node scripts/profile-worlds.mjs verne-voyages
+```
+
+It reports fps, median/p95 frame time, draws and triangles per frame, geometry
+and texture bytes, and JS heap. This is how terrain self-shadowing was found to
+be doubling the triangle count on every world.
+
 Route coverage is checked across the **whole atlas**, not just the DEM worlds:
 
 ```bash
