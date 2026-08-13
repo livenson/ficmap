@@ -64,6 +64,25 @@ const WORLDS = {
     wet: new Set(['isenstein', 'rhine-mouth']),
     scenic: new Set(['alps', 'bohemia']),
   },
+  harz: {
+    png: '../src/assets/harz-height.png',
+    story: '../src/stories/faust.ts',
+    bbox: { lonMin: 7.5, lonMax: 14.5, latMin: 49.0, latMax: 53.0 },
+    seaLevel: 0.005,
+    reach: 0.09,
+    wet: new Set(['reclaimed-coast']),
+    scenic: new Set(['brocken', 'harz', 'elbe', 'greece', 'knittlingen']),
+  },
+  flanders: {
+    png: '../src/assets/flanders-height.png',
+    story: '../src/stories/uilenspiegel.ts',
+    bbox: { lonMin: 1.8, lonMax: 6.8, latMin: 49.6, latMax: 52.4 },
+    seaLevel: 0.0085,
+    reach: 0.09,
+    // The Beggars' half is fought in tidal water; these are meant to be wet.
+    wet: new Set(['brielle', 'flushing', 'middelburg', 'ostend']),
+    scenic: new Set(['ardennes', 'spanish-road']),
+  },
 }
 
 const name = process.argv[2] ?? 'latvia'

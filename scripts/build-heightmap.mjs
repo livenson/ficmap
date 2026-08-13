@@ -92,6 +92,41 @@ const PRESETS = {
     lakes: true,
     out: '../src/assets/nibelungen-height.png',
   },
+  harz: {
+    // Faust country: central Germany. Leipzig and Auerbachs Keller in the
+    // east, the Harz and the Brocken in the middle (where Walpurgis Night is
+    // held), Wittenberg north of them, and Knittlingen in the south-west,
+    // where the historical Faust was born.
+    z: 8,
+    // Reaches the German Bight in the north, because Part II ends on a coast
+    // Faust takes out of the sea — that has to be real water on the map.
+    bbox: { lonMin: 6.5, lonMax: 15.0, latMin: 49.0, latMax: 54.0 },
+    w: 1024,
+    h: 966,
+    // The Brocken is 1,141 m and is the roof of this story. Cap just above it
+    // so the Bavarian Forest along the southern edge cannot out-rank it.
+    capM: 1200,
+    flatOceanM: -6,
+    landGamma: 0.7,
+    lakes: true,
+    out: '../src/assets/harz-height.png',
+  },
+  flanders: {
+    // Uilenspiegel country: Flanders, Brabant and the Zeeland estuaries, from
+    // Dunkirk and Ypres in the south-west up to Brielle in the north, with the
+    // Ardennes on the eastern edge. The book starts on land and ends at sea,
+    // so the box has to hold the whole coast and the river mouths behind it.
+    z: 9,
+    bbox: { lonMin: 1.8, lonMax: 6.8, latMin: 49.6, latMax: 52.4 },
+    w: 1024,
+    h: 910,
+    flatOceanM: -6,
+    // Flanders is flatter than Latvia. Bruges stands about 8 m up and Damme
+    // less; without the gamma the whole country renders as beach.
+    landGamma: 0.5,
+    lakes: true,
+    out: '../src/assets/flanders-height.png',
+  },
   france: {
     z: 6,
     bbox: { lonMin: -6, lonMax: 6, latMin: 42, latMax: 53 },
