@@ -43,6 +43,9 @@ export function Weather({ terrain, area }: Props = {}) {
 
   const RAIN = Math.round(1400 * (area ? Math.min(1, box.frac * 2.2) : 1))
   const CLOUDS = Math.round(16 * (area ? Math.min(1, box.frac * 2.6) : 1))
+  // Clouds are sized for a world-wide overcast; over a small squall a single
+  // one of those covers the whole storm and reads as a hole in the sky.
+  const CLOUD_SIZE = area ? Math.max(0.36, Math.min(1, Math.sqrt(box.frac) * 1.7)) : 1
   const lerp = (a: number, b: number) => a + Math.random() * (b - a)
 
   const rainRef = useRef<THREE.BufferGeometry>(null)
@@ -88,12 +91,12 @@ export function Weather({ terrain, area }: Props = {}) {
         x: lerp(box.x0, box.x1),
         y: 52 + Math.random() * 14,
         z: lerp(box.z0, box.z1),
-        s: 12 + Math.random() * 12,
+        s: (12 + Math.random() * 12) * CLOUD_SIZE,
         drift: 1.2 + Math.random() * 1.6,
       })
     }
     return arr
-  }, [CLOUDS, box])
+  }, [CLOUDS, CLOUD_SIZE, box])
 
   useFrame((_, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05)

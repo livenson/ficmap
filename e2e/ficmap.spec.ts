@@ -15,6 +15,7 @@ const WORLDS = [
   { id: 'eneida', title: 'Eneida' },
   { id: 'game-of-thrones', title: 'A Song of Ice and Fire' },
   { id: 'lacplesis', title: 'Lāčplēsis' },
+  { id: 'tell', title: 'Wilhelm Tell' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -285,4 +286,35 @@ test('climbs Lāčplēsis to the sky palace and down to the crystal castle', asy
 
   await page.getByRole('button', { name: 'The Daugava Lands', exact: true }).click()
   await expect(page).not.toHaveURL(/floor=/)
+})
+
+test('groups the world picker into sections and filters it', async ({ page }) => {
+  // A flat list of fifteen worlds reads as arbitrary, so the menu is sectioned
+  // and searchable. Both need to keep working as the atlas grows.
+  await page.locator('.worldpicker__button').click({ noWaitAfter: true })
+  const titles = page.locator('.worldpicker__group-title')
+  await expect(titles.first()).toHaveText('National epics & folk tales')
+  expect(await titles.count()).toBeGreaterThanOrEqual(4)
+
+  // Typing narrows to matches on title, author or setting.
+  await page.locator('.worldpicker__search').fill('schiller')
+  await expect(page.locator('.worldpicker__item')).toHaveCount(1)
+  await expect(page.locator('.worldpicker__item-title')).toHaveText('Wilhelm Tell')
+
+  // Enter takes the only remaining match.
+  await page.locator('.worldpicker__search').press('Enter')
+  await expect(page.locator('.worldpicker__current')).toHaveText('Wilhelm Tell')
+  await expect(page).toHaveURL(/world=tell/)
+})
+
+test('runs Wilhelm Tell from the lake to the sunken lane', async ({ page }) => {
+  const errors = trackErrors(page)
+  await page.goto('/?world=tell')
+  await expect(page.locator('canvas')).toBeVisible()
+  // The play's two ends: Tell's house, and where he waits for Gessler.
+  await expect(page.getByRole('button', { name: /Bürglen/ }).first()).toBeVisible()
+  await page.getByRole('button', { name: /The Hohle Gasse/ }).first().click()
+  await expect(page.getByRole('heading', { name: 'The Hohle Gasse' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Mentioned in' })).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
 })

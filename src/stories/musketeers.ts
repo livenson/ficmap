@@ -21,6 +21,7 @@ export const musketeers: Story = {
   author: 'Alexandre Dumas',
   region: 'France & England',
   epoch: 'The d’Artagnan Romances · 1844–1850',
+  group: 'adventure',
   intro:
     'One for all: the cycle of the King’s Musketeers, from a Gascon boy’s ride ' +
     'to Paris to the secret of the Iron Mask — three novels over one real ' +

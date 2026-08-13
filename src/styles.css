@@ -133,6 +133,42 @@ body,
   flex-direction: column;
   gap: 2px;
 }
+.worldpicker__search {
+  position: sticky;
+  top: -6px;
+  z-index: 1;
+  margin: -6px -6px 4px;
+  padding: 9px 12px;
+  background: var(--panel);
+  border: none;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+.worldpicker__search::placeholder {
+  color: var(--ink-dim);
+}
+.worldpicker__none {
+  margin: 10px 10px 6px;
+  font-size: 13px;
+  color: var(--ink-dim);
+}
+.worldpicker__group + .worldpicker__group {
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.worldpicker__group-title {
+  margin: 2px 0 4px;
+  padding: 0 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
 .worldpicker__item {
   display: flex;
   flex-direction: column;

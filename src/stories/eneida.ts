@@ -25,6 +25,7 @@ export const eneida: Story = {
   author: 'Ivan Kotliarevsky',
   region: 'The Mediterranean · Olympus · Peklo',
   epoch: 'Published 1798',
+  group: 'epic',
   intro:
     'Troy is ash, and Aeneas — here a swaggering Zaporozhian Cossack — puts to ' +
     'sea with his band to find a promised land. Storms, a queen’s love, funeral ' +

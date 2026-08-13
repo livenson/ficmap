@@ -136,7 +136,7 @@ export function MapScene({
         <fog attach="fog" args={[fogColor, WORLD_SIZE * 0.8 * aspect, WORLD_SIZE * 2.2 * aspect]} />
       )}
 
-      <Cameras mode={mode} controlsRef={controls} aspect={aspect} />
+      <Cameras mode={mode} controlsRef={controls} aspect={aspect} overhead={!!terrain.overhead} />
       <CameraDirector goal={goal} controlsRef={controls} />
 
       {/* Lighting */}
@@ -151,7 +151,9 @@ export function MapScene({
         // long, blocky shadows across the ocean; a square world keeps the low,
         // relief-revealing angle. The sky realm gets a soft, high sun so its
         // isles are evenly bathed in light.
-        position={heaven ? [30, 180, 40] : aspect > 1.5 ? [20, 220, 30] : [40, 80, 20]}
+        position={
+          heaven ? [30, 180, 40] : aspect > 1.5 || terrain.overhead ? [20, 220, 30] : [40, 80, 20]
+        }
         intensity={underground ? 0.5 : heaven ? 1.1 : rainy ? 0.5 : mode === '2d' ? 0.7 : 1.15}
         color={cavern ? '#cfe6f0' : dark ? '#ff5a3c' : heaven ? '#fff6e8' : rainy ? '#c8d0d6' : '#ffffff'}
         castShadow
@@ -411,10 +413,12 @@ function Cameras({
   mode,
   controlsRef,
   aspect = 1,
+  overhead = false,
 }: {
   mode: ViewMode
   controlsRef: React.MutableRefObject<any>
   aspect?: number
+  overhead?: boolean
 }) {
   const is3d = mode === '3d'
   // A wider-than-square world needs the camera pulled back to frame its width,
@@ -433,7 +437,7 @@ function Cameras({
         // the lower, relief-revealing angle that shows off its terrain.
         position={
           is3d
-            ? aspect > 1.5
+            ? aspect > 1.5 || overhead
               ? [0, 82 * w, 50 * w] // same distance as below, but ~59° overhead
               : [0, 55 * w, 78 * w]
             : [0, 235 * w, 0.1]

@@ -23,6 +23,7 @@ export const indianaJones: Story = {
   author: 'Lucasfilm — Lucas & Spielberg',
   region: 'The whole Earth',
   epoch: 'The film & novel adventures · 1935–1969',
+  group: 'adventure',
   intro:
     'Fedora, whip, and a passport with too many stamps. Dr. Henry "Indiana" ' +
     'Jones crosses the real globe after relics that belong in a museum — the ' +

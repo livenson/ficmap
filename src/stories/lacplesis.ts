@@ -37,6 +37,7 @@ export const lacplesis: Story = {
   author: 'Andrejs Pumpurs',
   region: 'Latvia, the sky palace & the crystal castle',
   epoch: 'Latvian national epic · 1888 · set in the 13th c.',
+  group: 'epic',
   intro:
     'The Bear-Slayer — torn from a she-bear, raised at Lielvārde, strong ' +
     'enough to pull a bear’s jaws apart, and undone in the end by the two ' +
