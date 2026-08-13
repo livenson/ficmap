@@ -5,7 +5,14 @@ import * as THREE from 'three'
 import { makeHeightField, type HeightField } from '../engine/noise'
 import { FLAT_FIELD, loadImageHeightField } from '../engine/heightmap'
 import type { TerrainConfig } from '../types'
-import { WORLD_SIZE, aspectOf, elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
+import {
+  WORLD_SIZE,
+  aspectOf,
+  elevationAt,
+  frameScale,
+  mapToWorld,
+  mapToWorldX,
+} from '../engine/terrain'
 import type { CameraFocus, Marker, Story } from '../types'
 import {
   resolveHighlight,
@@ -111,6 +118,9 @@ export function MapScene({
         : rainy
           ? '#7c8892'
           : '#9fc2d6'
+  // How far the camera has to sit back to frame this world; the fog depth and
+  // the camera distance both key off it. Kept in step with `Cameras` below.
+  const frame = frameScale(aspect)
   const fogColor = cavern
     ? '#0c2029'
     : dark
@@ -133,7 +143,14 @@ export function MapScene({
     >
       <color attach="background" args={[bg]} />
       {mode === '3d' && (
-        <fog attach="fog" args={[fogColor, WORLD_SIZE * 0.8 * aspect, WORLD_SIZE * 2.2 * aspect]} />
+        // Haze scaled to how far back the camera sits (see `frameScale`), not to
+        // the world's width alone — a tall, narrow world is viewed from further
+        // away than its width suggests, and fog tuned to the width alone
+        // whites the whole country out before you can see its colours.
+        <fog
+          attach="fog"
+          args={[fogColor, WORLD_SIZE * 0.8 * frame, WORLD_SIZE * 2.2 * frame]}
+        />
       )}
 
       <Cameras mode={mode} controlsRef={controls} aspect={aspect} overhead={!!terrain.overhead} />
@@ -158,11 +175,14 @@ export function MapScene({
         color={cavern ? '#cfe6f0' : dark ? '#ff5a3c' : heaven ? '#fff6e8' : rainy ? '#c8d0d6' : '#ffffff'}
         castShadow
         shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-WORLD_SIZE * aspect}
-        shadow-camera-right={WORLD_SIZE * aspect}
-        shadow-camera-top={WORLD_SIZE}
-        shadow-camera-bottom={-WORLD_SIZE}
-        shadow-camera-far={300}
+        // Sized to the framed view, not to the world's width: on a tall, narrow
+        // world the camera sits back far enough that a width-sized frustum ends
+        // mid-sea and draws its own edge across the water.
+        shadow-camera-left={-WORLD_SIZE * Math.max(aspect, frame)}
+        shadow-camera-right={WORLD_SIZE * Math.max(aspect, frame)}
+        shadow-camera-top={WORLD_SIZE * frame}
+        shadow-camera-bottom={-WORLD_SIZE * frame}
+        shadow-camera-far={300 * frame}
         // The wider the world, the coarser each shadow texel — bias along the
         // normal so flat water/plains don't self-shadow into dark blotches.
         shadow-normalBias={1.2 * aspect}
@@ -421,9 +441,7 @@ function Cameras({
   overhead?: boolean
 }) {
   const is3d = mode === '3d'
-  // A wider-than-square world needs the camera pulled back to frame its width,
-  // and the zoom-out limit raised to match.
-  const w = Math.max(1, aspect)
+  const w = frameScale(aspect)
 
   return (
     <>
@@ -438,7 +456,7 @@ function Cameras({
         position={
           is3d
             ? aspect > 1.5 || overhead
-              ? [0, 82 * w, 50 * w] // same distance as below, but ~59° overhead
+              ? [0, 96 * w, 58 * w] // same angle as below is too low; ~59° overhead
               : [0, 55 * w, 78 * w]
             : [0, 235 * w, 0.1]
         }

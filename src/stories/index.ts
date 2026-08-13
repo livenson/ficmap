@@ -16,6 +16,9 @@ import { tell } from './tell'
 import { nibelungen } from './nibelungen'
 import { faust } from './faust'
 import { uilenspiegel } from './uilenspiegel'
+import { kalevala } from './kalevala'
+import { peergynt } from './peergynt'
+import { nils } from './nils'
 
 /**
  * The atlas registry. To add a world:
@@ -41,6 +44,9 @@ export const stories: Story[] = [
   nibelungen,
   faust,
   uilenspiegel,
+  kalevala,
+  peergynt,
+  nils,
 ]
 
 export function getStory(id: string | null | undefined): Story {

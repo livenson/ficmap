@@ -28,6 +28,23 @@ export function mapToWorld(coord: number): number {
 }
 
 /**
+ * How far back the camera has to sit to frame a world of this aspect, as a
+ * multiple of the square-world distance — and, with it, how far the haze, the
+ * water plane and the shadow frustum have to reach.
+ *
+ * A wider-than-square world needs pulling back to frame its width. A world that
+ * is TALLER than it is wide has the same problem on the other axis: the viewport
+ * is landscape, so it is the world's depth that runs off the screen — Sweden is
+ * 777 km across and 1,611 km down, and at the square world's distance its
+ * southern end (where Nils Holgersson starts) sits below the bottom edge. The
+ * 1.4 divisor is roughly the viewport's own aspect, so the depth term only
+ * starts pulling back once the world is narrower than the screen.
+ */
+export function frameScale(aspect: number): number {
+  return Math.max(1, aspect, 1 / Math.max(aspect, 0.05) / 1.4)
+}
+
+/**
  * World aspect: X width / Z depth. 1 = square (default); >1 = wider than deep,
  * e.g. an equirectangular world map, so continents keep real proportions
  * instead of being stretched vertically into the square.
