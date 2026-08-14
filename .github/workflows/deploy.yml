@@ -42,6 +42,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The fast, deterministic half of this project's verification: every
+      # marker on land, every place with a route to it, every bass note under
+      # its melody, the terrain's detail plan and its seams, and the elevation
+      # scales that let detail tiles agree with the map they refine. Twenty-odd
+      # checks in about twenty seconds, so they run on every push. The
+      # Playwright suite is the other half and is far too slow for this.
+      - name: Sanity checks
+        run: npm run check
+
       - name: Build
         run: npm run build
 

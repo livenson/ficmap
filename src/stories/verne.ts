@@ -44,6 +44,11 @@ export const verne: Story = {
     },
     seed: 'verne-dem',
     heightmap: worldHeight,
+    // Four-times-finer elevation for whatever part of the globe you zoom into,
+    // fetched a few 512px tiles at a time. The base map above holds ~13 km per
+    // pixel — a whole fjord is two pixels — so it softens as you close in no
+    // matter how fine the mesh gets. See scripts/build-dem-tiles.mjs.
+    detailTiles: 'world',
     // The DEM spans 360° of longitude over 140° of latitude, so the world is
     // ~2.57× wider than deep — keep that ratio instead of squaring the globe.
     aspect: 360 / 140,

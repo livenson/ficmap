@@ -9,6 +9,8 @@ import type { TerrainConfig } from '../types'
 interface Props {
   field: HeightField
   terrain: TerrainConfig
+  /** Bumped when finer ground arrives, so the courses can settle onto it. */
+  detailVersion?: number
 }
 
 /**
@@ -16,7 +18,10 @@ interface Props {
  * draped just over the terrain surface. Count and color come from the world's
  * terrain config (blue by default; e.g. lava-orange for a volcanic world).
  */
-export function Rivers({ field, terrain }: Props) {
+export function Rivers({ field, terrain, detailVersion = 0 }: Props) {
+  // The courses themselves are traced once. `detailVersion` is deliberately not
+  // a dependency here: re-tracing on finer ground would send every river down a
+  // different valley, which is a bigger change than the one being fixed.
   const rivers = useMemo(
     () => generateRivers(field, terrain, terrain.rivers ?? 0),
     [field, terrain],
@@ -27,7 +32,14 @@ export function Rivers({ field, terrain }: Props) {
   return (
     <>
       {rivers.map((path, i) => (
-        <RiverLine key={i} path={path} field={field} terrain={terrain} color={color} />
+        <RiverLine
+          key={i}
+          path={path}
+          field={field}
+          terrain={terrain}
+          color={color}
+          detailVersion={detailVersion}
+        />
       ))}
     </>
   )
@@ -38,11 +50,13 @@ function RiverLine({
   field,
   terrain,
   color,
+  detailVersion,
 }: {
   path: { x: number; z: number }[]
   field: HeightField
   terrain: TerrainConfig
   color: string
+  detailVersion: number
 }) {
   const points = useMemo(() => {
     const flat = path.map((p) => new Vector3(p.x, 0, p.z))
@@ -60,7 +74,8 @@ function RiverLine({
       )
     }
     return out
-  }, [path, field, terrain])
+    // The course is fixed; only where it lies on the hillside is redone.
+  }, [path, field, terrain, detailVersion])
 
   return <Line points={points} color={color} lineWidth={2} transparent opacity={0.85} />
 }

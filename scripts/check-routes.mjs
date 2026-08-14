@@ -67,6 +67,11 @@ const SCENIC = new Set([
   // Mistborn: an ashmount drawn on the Final Empire map. Nobody in Era 1 goes
   // anywhere near it.
   'mistborn/surface/doriel',
+  // King Ottokar: the Tauern are the southern horizon of the map and nobody in
+  // the play crosses them; Salzburg belongs to its archbishop and to neither
+  // side of the quarrel, so no army in this play has business there.
+  'ottokar/surface/tauern',
+  'ottokar/surface/salzburg',
   // Te Ika-a-Māui: a name for the whole South Island, not a place you arrive at.
   'aotearoa/surface/the-canoe',
 ])

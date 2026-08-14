@@ -14,6 +14,23 @@ import type { TerrainConfig } from '../types'
 export interface HeightField {
   /** Sample normalized height in [0, 1] at map coords x, z ∈ [-1, 1]. */
   at(x: number, z: number): number
+  /**
+   * How many samples the field actually holds across the map, when it is built
+   * from finite data. A DEM has a real pixel grid; tessellating finer than that
+   * does not reveal more ground, it reveals the creases in the bilinear
+   * interpolation BETWEEN its pixels, and the terrain comes out visibly
+   * crinkled. Absent on procedural fields, which have detail at every scale.
+   */
+  samples?: { w: number; h: number }
+  /**
+   * How many samples cover a particular rectangle of the map, when that differs
+   * from `samples` — a field refined by tiles holds more data where they have
+   * arrived than it does elsewhere.
+   */
+  samplesOver?(rect: { x0: number; x1: number; z0: number; z1: number }): {
+    w: number
+    h: number
+  }
 }
 
 export function makeHeightField(cfg: TerrainConfig): HeightField {

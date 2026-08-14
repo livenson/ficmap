@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
-import { scatterTrees } from '../engine/scatter'
+import { drapeTrees, scatterTrees } from '../engine/scatter'
 import type { Ambient, TerrainConfig } from '../types'
 
 /**
@@ -34,6 +34,8 @@ interface Props {
   field: HeightField
   terrain: TerrainConfig
   ambient: Ambient
+  /** Bumped when finer ground arrives, so the wood can settle onto it. */
+  detailVersion?: number
 }
 
 /** Deterministic per-tree pseudo-random in [0,1) from its index. */
@@ -49,10 +51,18 @@ function rand(i: number, salt: number): number {
  * small, and vary per-instance in size, tint, and lean so the wood reads
  * organic rather than stamped.
  */
-export function Flora({ field, terrain, ambient }: Props) {
-  const trees = useMemo(
+export function Flora({ field, terrain, ambient, detailVersion = 0 }: Props) {
+  // Where the trees stand, decided once. The field is refined in place, so its
+  // identity never changes and this never re-runs — which is the point: a
+  // re-scatter would move every tree in the wood.
+  const placed = useMemo(
     () => scatterTrees(field, terrain, ambient.trees ?? 0.6),
     [field, terrain, ambient.trees],
+  )
+  // How high they stand, redone when finer ground arrives beneath them.
+  const trees = useMemo(
+    () => drapeTrees(placed, field, terrain),
+    [placed, field, terrain, detailVersion],
   )
   const conifer = ambient.treeKind === 'conifer'
   const base = new THREE.Color(ambient.treeColor ?? (conifer ? '#3f6f4a' : '#5a9455'))
