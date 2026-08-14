@@ -263,6 +263,35 @@ export const PRESETS = {
     lakes: true,
     out: '../src/assets/tasmania-height.png',
   },
+  ottokar: {
+    // Grillparzer's König Ottokars Glück und Ende: Bohemia and the lands
+    // Ottokar held, and the Marchfeld where he lost them. Prague in the north,
+    // Vienna and the Danube in the middle, the March and the battlefield in the
+    // east, and the Alpine duchies — Styria, Carinthia, Carniola — running off
+    // to the south, which is the whole point of the play's argument.
+    z: 8,
+    bbox: { lonMin: 11.8, lonMax: 18.4, latMin: 45.6, latMax: 51.0 },
+    // Square-ish pixels on the ground: the box is 6.6° of longitude at ~48°N
+    // (≈487 km) by 5.4° of latitude (≈599 km).
+    w: 1024,
+    h: 1260,
+    // Entirely landlocked, so the waterline is not a sea: `floorM: 0` keeps all
+    // land at or above zero and the carved lake polygons — the Neusiedler See,
+    // Balaton, the Bohemian ponds — are the only water on the map.
+    floorM: 0,
+    lakes: true,
+    // The Hohe Tauern reach 3,798 m inside this box, which would crush Bohemia
+    // and the Marchfeld — where the play actually happens — into the bottom of
+    // the range. Capped so the plain, the Danube and the Bohemian basin keep
+    // their relief, with the gamma lifting the low ground clear of the lakes.
+    capM: 2400,
+    landGamma: 0.62,
+    // Pinned, so `check-dem-scale` can compute the waterline instead of it
+    // being copied out of a build log. -4 m is the depth lakes are carved to.
+    minM: -4,
+    maxM: 2400,
+    out: '../src/assets/ottokar-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

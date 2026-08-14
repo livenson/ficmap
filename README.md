@@ -64,7 +64,7 @@ The Vite `base` is already set to `./` so assets resolve correctly under the
 
 ## The worlds
 
-Twenty-four worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
+Twenty-five worlds ship in the atlas, mixing procedural, real-DEM and hand-shaped
 terrain:
 
 - **The Realm of Valdurn** — an original demo kingdom that climbs to the
@@ -192,6 +192,17 @@ counts as connected when a route passes within 0.09 map units of it, or when it
 is declared scenic in the script (a summit you only ever look at). This found 71
 places with no route to them, including a whole world — The Forest Song — that
 had no routes at all.
+
+All of the checkers run together, which is what CI does on every push:
+
+```bash
+npm run check     # ~21 checks in about 20 seconds
+```
+
+They are the fast, deterministic half of the verification here. The Playwright
+suite covers that the app loads and behaves, but it drives a real browser over
+software WebGL and takes the better part of an hour; these read the actual data
+and geometry and finish in seconds, so they can gate every commit.
 
 The terrain's zoom-dependent detail is checked the same way, without a browser:
 

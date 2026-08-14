@@ -26,6 +26,7 @@ const WORLDS = [
   { id: 'cid', title: 'The Poem of the Cid' },
   { id: 'aotearoa', title: 'Te Ika-a-Māui' },
   { id: 'natural-life', title: 'For the Term of His Natural Life' },
+  { id: 'ottokar', title: 'King Ottokar’s Fortune and End' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -515,4 +516,10 @@ test('reads the fish and the dog line', async ({ page }) => {
   await page.getByRole('button', { name: /Eaglehawk Neck/ }).first().click()
   await expect(page.getByText(/line of dogs chained/)).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('finds the queen in her coffin at Götzendorf', async ({ page }) => {
+  await selectWorld(page, 'ottokar')
+  await page.getByRole('button', { name: /Götzendorf/ }).first().click()
+  await expect(page.getByText(/arms of Austria at her feet/)).toBeVisible()
 })

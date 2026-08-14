@@ -126,6 +126,26 @@ const WORLDS = {
     ]),
     scenic: new Set(['cape-raoul', 'frenchmans']),
   },
+  ottokar: {
+    png: '../src/assets/ottokar-height.png',
+    story: '../src/stories/ottokar.ts',
+    bbox: { lonMin: 11.8, lonMax: 18.4, latMin: 45.6, latMax: 51.0 },
+    seaLevel: 0.0017,
+    reach: 0.09,
+    // Nothing here is meant to be under water: the box is entirely inland.
+    wet: new Set([]),
+    // Named but never gone to: the two off-map edges, the crown as an idea,
+    // the mountains that are only ever the southern horizon, and Salzburg,
+    // which belongs to its archbishop and to neither side in the quarrel.
+    scenic: new Set([
+      'the-empire',
+      'hungary',
+      'bohemia-crown',
+      'tauern',
+      'neusiedl',
+      'salzburg',
+    ]),
+  },
   verne: {
     png: '../src/assets/world-height.png',
     story: '../src/stories/verne.ts',

@@ -23,6 +23,7 @@ import { tain } from './tain'
 import { cid } from './cid'
 import { aotearoa } from './aotearoa'
 import { naturalLife } from './natural-life'
+import { ottokar } from './ottokar'
 
 /**
  * The atlas registry. To add a world:
@@ -55,6 +56,7 @@ export const stories: Story[] = [
   cid,
   aotearoa,
   naturalLife,
+  ottokar,
 ]
 
 export function getStory(id: string | null | undefined): Story {
