@@ -122,7 +122,9 @@ export const aotearoa: Story = {
       id: 'the-canoe',
       name: 'The Canoe',
       kind: 'landmark',
-      at: { x: -0.363, z: 0.422 },
+      // A label for the whole South Island, so it sits inland at the island's
+      // middle — clear of Aoraki, which names one mountain on the same coast.
+      at: { x: -0.185, z: 0.467 },
       description:
         'The South Island: the canoe Māui stood in to haul the fish up. In ' +
         'this telling the whole geography of the country is one act — a man ' +

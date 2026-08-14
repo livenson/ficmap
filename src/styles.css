@@ -474,18 +474,16 @@ body,
   min-height: 120px;
 }
 /*
- * The chapter title sits between the counter and the nav, so its height is the
- * only thing that can move the Next button. Two lines at 26px/1.15 covers every
- * chapter title in the atlas; a shorter one is padded rather than shifting the
- * buttons up under it.
+ * The nav is the first thing in the story panel, above the book line, the
+ * counter and the title, so nothing that changes with the chapter can move it.
+ * It used to sit under the title behind a two-line min-height, which held for
+ * 135 of the atlas's 136 chapter titles and quietly failed on the one that
+ * wrapped to three.
  */
-.panel--story .panel__title {
-  min-height: calc(26px * 1.15 * 2);
-}
 .story__nav {
   display: flex;
   gap: 10px;
-  margin: 10px 0 16px;
+  margin: 2px 0 14px;
 }
 .story__btn {
   flex: 1;

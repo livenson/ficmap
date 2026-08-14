@@ -83,26 +83,76 @@ test('plays a chapter tour and exits', async ({ page }) => {
   expect(errors, errors.join('\n')).toHaveLength(0)
 })
 
-test('keeps the Next button still as chapters change', async ({ page }) => {
-  // Chapter narrations differ by several lines, and the nav used to sit under
-  // them, so Next slid down the panel on every advance and you had to chase it.
-  await selectWorld(page, 'kalevala')
+/**
+ * Walk a whole story and record where Next sits, how long each narration is,
+ * and how tall the chapter title and book line render. Everything above the nav
+ * used to be variable, so a partial walk could pass while a chapter further in
+ * moved the button.
+ */
+async function walkStory(page: Page, world: string) {
+  await selectWorld(page, world)
   await page.getByRole('button', { name: 'Play story' }).click()
-  const next = page.getByRole('button', { name: /Next/ })
-  await expect(next).toBeVisible()
+  await expect(page.locator('.story__nav')).toBeVisible()
 
-  const ys: number[] = []
-  const lengths: number[] = []
-  for (let i = 0; i < 6; i++) {
-    ys.push(Math.round((await next.boundingBox())!.y))
-    lengths.push((await page.locator('.story__narration').innerText()).length)
-    await next.click()
-    await page.waitForTimeout(900)
+  const seen = []
+  for (let i = 0; i < 60; i++) {
+    const row = await page.evaluate(() => {
+      const nav = document.querySelector('.story__nav')!
+      const title = document.querySelector('.panel--story .panel__title')
+      const book = document.querySelector('.story__book')
+      const last = [...document.querySelectorAll('.story__btn')].pop() as HTMLButtonElement
+      return {
+        y: Math.round(nav.getBoundingClientRect().top),
+        titleH: Math.round(title?.getBoundingClientRect().height ?? 0),
+        bookH: Math.round(book?.getBoundingClientRect().height ?? 0),
+        narration: document.querySelector('.story__narration')?.textContent?.length ?? 0,
+        atEnd: last.disabled || !/Next/.test(last.textContent ?? ''),
+      }
+    })
+    seen.push(row)
+    if (row.atEnd) break
+    await page.evaluate(() =>
+      (([...document.querySelectorAll('.story__btn')].pop() as HTMLButtonElement).click()),
+    )
+    await page.waitForTimeout(160)
   }
-  // The narration really does vary, so this is a meaningful test and not a
-  // tautology on six identical chapters.
-  expect(Math.max(...lengths) - Math.min(...lengths), 'narration lengths are all alike').toBeGreaterThan(40)
-  expect(new Set(ys).size, `Next moved between y = ${ys.join(', ')}`).toBe(1)
+  return seen
+}
+
+test('keeps the Next button still across every chapter of a story', async ({ page }) => {
+  // Narrations differ by several lines and the nav used to sit under them, so
+  // Next slid down the panel on every advance and you had to chase it. Walking
+  // all 22 chapters matters: an earlier six-chapter version of this test passed
+  // while `XLV–XLIX · Nine diseases, a bear, and the dark` — the one title in
+  // the atlas that wraps to three lines — still moved the button 30px.
+  const seen = await walkStory(page, 'kalevala')
+  expect(seen.length, 'walked the whole story').toBeGreaterThan(20)
+
+  const lengths = seen.map((s) => s.narration)
+  expect(
+    Math.max(...lengths) - Math.min(...lengths),
+    'narration lengths are all alike, so this proves nothing',
+  ).toBeGreaterThan(40)
+  const titles = seen.map((s) => s.titleH)
+  expect(
+    new Set(titles).size,
+    'every title renders the same height, so this proves nothing',
+  ).toBeGreaterThan(1)
+
+  const ys = [...new Set(seen.map((s) => s.y))]
+  expect(ys.length, `Next moved between y = ${ys.join(', ')}`).toBe(1)
+})
+
+test('keeps the Next button still across a book boundary', async ({ page }) => {
+  // A multi-book world prints `Book 3 · The Mysterious Island` above the
+  // chapter, and the longer book names wrap to a second line. That moved Next
+  // 15px whenever the story crossed from one book into the next.
+  const seen = await walkStory(page, 'verne-voyages')
+  const books = [...new Set(seen.map((s) => s.bookH))]
+  expect(books.length, 'the book line never changes height, so this proves nothing').toBeGreaterThan(1)
+
+  const ys = [...new Set(seen.map((s) => s.y))]
+  expect(ys.length, `Next moved between y = ${ys.join(', ')}`).toBe(1)
 })
 
 test('shows cross-chapter place references', async ({ page }) => {

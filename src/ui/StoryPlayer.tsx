@@ -31,22 +31,14 @@ export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Pro
         ✕ {t('exitStory')}
       </button>
 
-      <div className="story__meta">
-        {multiBook && (
-          <span className="story__book">
-            {t('book')} {current.bookIndex + 1} · {current.bookTitle}
-          </span>
-        )}
-        <span className="story__count">
-          {t('chapter')} {current.indexInBook + 1} / {inBook.length}
-        </span>
-      </div>
-      <h2 className="panel__title">{current.chapter.title}</h2>
-
-      {/* Above the narration, not below it. Chapter texts differ in length by
-          several lines, so a nav underneath moved every time you advanced and
-          you had to chase the Next button down the panel. Up here only the
-          title sits above it, and that is held to a fixed height in CSS. */}
+      {/* First, above everything that changes with the chapter. Narrations
+          differ by several lines and titles and book lines wrap to one, two or
+          three, so anywhere below them the Next button slides down the panel as
+          you advance and you have to chase it. Held here by structure rather
+          than by a min-height guessed from the longest title in the atlas —
+          Kalevala's `XLV–XLIX · Nine diseases, a bear, and the dark` took three
+          lines and moved it 30px, and Verne's two-line book names moved it 15px
+          at a book boundary. Nothing above this line varies. */}
       <div className="story__nav">
         <button onClick={onPrev} disabled={atStart} className="story__btn">
           {t('prev')}
@@ -58,6 +50,18 @@ export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Pro
           {atEnd ? t('finish') : t('next')}
         </button>
       </div>
+
+      <div className="story__meta">
+        {multiBook && (
+          <span className="story__book">
+            {t('book')} {current.bookIndex + 1} · {current.bookTitle}
+          </span>
+        )}
+        <span className="story__count">
+          {t('chapter')} {current.indexInBook + 1} / {inBook.length}
+        </span>
+      </div>
+      <h2 className="panel__title">{current.chapter.title}</h2>
 
       <p className="panel__body story__narration">{current.chapter.narration}</p>
 

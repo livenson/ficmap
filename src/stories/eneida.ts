@@ -156,12 +156,14 @@ export const eneida: Story = {
         { x: 0.03, z: 0.0 },
         { x: 0.12, z: -0.34 },
         { x: 0.03, z: -0.49 },
+        { x: -0.02, z: -0.56 },
       ],
       color: '#ffcf5a',
       style: 'solid',
       description:
         'From the ruin of Troy, by storm and queen and games and Hell, to the ' +
-        'destined shore of Latium.',
+        'destined shore of Latium — and up the river to Evander’s Pallanteum ' +
+        'to beg the allies the war will need.',
     },
   ],
   regions: [

@@ -64,6 +64,11 @@ const SCENIC = new Set([
   // Nils: landmarks the geese steer by.
   'nils/surface/omberg',
   'nils/surface/smaland',
+  // Mistborn: an ashmount drawn on the Final Empire map. Nobody in Era 1 goes
+  // anywhere near it.
+  'mistborn/surface/doriel',
+  // Te Ika-a-Māui: a name for the whole South Island, not a place you arrive at.
+  'aotearoa/surface/the-canoe',
 ])
 
 const bundle = await esbuild.build({
@@ -93,29 +98,43 @@ const mod = await import(
   'data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64')
 )
 
-/** Shortest distance from a point to a polyline, in map units. */
-function distToRoutes(routes, x, z) {
+/**
+ * Shortest distance from a point to a polyline, in map units.
+ *
+ * X is scaled by the world's aspect first. The map is -1..1 on both axes but a
+ * wide world is stretched across that box: on the whole-Earth map (aspect 2.57)
+ * an unscaled 0.09 along x is over 16° of longitude — most of Europe — while
+ * the same number along z is 6° of latitude. Scaling x makes REACH one distance
+ * on the ground in every world instead of a different one per aspect.
+ */
+function distToRoutes(routes, x, z, aspect) {
   let best = Infinity
   for (const r of routes) {
     const pts = r.points ?? []
     for (let i = 1; i < pts.length; i++) {
       const a = pts[i - 1]
       const b = pts[i]
-      const dx = b.x - a.x
+      const dx = (b.x - a.x) * aspect
       const dz = b.z - a.z
+      const px = (x - a.x) * aspect
       const len = dx * dx + dz * dz
-      const t = len === 0 ? 0 : Math.max(0, Math.min(1, ((x - a.x) * dx + (z - a.z) * dz) / len))
-      best = Math.min(best, Math.hypot(x - (a.x + t * dx), z - (a.z + t * dz)))
+      const t = len === 0 ? 0 : Math.max(0, Math.min(1, (px * dx + (z - a.z) * dz) / len))
+      best = Math.min(best, Math.hypot(px - t * dx, z - a.z - t * dz))
     }
   }
   return best
 }
 
 const only = process.argv[2]
+if (only && !mod.stories.some((s) => s.id === only)) {
+  console.error(`unknown world "${only}"; try: ${mod.stories.map((s) => s.id).join(', ')}`)
+  process.exit(2)
+}
 let stranded = 0
 let checked = 0
 for (const story of mod.stories) {
   if (only && story.id !== only) continue
+  const aspect = story.terrain?.aspect > 0 ? story.terrain.aspect : 1
   // The surface, then each extra floor. A floor inherits nothing: its markers
   // and routes are its own.
   const levels = [
@@ -132,7 +151,7 @@ for (const story of mod.stories) {
       checked++
       const key = `${story.id}/${lv.id}/${m.id}`
       if (SCENIC.has(key)) continue
-      const d = distToRoutes(lv.routes, m.at.x, m.at.z)
+      const d = distToRoutes(lv.routes, m.at.x, m.at.z, aspect)
       if (d > REACH) out.push({ m, d })
     }
     if (out.length) {

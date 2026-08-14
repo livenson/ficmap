@@ -260,8 +260,11 @@ export const indianaJones: Story = {
       name: 'Raiders of the Lost Ark (1936)',
       color: '#ffce54',
       style: 'solid',
-      description: 'Marshall College to Nepal, on to Cairo and the dig at Tanis, and the Ark home to Washington.',
+      description:
+        'The Peruvian temple in the opening reel, back to Marshall College, on ' +
+        'to Nepal, Cairo and the dig at Tanis, and the Ark home to Washington.',
       points: [
+        { x: -0.433, z: 0.203 }, // the Chachapoyan temple
         { x: -0.405, z: -0.476 }, // Marshall College
         { x: 0.474, z: -0.281 }, // Nepal
         { x: 0.174, z: -0.315 }, // Cairo

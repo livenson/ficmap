@@ -107,7 +107,6 @@ const WORLDS = {
     bbox: { lonMin: 166.0, lonMax: 179.0, latMin: -47.5, latMax: -34.0 },
     seaLevel: 0.0025,
     reach: 0.09,
-    // Hawaiki is off every map, the lakes and the strait are water on purpose.
     // Hawaiki is off every map; the lake, the strait and the pit the sun
     // climbs out of in the eastern sea are water on purpose.
     wet: new Set(['hawaiki', 'taupo', 'cook-strait', 'sun-pit']),
@@ -133,7 +132,6 @@ const WORLDS = {
     bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },
     seaLevel: 0.0017,
     reach: 0.09,
-    // Voyages: most of this world is deliberately at sea.
     // Half of Verne happens at sea, and one marker sits below the DEM's
     // southern edge on purpose.
     wet: new Set(['pacific-deeps', 'atlantis', 'maelstrom', 'lincoln-island', 'south-pole']),
@@ -223,7 +221,14 @@ const toLat = (z) => latMax - ((z + 1) / 2) * (latMax - latMin)
 // Pull `id` / `at: { x, z }` pairs straight out of the story source. Only the
 // surface level is checked — the mythic floors are procedural, not geographic.
 const surface = src.slice(0, src.indexOf('levels:'))
-const re = /id: '([^']+)',\s*\n\s*name: '([^']*)',\s*\n\s*kind: '([^']+)',\s*\n\s*at: \{ x: (-?[\d.]+), z: (-?[\d.]+) \}/g
+// `GAP` lets a `//` comment sit between any two fields. Without it a single
+// explanatory line above `at:` drops the whole marker from this check, silently
+// — which is the opposite of what a checker is for.
+const GAP = String.raw`(?:\s*\n\s*//[^\n]*)*\s*\n\s*`
+const re = new RegExp(
+  String.raw`id: '([^']+)',${GAP}name: '([^']*)',${GAP}kind: '([^']+)',${GAP}at: \{ x: (-?[\d.]+), z: (-?[\d.]+) \}`,
+  'g',
+)
 
 // Every route's waypoints, so a marker can be measured against the lines.
 const routes = []

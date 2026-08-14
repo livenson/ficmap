@@ -24,7 +24,10 @@ export interface Part {
  * twenty-odd creatures in the sky that was most of the frame's draw calls —
  * Westeros spent 233 of its 321 on wildlife alone. Nothing inside a body moves
  * relative to the rest of it (only the wings hinge, and they are separate), so
- * the parts can be welded once per creature type and colour and reused.
+ * a body can be welded once and reused.
+ *
+ * Callers should reach for `baked()` rather than this, so the weld happens once
+ * per creature kind instead of once per creature.
  */
 export function bake(parts: Part[]): THREE.BufferGeometry {
   const out: THREE.BufferGeometry[] = []
@@ -63,5 +66,29 @@ export function bake(parts: Part[]): THREE.BufferGeometry {
     out.push(g.index ? g.toNonIndexed() : g)
   }
   return mergeGeometries(out, false)!
+}
+
+const CACHE = new Map<string, THREE.BufferGeometry>()
+
+/**
+ * `bake()` behind a cache keyed by creature kind, so twenty ravens share one
+ * geometry instead of building twenty identical ones.
+ *
+ * The cache lives for the life of the page and is never evicted, which is the
+ * point: a geometry handed to react-three-fiber as a `geometry={…}` prop is not
+ * disposed when the mesh unmounts, so a per-instance bake would strand its
+ * buffers on the GPU every time a reader switched world. Bodies are a small
+ * fixed set — a dozen creature kinds across the whole atlas — so holding them
+ * all costs less than one DEM and nothing accumulates.
+ *
+ * `build` is only called on a miss, so callers can construct their Parts lazily.
+ */
+export function baked(key: string, build: () => Part[]): THREE.BufferGeometry {
+  let g = CACHE.get(key)
+  if (!g) {
+    g = bake(build())
+    CACHE.set(key, g)
+  }
+  return g
 }
 
