@@ -101,6 +101,32 @@ const WORLDS = {
     wet: new Set([]),
     scenic: new Set(['navarre-aragon']),
   },
+  aotearoa: {
+    png: '../src/assets/aotearoa-height.png',
+    story: '../src/stories/aotearoa.ts',
+    bbox: { lonMin: 166.0, lonMax: 179.0, latMin: -47.5, latMax: -34.0 },
+    seaLevel: 0.0025,
+    reach: 0.09,
+    // Hawaiki is off every map, the lakes and the strait are water on purpose.
+    // Hawaiki is off every map; the lake, the strait and the pit the sun
+    // climbs out of in the eastern sea are water on purpose.
+    wet: new Set(['hawaiki', 'taupo', 'cook-strait', 'sun-pit']),
+    scenic: new Set(['aoraki', 'hikurangi', 'ruapehu', 'ngauruhoe', 'the-fish', 'the-canoe']),
+  },
+  tasmania: {
+    png: '../src/assets/tasmania-height.png',
+    story: '../src/stories/natural-life.ts',
+    bbox: { lonMin: 144.4, lonMax: 148.6, latMin: -43.8, latMax: -40.4 },
+    seaLevel: 0.0037,
+    reach: 0.09,
+    // The voyages, the wreck, and the two settings a thousand miles off the map.
+    wet: new Set([
+      'malabar', 'norfolk', 'sydney', 'the-wreck', 'hells-gates', 'bruny',
+      // Built on the harbour and launched into it.
+      'the-escape',
+    ]),
+    scenic: new Set(['cape-raoul', 'frenchmans']),
+  },
   verne: {
     png: '../src/assets/world-height.png',
     story: '../src/stories/verne.ts',

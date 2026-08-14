@@ -239,6 +239,35 @@ const PRESETS = {
     lakes: true,
     out: '../src/assets/spain-height.png',
   },
+  aotearoa: {
+    // Te Ika-a-Māui and Te Waka-a-Māui — the North Island and the South. The
+    // whole point of this world is the shape of the two islands, so the box is
+    // both of them end to end: 1,097 km across by 1,500 km down.
+    z: 7,
+    bbox: { lonMin: 166.0, lonMax: 179.0, latMin: -47.5, latMax: -34.0 },
+    w: 1024,
+    h: 1400,
+    // Aoraki is 3,724 m, but the Southern Alps as a white wall would bury the
+    // North Island's volcanoes, which are the ones the legends are about.
+    capM: 2400,
+    flatOceanM: -6,
+    landGamma: 0.62,
+    lakes: true,
+    out: '../src/assets/aotearoa-height.png',
+  },
+  tasmania: {
+    // Van Diemen's Land: Hobart and the Derwent, the Tasman peninsula and Port
+    // Arthur in the south-east, and Macquarie Harbour on the wild west coast.
+    z: 8,
+    bbox: { lonMin: 144.4, lonMax: 148.6, latMin: -43.8, latMax: -40.4 },
+    w: 1024,
+    h: 1118,
+    capM: 1600,
+    flatOceanM: -6,
+    landGamma: 0.65,
+    lakes: true,
+    out: '../src/assets/tasmania-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

@@ -24,6 +24,8 @@ const WORLDS = [
   { id: 'nils', title: 'Nils Holgersson' },
   { id: 'tain', title: 'Táin Bó Cúailnge' },
   { id: 'cid', title: 'The Poem of the Cid' },
+  { id: 'aotearoa', title: 'Te Ika-a-Māui' },
+  { id: 'natural-life', title: 'For the Term of His Natural Life' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -450,5 +452,17 @@ test('holds the ford in the Táin and takes Valencia in the Cid', async ({ page 
   await selectWorld(page, 'cid')
   await page.getByRole('button', { name: /^Valencia/ }).first().click()
   await expect(page.getByText(/named 109 times/)).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('reads the fish and the dog line', async ({ page }) => {
+  const errors = trackErrors(page)
+  await selectWorld(page, 'aotearoa')
+  await page.getByRole('button', { name: /The Anchor Stone/ }).first().click()
+  await expect(page.getByText(/held the canoe steady/)).toBeVisible()
+
+  await selectWorld(page, 'natural-life')
+  await page.getByRole('button', { name: /Eaglehawk Neck/ }).first().click()
+  await expect(page.getByText(/line of dogs chained/)).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
 })
