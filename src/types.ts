@@ -92,6 +92,15 @@ export interface TerrainConfig {
    */
   aspect?: number
   /**
+   * Terrain mesh segments per side (default 320). A wide world multiplies this
+   * by its aspect so cells stay square, so the whole-Earth maps already get
+   * ~2.6x the columns. Raise it where coastline shape is the point: at the
+   * default a world map spends one vertex per ~48 km, which turns Italy into a
+   * smooth wedge. Costs (res x res x aspect x 2) triangles, so check
+   * `scripts/profile-worlds.mjs` after changing it.
+   */
+  meshResolution?: number
+  /**
    * Start the 3D view well overhead instead of at the usual low, relief-
    * revealing angle. Wide world maps already do this because they are
    * unreadable edge-on; a world with extreme relief has the same problem for

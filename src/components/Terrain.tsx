@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
+import { FLAT_FIELD } from '../engine/heightmap'
 import { buildTerrainGeometry } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
 
@@ -29,9 +30,15 @@ interface Props {
  * close — no extra geometry, and the flat biome colours are untouched.
  */
 export function Terrain({ field, terrain, wireframe, selfShadow = true }: Props) {
+  // A DEM world shows a flat placeholder sea until its heightmap image has
+  // decoded. Tessellating THAT at full resolution built the biggest mesh in the
+  // app twice on every load — a million triangles of dead flat plane, thrown
+  // away a moment later. The placeholder is flat, so 32 segments draw it just
+  // as well.
+  const placeholder = field === FLAT_FIELD
   const geometry = useMemo(
-    () => buildTerrainGeometry(field, terrain),
-    [field, terrain],
+    () => buildTerrainGeometry(field, terrain, placeholder ? 32 : undefined),
+    [field, terrain, placeholder],
   )
   const bump = useMemo(() => (terrain.detail ? makeBumpTexture() : null), [terrain.detail])
 

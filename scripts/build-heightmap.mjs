@@ -208,13 +208,15 @@ const PRESETS = {
     out: '../src/assets/mediterranean-height.png',
   },
   world: {
-    // z5 source (~39 km/px) resampled to a 1536×768 grid, so coastlines and
-    // ranges stay crisp when you zoom into a continent instead of turning to
-    // low-res blobs.
+    // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
+    // into 1536 threw away four fifths of it and left ~26 km per pixel, which
+    // is why coastlines and small seas came out as blobs. 3072x1536 keeps
+    // ~13 km/px — Italy, Denmark, the Black Sea and the Gulf all read as
+    // themselves — for a PNG that is still a couple of megabytes.
     z: 5,
     bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },
-    w: 1536,
-    h: 768,
+    w: 3072,
+    h: 1536,
     capM: 3500,
     // Flatten ALL ocean to one shallow depth so the sea reads as a single
     // even colour (the biome shader darkens by depth, and the low-res DEM's

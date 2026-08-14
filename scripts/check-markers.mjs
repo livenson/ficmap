@@ -83,6 +83,27 @@ const WORLDS = {
     wet: new Set(['brielle', 'flushing', 'middelburg', 'ostend']),
     scenic: new Set(['ardennes', 'spanish-road']),
   },
+  verne: {
+    png: '../src/assets/world-height.png',
+    story: '../src/stories/verne.ts',
+    bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },
+    seaLevel: 0.0017,
+    reach: 0.09,
+    // Voyages: most of this world is deliberately at sea.
+    // Half of Verne happens at sea, and one marker sits below the DEM's
+    // southern edge on purpose.
+    wet: new Set(['pacific-deeps', 'atlantis', 'maelstrom', 'lincoln-island', 'south-pole']),
+    scenic: new Set([]),
+  },
+  indiana: {
+    png: '../src/assets/world-height.png',
+    story: '../src/stories/indiana-jones.ts',
+    bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },
+    seaLevel: 0.0017,
+    reach: 0.09,
+    wet: new Set([]),
+    scenic: new Set([]),
+  },
   kalevala: {
     png: '../src/assets/karelia-height.png',
     story: '../src/stories/kalevala.ts',
