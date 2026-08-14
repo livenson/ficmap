@@ -207,6 +207,38 @@ const PRESETS = {
     flatOceanM: -6,
     out: '../src/assets/mediterranean-height.png',
   },
+  ireland: {
+    // Táin country. The raid runs from Cruachan in Connacht to the Cooley
+    // peninsula in the north-east, so the box holds the whole island — 365 km
+    // across by 467 km down, another world taller than it is wide.
+    z: 8,
+    bbox: { lonMin: -10.8, lonMax: -5.3, latMin: 51.3, latMax: 55.5 },
+    w: 1024,
+    h: 1310,
+    // Carrauntoohil is 1,038 m and the Táin's hills are far lower; cap low so
+    // the drumlins and the Gap of the North keep the dynamic range.
+    capM: 1050,
+    flatOceanM: -6,
+    landGamma: 0.65,
+    lakes: true,
+    out: '../src/assets/ireland-height.png',
+  },
+  spain: {
+    // The Cid's road: Bivar and Burgos in the north-west, down the Jalón to
+    // Zaragoza, out to the Tévar pine wood and Barcelona, then south to
+    // Valencia — and back inland to Corpes and the court at Toledo.
+    z: 7,
+    bbox: { lonMin: -6.0, lonMax: 3.0, latMin: 38.5, latMax: 43.5 },
+    w: 1280,
+    h: 941,
+    // The Pyrenees and the Sistema Central both top 2,500 m; the meseta the
+    // poem crosses sits near 800 m, so cap high and gamma the land up.
+    capM: 2600,
+    flatOceanM: -6,
+    landGamma: 0.7,
+    lakes: true,
+    out: '../src/assets/spain-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

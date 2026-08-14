@@ -22,6 +22,8 @@ const WORLDS = [
   { id: 'kalevala', title: 'The Kalevala' },
   { id: 'peergynt', title: 'Peer Gynt' },
   { id: 'nils', title: 'Nils Holgersson' },
+  { id: 'tain', title: 'Táin Bó Cúailnge' },
+  { id: 'cid', title: 'The Poem of the Cid' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -434,5 +436,19 @@ test('flies Nils the length of Sweden', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'West Vemminghög' })).toBeVisible()
   await page.getByRole('button', { name: /^Kebnekaise/ }).first().click()
   await expect(page.getByText(/highest mountain in Sweden/)).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('holds the ford in the Táin and takes Valencia in the Cid', async ({ page }) => {
+  // Both worlds are itineraries, so the thing worth asserting is that the
+  // places the road exists for are actually there.
+  const errors = trackErrors(page)
+  await selectWorld(page, 'tain')
+  await page.getByRole('button', { name: /Ath Fhirdiad/ }).first().click()
+  await expect(page.getByText(/foster-brother/)).toBeVisible()
+
+  await selectWorld(page, 'cid')
+  await page.getByRole('button', { name: /^Valencia/ }).first().click()
+  await expect(page.getByText(/named 109 times/)).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
 })

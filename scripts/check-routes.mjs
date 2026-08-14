@@ -58,6 +58,9 @@ const SCENIC = new Set([
   'peergynt/surface/gendin',
   'peergynt/surface/oslo',
   'peergynt/surface/jokel',
+  // The Cid: the poem's last lines note that the kings of Spain are now his
+  // kin. Nobody rides there.
+  'cid/surface/navarre-aragon',
   // Nils: landmarks the geese steer by.
   'nils/surface/omberg',
   'nils/surface/smaland',
