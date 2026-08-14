@@ -34,7 +34,7 @@ export function makeImageHeightField(
     const d = px(y1, x1)
     return a * (1 - fx) * (1 - fy) + b * fx * (1 - fy) + c * (1 - fx) * fy + d * fx * fy
   }
-  return { at }
+  return { at, samples: { w, h } }
 }
 
 /** A flat placeholder field (all sea) used until the image finishes loading. */

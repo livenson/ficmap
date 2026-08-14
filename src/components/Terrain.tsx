@@ -1,8 +1,10 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
 import { FLAT_FIELD } from '../engine/heightmap'
 import { buildTerrainGeometry } from '../engine/terrain'
+import { planChanged, planLod, visibleMapRect, type LodPlan } from '../engine/lod'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -36,25 +38,104 @@ export function Terrain({ field, terrain, wireframe, selfShadow = true }: Props)
   // away a moment later. The placeholder is flat, so 32 segments draw it just
   // as well.
   const placeholder = field === FLAT_FIELD
+  const fullResolution = placeholder ? 32 : (terrain.meshResolution ?? 320)
+  const plan = useLodPlan(terrain, fullResolution, placeholder, field)
+
   const geometry = useMemo(
-    () => buildTerrainGeometry(field, terrain, placeholder ? 32 : undefined),
-    [field, terrain, placeholder],
+    () =>
+      buildTerrainGeometry(field, terrain, plan ? plan.baseResolution : fullResolution, {
+        hole: plan?.rect,
+      }),
+    [field, terrain, fullResolution, plan],
+  )
+  const detail = useMemo(
+    () =>
+      plan
+        ? buildTerrainGeometry(field, terrain, plan.baseResolution, {
+            patch: { ...plan.rect, refine: plan.refine },
+          })
+        : null,
+    [field, terrain, plan],
   )
   const bump = useMemo(() => (terrain.detail ? makeBumpTexture() : null), [terrain.detail])
 
-  return (
-    <mesh geometry={geometry} receiveShadow castShadow={selfShadow}>
-      <meshStandardMaterial
-        vertexColors
-        wireframe={wireframe}
-        roughness={0.95}
-        metalness={0.0}
-        flatShading={false}
-        bumpMap={bump ?? undefined}
-        bumpScale={bump ? 0.5 : 0}
-      />
-    </mesh>
+  // Both meshes must look identical — they are two halves of one surface.
+  const material = (
+    <meshStandardMaterial
+      vertexColors
+      wireframe={wireframe}
+      roughness={0.95}
+      metalness={0.0}
+      flatShading={false}
+      bumpMap={bump ?? undefined}
+      bumpScale={bump ? 0.5 : 0}
+    />
   )
+
+  return (
+    <>
+      <mesh geometry={geometry} receiveShadow castShadow={selfShadow}>
+        {material}
+      </mesh>
+      {detail && (
+        <mesh geometry={detail} receiveShadow castShadow={selfShadow}>
+          {material}
+        </mesh>
+      )}
+    </>
+  )
+}
+
+/** How often to reconsider the detail plan, in seconds. */
+const LOD_INTERVAL = 0.5
+
+/**
+ * Watch the camera and hand back the current detail plan, or null for one
+ * uniform mesh.
+ *
+ * Rebuilding a few hundred thousand triangles is not something to do every
+ * frame, so the plan is reconsidered a couple of times a second and adopted
+ * only when it names a different rectangle than the one already built. The
+ * rectangle is padded and snapped to whole base-grid cells, so an ordinary pan
+ * or a small zoom keeps naming the rectangle that is already on screen and
+ * nothing is rebuilt at all.
+ *
+ * Deliberately not gated on the camera being still: with damping the camera
+ * keeps gliding for a while after you let go, and on a slow machine "still"
+ * may never arrive within a frame budget — the detail would then only appear
+ * long after you stopped, or not at all.
+ */
+function useLodPlan(
+  terrain: TerrainConfig,
+  fullResolution: number,
+  disabled: boolean,
+  field: HeightField,
+) {
+  const { camera } = useThree()
+  const [plan, setPlan] = useState<LodPlan | null>(null)
+  const since = useRef(0)
+  const samples = useRef<{ w: number; h: number } | undefined>(undefined)
+  const current = useRef<LodPlan | null>(null)
+  current.current = plan
+
+  // A new world starts over: its old rectangle means nothing on a new map.
+  useEffect(() => {
+    setPlan(null)
+    since.current = 0
+    samples.current = field.samples
+  }, [terrain, fullResolution, field])
+
+  useFrame((_, dt) => {
+    if (disabled) return
+    since.current += dt
+    if (since.current < LOD_INTERVAL) return
+    since.current = 0
+    const rect = visibleMapRect(camera, terrain)
+    const next = rect && planLod(rect, terrain, fullResolution, samples.current)
+    if (planChanged(current.current, next ?? null)) setPlan(next ?? null)
+  })
+
+  return disabled ? null : plan
 }
 
 /**
