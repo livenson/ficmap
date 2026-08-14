@@ -193,6 +193,38 @@ export const valdurn: Story = {
         { x: 0.28, z: -0.12 },
       ],
     },
+    {
+      id: 'salt-road',
+      name: 'The Salt Road',
+      color: '#6fa8c8',
+      style: 'solid',
+      description:
+        'The coast road east out of the capital, past the drowned regalia in ' +
+        'the shallows and on to the harbour that still pays its tithes.',
+      points: [
+        { x: -0.3, z: 0.5 },
+        { x: -0.05, z: 0.62 },
+        { x: 0.22, z: 0.6 },
+        { x: 0.46, z: 0.52 },
+        { x: 0.6, z: 0.2 },
+      ],
+    },
+    {
+      id: 'northern-watch',
+      name: 'The Northern Watch',
+      color: '#9bb37a',
+      style: 'dashed',
+      description:
+        'The patrol the garrison at Greywatch still rides, out along the spur ' +
+        'and back across the fens to the ruin nobody will garrison.',
+      points: [
+        { x: -0.45, z: -0.05 },
+        { x: -0.5, z: -0.25 },
+        { x: -0.3, z: -0.3 },
+        { x: 0.02, z: -0.34 },
+        { x: 0.35, z: -0.3 },
+      ],
+    },
   ],
   regions: [
     { id: 'vale', name: 'The Vale of Valdurn', at: { x: -0.28, z: 0.28 }, scale: 1.2 },

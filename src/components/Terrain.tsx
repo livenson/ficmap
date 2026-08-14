@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
+import { FLAT_FIELD } from '../engine/heightmap'
 import { buildTerrainGeometry } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
 
@@ -8,6 +9,18 @@ interface Props {
   field: HeightField
   terrain: TerrainConfig
   wireframe?: boolean
+  /**
+   * Whether the landmass casts shadows on itself.
+   *
+   * This is the single most expensive switch in the scene: the terrain is the
+   * biggest mesh by far — 205k triangles on a square world, 526k on a wide one
+   * — and casting means drawing all of it a second time into the shadow map
+   * every frame. It is worth paying only when the sun is low enough for a ridge
+   * to throw a shadow into the next valley. Wide and overhead worlds light from
+   * about 81° above the horizon, where that shadow is a few pixels at best, so
+   * they skip the pass and halve their triangle count.
+   */
+  selfShadow?: boolean
 }
 
 /**
@@ -16,15 +29,21 @@ interface Props {
  * get a tiled procedural bump map so light picks out fine surface relief up
  * close — no extra geometry, and the flat biome colours are untouched.
  */
-export function Terrain({ field, terrain, wireframe }: Props) {
+export function Terrain({ field, terrain, wireframe, selfShadow = true }: Props) {
+  // A DEM world shows a flat placeholder sea until its heightmap image has
+  // decoded. Tessellating THAT at full resolution built the biggest mesh in the
+  // app twice on every load — a million triangles of dead flat plane, thrown
+  // away a moment later. The placeholder is flat, so 32 segments draw it just
+  // as well.
+  const placeholder = field === FLAT_FIELD
   const geometry = useMemo(
-    () => buildTerrainGeometry(field, terrain),
-    [field, terrain],
+    () => buildTerrainGeometry(field, terrain, placeholder ? 32 : undefined),
+    [field, terrain, placeholder],
   )
   const bump = useMemo(() => (terrain.detail ? makeBumpTexture() : null), [terrain.detail])
 
   return (
-    <mesh geometry={geometry} receiveShadow castShadow>
+    <mesh geometry={geometry} receiveShadow castShadow={selfShadow}>
       <meshStandardMaterial
         vertexColors
         wireframe={wireframe}

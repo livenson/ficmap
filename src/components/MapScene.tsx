@@ -121,6 +121,12 @@ export function MapScene({
   // How far the camera has to sit back to frame this world; the fog depth and
   // the camera distance both key off it. Kept in step with `Cameras` below.
   const frame = frameScale(aspect)
+  // A near-overhead sun: wide world maps and `overhead` worlds are lit from
+  // ~81° so continents don't throw long blocky shadows across the ocean, and
+  // the sky realm gets a soft high sun. At that angle the terrain's own
+  // shadow is worth less than the second 205k-526k triangle pass it costs, so
+  // these worlds skip terrain self-shadowing entirely.
+  const highSun = heaven || aspect > 1.5 || !!terrain.overhead
   const fogColor = cavern
     ? '#0c2029'
     : dark
@@ -168,9 +174,7 @@ export function MapScene({
         // long, blocky shadows across the ocean; a square world keeps the low,
         // relief-revealing angle. The sky realm gets a soft, high sun so its
         // isles are evenly bathed in light.
-        position={
-          heaven ? [30, 180, 40] : aspect > 1.5 || terrain.overhead ? [20, 220, 30] : [40, 80, 20]
-        }
+        position={highSun ? (heaven ? [30, 180, 40] : [20, 220, 30]) : [40, 80, 20]}
         intensity={underground ? 0.5 : heaven ? 1.1 : rainy ? 0.5 : mode === '2d' ? 0.7 : 1.15}
         color={cavern ? '#cfe6f0' : dark ? '#ff5a3c' : heaven ? '#fff6e8' : rainy ? '#c8d0d6' : '#ffffff'}
         castShadow
@@ -198,7 +202,7 @@ export function MapScene({
         )
       )}
 
-      <Terrain field={field} terrain={terrain} />
+      <Terrain field={field} terrain={terrain} selfShadow={!highSun} />
       <Water terrain={terrain} />
       {layers.rivers && <Rivers field={field} terrain={terrain} />}
 

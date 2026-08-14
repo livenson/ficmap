@@ -85,7 +85,7 @@ export function elevationAt(
 export function buildTerrainGeometry(
   field: HeightField,
   cfg: TerrainConfig,
-  resolution = 320,
+  resolution = cfg.meshResolution ?? 320,
 ): BufferGeometry {
   const heightScale = cfg.heightScale ?? 22
   const seaLevel = cfg.seaLevel ?? 0.42

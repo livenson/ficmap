@@ -468,12 +468,22 @@ body,
 .story__narration {
   font-size: 16px;
   color: var(--ink);
+  /* Holds the chapter rail below roughly still between short and long
+     chapters. The nav no longer sits under this, so it no longer matters
+     to the Next button. */
   min-height: 120px;
 }
+/*
+ * The nav is the first thing in the story panel, above the book line, the
+ * counter and the title, so nothing that changes with the chapter can move it.
+ * It used to sit under the title behind a two-line min-height, which held for
+ * 135 of the atlas's 136 chapter titles and quietly failed on the one that
+ * wrapped to three.
+ */
 .story__nav {
   display: flex;
   gap: 10px;
-  margin: 8px 0 20px;
+  margin: 2px 0 14px;
 }
 .story__btn {
   flex: 1;

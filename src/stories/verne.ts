@@ -47,6 +47,10 @@ export const verne: Story = {
     // The DEM spans 360° of longitude over 140° of latitude, so the world is
     // ~2.57× wider than deep — keep that ratio instead of squaring the globe.
     aspect: 360 / 140,
+    // A whole-Earth map is the one place where coastline shape IS the subject,
+    // and 320 spends a vertex per ~48 km. 440 puts it near ~35 km and costs
+    // about what the terrain used to cost when it also drew a shadow pass.
+    meshResolution: 440,
     seaLevel: 0.0017, // 0 m in the capped (−6..3500 m) DEM, sea flattened
     heightScale: 5,
     rivers: 0,
@@ -110,7 +114,7 @@ export const verne: Story = {
       id: 'yokohama',
       name: 'Yokohama',
       kind: 'port',
-      at: { x: 0.776, z: -0.392 }, // 35.4 N, 139.6 E
+      at: { x: 0.775, z: -0.392 }, // 35.4 N, 139.5 E — Tokyo Bay's west shore
       description:
         'Japan, and a reunion at a travelling circus, before the long steam ' +
         'across the Pacific to America.',
@@ -185,7 +189,7 @@ export const verne: Story = {
       id: 'stone-hill',
       name: 'Stone Hill, Florida',
       kind: 'battle',
-      at: { x: -0.458, z: -0.284 }, // Florida
+      at: { x: -0.457, z: -0.284 }, // Florida, on the Tampa shore
       description:
         'The Gun Club casts a nine-hundred-foot cannon in the Florida earth to ' +
         'fire a manned projectile at the Moon.',

@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { bake, type Part } from '../engine/bake'
 import { WORLD_SIZE, WORLD_HALF } from '../engine/terrain'
 import type { Ambient } from '../types'
 
@@ -257,6 +258,114 @@ function DragonFire({ phase }: { phase: number }) {
   )
 }
 
+interface BuiltBody {
+  flat: THREE.BufferGeometry | null
+  textured: THREE.BufferGeometry | null
+  dbl: THREE.BufferGeometry | null
+}
+
+/**
+ * Welded bodies, keyed by creature type and colour and kept for the life of the
+ * page: twenty ravens draw from one set of buffers instead of building twenty
+ * identical ones.
+ *
+ * The cache is deliberately never evicted. A geometry handed to r3f as a
+ * `geometry={…}` prop is not disposed when its mesh unmounts, so caching per
+ * component instance would strand buffers on the GPU every time a reader
+ * switched world. There are only a dozen creature kinds in the whole atlas, so
+ * holding all of them costs less than one DEM and nothing accumulates.
+ */
+const BODIES = new Map<string, BuiltBody>()
+
+function bodyFor(type: CreatureType, color: string): BuiltBody {
+  const key = `${type}|${color}`
+  let built = BODIES.get(key)
+  if (!built) {
+    built = weldBody(type, color)
+    BODIES.set(key, built)
+  }
+  return built
+}
+
+/**
+ * Assemble one creature's parts and merge them. `flat` is everything drawn with
+ * a plain colour; `textured` is the scaled hide a dragon needs, which cannot
+ * share a material with the rest; `dbl` is the two-sided pieces.
+ */
+function weldBody(type: CreatureType, color: string): BuiltBody {
+  const flat: Part[] = []
+  const textured: Part[] = []
+  const dbl: Part[] = []
+  const HALF = Math.PI / 2
+
+  if (type === 'owl') {
+    // A plump post owl: round body, big head with ear-tufts and pale eyes, a
+    // broad short tail — and a letter clutched in its talons.
+    flat.push(
+      { geo: new THREE.CapsuleGeometry(0.17, 0.32, 6, 10), color, rot: [HALF, 0, 0], scale: [1, 1, 0.85] },
+      { geo: new THREE.SphereGeometry(0.2, 12, 12), color, pos: [0, 0.09, 0.33] },
+      { geo: new THREE.ConeGeometry(0.05, 0.16, 5), color, pos: [0.11, 0.25, 0.32], rot: [0, 0, -0.35] },
+      { geo: new THREE.ConeGeometry(0.05, 0.16, 5), color, pos: [-0.11, 0.25, 0.32], rot: [0, 0, 0.35] },
+      { geo: new THREE.SphereGeometry(0.07, 8, 8), color: '#f4efe4', pos: [0.08, 0.09, 0.49] },
+      { geo: new THREE.SphereGeometry(0.07, 8, 8), color: '#f4efe4', pos: [-0.08, 0.09, 0.49] },
+      { geo: new THREE.SphereGeometry(0.032, 6, 6), color: '#161210', pos: [0.08, 0.09, 0.54] },
+      { geo: new THREE.SphereGeometry(0.032, 6, 6), color: '#161210', pos: [-0.08, 0.09, 0.54] },
+      { geo: new THREE.ConeGeometry(0.03, 0.11, 5), color: '#d7a24a', pos: [0, 0.03, 0.55], rot: [HALF, 0, 0] },
+      { geo: new THREE.BoxGeometry(0.24, 0.02, 0.17), color: '#efe7d2', pos: [0, -0.17, 0.16], rot: [0.35, 0, 0] },
+    )
+    dbl.push({ geo: makeTail(0.34, 0.36), color, pos: [0, 0, -0.42] })
+  } else if (type === 'raven') {
+    // A maester's raven: slim glossy-black body, wedge tail, heavy beak.
+    flat.push(
+      { geo: new THREE.CapsuleGeometry(0.1, 0.62, 5, 9), color, rot: [HALF, 0, 0], scale: [1, 1, 1.15] },
+      { geo: new THREE.SphereGeometry(0.12, 10, 10), color, pos: [0, 0.04, 0.46] },
+      { geo: new THREE.ConeGeometry(0.045, 0.2, 5), color: '#2a2a2e', pos: [0, 0.02, 0.6], rot: [HALF, 0, 0] },
+      { geo: new THREE.SphereGeometry(0.022, 6, 6), color: '#b9b2a4', pos: [0.055, 0.07, 0.52] },
+      { geo: new THREE.SphereGeometry(0.022, 6, 6), color: '#b9b2a4', pos: [-0.055, 0.07, 0.52] },
+    )
+    dbl.push({ geo: makeTail(0.3, 0.62), color, pos: [0, 0, -0.56] })
+  } else if (type === 'angel') {
+    flat.push(
+      { geo: new THREE.SphereGeometry(0.16, 12, 12), color: '#fffaf0', pos: [0, 0.16, 0.34] },
+      { geo: new THREE.TorusGeometry(0.22, 0.03, 8, 20), color: '#ffe9a8', pos: [0, 0.42, 0.34], rot: [HALF, 0, 0] },
+    )
+    dbl.push({
+      geo: new THREE.ConeGeometry(0.34, 1.5, 12, 1, true),
+      color,
+      pos: [0, -0.1, -0.1],
+      rot: [HALF, 0, 0],
+    })
+  } else if (type === 'dragon') {
+    // The scaled hide keeps its texture, so it merges separately.
+    textured.push(
+      { geo: new THREE.CapsuleGeometry(0.16, 1.5, 6, 12), color, rot: [HALF, 0, 0] },
+      { geo: new THREE.ConeGeometry(0.16, 0.9, 10), color, pos: [0, 0.04, 1.15], rot: [HALF, 0, 0] },
+      { geo: new THREE.ConeGeometry(0.13, 1.6, 8), color, pos: [0, 0, -1.35], rot: [-HALF, 0, 0] },
+    )
+    flat.push(
+      { geo: new THREE.ConeGeometry(0.14, 0.42, 8), color: '#ff8a3a', pos: [0, 0.06, 1.62] },
+      { geo: new THREE.ConeGeometry(0.03, 0.28, 6), color: '#ffd27a', pos: [0.07, 0.16, 1.66], rot: [0.5, 0, 0.3] },
+      { geo: new THREE.ConeGeometry(0.03, 0.28, 6), color: '#ffd27a', pos: [-0.07, 0.16, 1.66], rot: [0.5, 0, -0.3] },
+      { geo: new THREE.SphereGeometry(0.035, 6, 6), color: '#fff2c8', pos: [0.07, 0.08, 1.78] },
+      { geo: new THREE.SphereGeometry(0.035, 6, 6), color: '#fff2c8', pos: [-0.07, 0.08, 1.78] },
+      { geo: new THREE.ConeGeometry(0.11, 0.34, 4), color: '#ff8a3a', pos: [0, 0, -2.2], rot: [Math.PI, 0, 0] },
+    )
+    for (const z of [-0.8, -0.4, 0, 0.4, 0.8]) {
+      flat.push({ geo: new THREE.ConeGeometry(0.05, 0.26, 4), color: '#ffb24a', pos: [0, 0.16, z], rot: [-0.2, 0, 0] })
+    }
+  } else {
+    // ordinary bird
+    flat.push({ geo: new THREE.CapsuleGeometry(0.1, 0.7, 4, 8), color, rot: [HALF, 0, 0] })
+    dbl.push({ geo: makeTail(0.32, 0.5), color, pos: [0, 0, -0.6] })
+  }
+
+  return {
+    flat: flat.length ? bake(flat) : null,
+    textured: textured.length ? bake(textured) : null,
+    dbl: dbl.length ? bake(dbl) : null,
+  }
+}
+
 /** The body, head, tail (and, for angels, a halo) — varies by creature type. */
 function Body({
   type,
@@ -267,200 +376,29 @@ function Body({
   color: string
   scales: THREE.Texture
 }) {
-  const tails = useMemo(
-    () => ({
-      bird: makeTail(0.32, 0.5),
-      dragon: makeTail(0.55, 0.9),
-      owl: makeTail(0.34, 0.36),
-      raven: makeTail(0.3, 0.62),
-    }),
-    [],
-  )
+  const built = bodyFor(type, color)
 
-  if (type === 'owl') {
-    // A plump post owl: round body, big head with ear-tufts and pale eyes, a
-    // broad short tail — and a letter clutched in its talons.
-    return (
-      <group>
-        <mesh rotation-x={Math.PI / 2} scale={[1, 1, 0.85]}>
-          <capsuleGeometry args={[0.17, 0.32, 6, 10]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-        {/* big round head */}
-        <mesh position={[0, 0.09, 0.33]}>
-          <sphereGeometry args={[0.2, 12, 12]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-        {/* ear tufts */}
-        <mesh position={[0.11, 0.25, 0.32]} rotation={[0, 0, -0.35]}>
-          <coneGeometry args={[0.05, 0.16, 5]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-        <mesh position={[-0.11, 0.25, 0.32]} rotation={[0, 0, 0.35]}>
-          <coneGeometry args={[0.05, 0.16, 5]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-        {/* pale facial discs + dark eyes */}
-        <mesh position={[0.08, 0.09, 0.49]}>
-          <sphereGeometry args={[0.07, 8, 8]} />
-          <meshBasicMaterial color="#f4efe4" />
-        </mesh>
-        <mesh position={[-0.08, 0.09, 0.49]}>
-          <sphereGeometry args={[0.07, 8, 8]} />
-          <meshBasicMaterial color="#f4efe4" />
-        </mesh>
-        <mesh position={[0.08, 0.09, 0.54]}>
-          <sphereGeometry args={[0.032, 6, 6]} />
-          <meshBasicMaterial color="#161210" />
-        </mesh>
-        <mesh position={[-0.08, 0.09, 0.54]}>
-          <sphereGeometry args={[0.032, 6, 6]} />
-          <meshBasicMaterial color="#161210" />
-        </mesh>
-        {/* beak */}
-        <mesh position={[0, 0.03, 0.55]} rotation-x={Math.PI / 2}>
-          <coneGeometry args={[0.03, 0.11, 5]} />
-          <meshBasicMaterial color="#d7a24a" />
-        </mesh>
-        {/* short fanned tail */}
-        <mesh geometry={tails.owl} position={[0, 0, -0.42]}>
-          <meshBasicMaterial color={color} side={THREE.DoubleSide} />
-        </mesh>
-        {/* a letter in its talons */}
-        <mesh position={[0, -0.17, 0.16]} rotation-x={0.35}>
-          <boxGeometry args={[0.24, 0.02, 0.17]} />
-          <meshBasicMaterial color="#efe7d2" />
-        </mesh>
-      </group>
-    )
-  }
-
-  if (type === 'raven') {
-    // A maester's raven: slim glossy-black body, wedge tail, heavy beak.
-    return (
-      <group>
-        <mesh rotation-x={Math.PI / 2} scale={[1, 1, 1.15]}>
-          <capsuleGeometry args={[0.1, 0.62, 5, 9]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-        {/* head + heavy wedge beak */}
-        <mesh position={[0, 0.04, 0.46]}>
-          <sphereGeometry args={[0.12, 10, 10]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-        <mesh position={[0, 0.02, 0.60]} rotation-x={Math.PI / 2}>
-          <coneGeometry args={[0.045, 0.2, 5]} />
-          <meshBasicMaterial color="#2a2a2e" />
-        </mesh>
-        {/* a pale eye, so the head reads at distance */}
-        <mesh position={[0.055, 0.07, 0.52]}>
-          <sphereGeometry args={[0.022, 6, 6]} />
-          <meshBasicMaterial color="#b9b2a4" />
-        </mesh>
-        <mesh position={[-0.055, 0.07, 0.52]}>
-          <sphereGeometry args={[0.022, 6, 6]} />
-          <meshBasicMaterial color="#b9b2a4" />
-        </mesh>
-        {/* long wedge tail */}
-        <mesh geometry={tails.raven} position={[0, 0, -0.56]}>
-          <meshBasicMaterial color={color} side={THREE.DoubleSide} />
-        </mesh>
-      </group>
-    )
-  }
-
-  if (type === 'angel') {
-    return (
-      <group>
-        {/* flowing robe */}
-        <mesh position={[0, -0.1, -0.1]} rotation-x={Math.PI / 2}>
-          <coneGeometry args={[0.34, 1.5, 12, 1, true]} />
-          <meshBasicMaterial color={color} side={THREE.DoubleSide} />
-        </mesh>
-        {/* head */}
-        <mesh position={[0, 0.16, 0.34]}>
-          <sphereGeometry args={[0.16, 12, 12]} />
-          <meshBasicMaterial color="#fffaf0" />
-        </mesh>
-        {/* halo */}
-        <mesh position={[0, 0.42, 0.34]} rotation-x={Math.PI / 2}>
-          <torusGeometry args={[0.22, 0.03, 8, 20]} />
-          <meshBasicMaterial color="#ffe9a8" />
-        </mesh>
-      </group>
-    )
-  }
-
-  if (type === 'dragon') {
-    return (
-      <group>
-        {/* long sinuous body */}
-        <mesh rotation-x={Math.PI / 2}>
-          <capsuleGeometry args={[0.16, 1.5, 6, 12]} />
-          <meshBasicMaterial color={color} map={scales} />
-        </mesh>
-        {/* neck + head reaching forward */}
-        <mesh position={[0, 0.04, 1.15]} rotation-x={Math.PI / 2}>
-          <coneGeometry args={[0.16, 0.9, 10]} />
-          <meshBasicMaterial color={color} map={scales} />
-        </mesh>
-        <mesh position={[0, 0.06, 1.62]}>
-          <coneGeometry args={[0.14, 0.42, 8]} />
-          <meshBasicMaterial color="#ff8a3a" />
-        </mesh>
-        {/* two swept-back horns */}
-        <mesh position={[0.07, 0.16, 1.66]} rotation={[0.5, 0, 0.3]}>
-          <coneGeometry args={[0.03, 0.28, 6]} />
-          <meshBasicMaterial color="#ffd27a" />
-        </mesh>
-        <mesh position={[-0.07, 0.16, 1.66]} rotation={[0.5, 0, -0.3]}>
-          <coneGeometry args={[0.03, 0.28, 6]} />
-          <meshBasicMaterial color="#ffd27a" />
-        </mesh>
-        {/* glowing eyes */}
-        <mesh position={[0.07, 0.08, 1.78]}>
-          <sphereGeometry args={[0.035, 6, 6]} />
-          <meshBasicMaterial color="#fff2c8" />
-        </mesh>
-        <mesh position={[-0.07, 0.08, 1.78]}>
-          <sphereGeometry args={[0.035, 6, 6]} />
-          <meshBasicMaterial color="#fff2c8" />
-        </mesh>
-        {/* long tail tapering back to a barb */}
-        <mesh position={[0, 0, -1.35]} rotation-x={-Math.PI / 2}>
-          <coneGeometry args={[0.13, 1.6, 8]} />
-          <meshBasicMaterial color={color} map={scales} />
-        </mesh>
-        <mesh position={[0, 0, -2.2]} rotation-x={Math.PI}>
-          <coneGeometry args={[0.11, 0.34, 4]} />
-          <meshBasicMaterial color="#ff8a3a" />
-        </mesh>
-        {/* a ridge of bright back-spines */}
-        {[-0.8, -0.4, 0, 0.4, 0.8].map((z, k) => (
-          <mesh key={k} position={[0, 0.16, z]} rotation-x={-0.2}>
-            <coneGeometry args={[0.05, 0.26, 4]} />
-            <meshBasicMaterial color="#ffb24a" />
-          </mesh>
-        ))}
-      </group>
-    )
-  }
-
-  // ordinary bird
   return (
     <group>
-      <mesh rotation-x={Math.PI / 2}>
-        <capsuleGeometry args={[0.1, 0.7, 4, 8]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-      <mesh geometry={tails.bird} position={[0, 0, -0.6]}>
-        <meshBasicMaterial color={color} side={THREE.DoubleSide} />
-      </mesh>
+      {built.flat && (
+        <mesh geometry={built.flat}>
+          <meshBasicMaterial vertexColors />
+        </mesh>
+      )}
+      {built.textured && (
+        <mesh geometry={built.textured}>
+          <meshBasicMaterial vertexColors map={scales} />
+        </mesh>
+      )}
+      {built.dbl && (
+        <mesh geometry={built.dbl}>
+          <meshBasicMaterial vertexColors side={THREE.DoubleSide} />
+        </mesh>
+      )}
     </group>
   )
 }
 
-/** A wing, hinged at the body — feathered for birds/angels, membrane for dragons. */
 function Wing({
   type,
   color,

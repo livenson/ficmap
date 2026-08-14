@@ -10,6 +10,14 @@ export function makeImageHeightField(
   w: number,
   h: number,
 ): HeightField {
+  // Keep the red channel only. A DEM is grayscale, so the other three bytes of
+  // every pixel are dead weight held for the lifetime of the world — 19 MB
+  // rather than 5 MB on the 3072x1536 world map. Packing it also puts the
+  // samples `at()` reads next to each other, and `at()` runs a few million
+  // times while a terrain mesh is built.
+  const grey = new Uint8Array(w * h)
+  for (let i = 0; i < grey.length; i++) grey[i] = data[i * 4]
+
   const at = (x: number, z: number): number => {
     const u = clamp01(x * 0.5 + 0.5) * (w - 1)
     const v = clamp01(z * 0.5 + 0.5) * (h - 1)
@@ -19,7 +27,7 @@ export function makeImageHeightField(
     const y1 = Math.min(h - 1, y0 + 1)
     const fx = u - x0
     const fy = v - y0
-    const px = (yy: number, xx: number) => data[(yy * w + xx) * 4] / 255
+    const px = (yy: number, xx: number) => grey[yy * w + xx] / 255
     const a = px(y0, x0)
     const b = px(y0, x1)
     const c = px(y1, x0)

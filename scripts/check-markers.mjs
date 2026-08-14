@@ -83,6 +83,69 @@ const WORLDS = {
     wet: new Set(['brielle', 'flushing', 'middelburg', 'ostend']),
     scenic: new Set(['ardennes', 'spanish-road']),
   },
+  tain: {
+    png: '../src/assets/ireland-height.png',
+    story: '../src/stories/tain.ts',
+    bbox: { lonMin: -10.8, lonMax: -5.3, latMin: 51.3, latMax: 55.5 },
+    seaLevel: 0.0062,
+    reach: 0.09,
+    wet: new Set([]),
+    scenic: new Set(['tara', 'sliab-cuilinn', 'dun-sobairce']),
+  },
+  cid: {
+    png: '../src/assets/spain-height.png',
+    story: '../src/stories/cid.ts',
+    bbox: { lonMin: -6.0, lonMax: 3.0, latMin: 38.5, latMax: 43.5 },
+    seaLevel: 0.0023,
+    reach: 0.09,
+    wet: new Set([]),
+    scenic: new Set(['navarre-aragon']),
+  },
+  aotearoa: {
+    png: '../src/assets/aotearoa-height.png',
+    story: '../src/stories/aotearoa.ts',
+    bbox: { lonMin: 166.0, lonMax: 179.0, latMin: -47.5, latMax: -34.0 },
+    seaLevel: 0.0025,
+    reach: 0.09,
+    // Hawaiki is off every map; the lake, the strait and the pit the sun
+    // climbs out of in the eastern sea are water on purpose.
+    wet: new Set(['hawaiki', 'taupo', 'cook-strait', 'sun-pit']),
+    scenic: new Set(['aoraki', 'hikurangi', 'ruapehu', 'ngauruhoe', 'the-fish', 'the-canoe']),
+  },
+  tasmania: {
+    png: '../src/assets/tasmania-height.png',
+    story: '../src/stories/natural-life.ts',
+    bbox: { lonMin: 144.4, lonMax: 148.6, latMin: -43.8, latMax: -40.4 },
+    seaLevel: 0.0037,
+    reach: 0.09,
+    // The voyages, the wreck, and the two settings a thousand miles off the map.
+    wet: new Set([
+      'malabar', 'norfolk', 'sydney', 'the-wreck', 'hells-gates', 'bruny',
+      // Built on the harbour and launched into it.
+      'the-escape',
+    ]),
+    scenic: new Set(['cape-raoul', 'frenchmans']),
+  },
+  verne: {
+    png: '../src/assets/world-height.png',
+    story: '../src/stories/verne.ts',
+    bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },
+    seaLevel: 0.0017,
+    reach: 0.09,
+    // Half of Verne happens at sea, and one marker sits below the DEM's
+    // southern edge on purpose.
+    wet: new Set(['pacific-deeps', 'atlantis', 'maelstrom', 'lincoln-island', 'south-pole']),
+    scenic: new Set([]),
+  },
+  indiana: {
+    png: '../src/assets/world-height.png',
+    story: '../src/stories/indiana-jones.ts',
+    bbox: { lonMin: -180, lonMax: 180, latMin: -62, latMax: 78 },
+    seaLevel: 0.0017,
+    reach: 0.09,
+    wet: new Set([]),
+    scenic: new Set([]),
+  },
   kalevala: {
     png: '../src/assets/karelia-height.png',
     story: '../src/stories/kalevala.ts',
@@ -158,7 +221,14 @@ const toLat = (z) => latMax - ((z + 1) / 2) * (latMax - latMin)
 // Pull `id` / `at: { x, z }` pairs straight out of the story source. Only the
 // surface level is checked — the mythic floors are procedural, not geographic.
 const surface = src.slice(0, src.indexOf('levels:'))
-const re = /id: '([^']+)',\s*\n\s*name: '([^']*)',\s*\n\s*kind: '([^']+)',\s*\n\s*at: \{ x: (-?[\d.]+), z: (-?[\d.]+) \}/g
+// `GAP` lets a `//` comment sit between any two fields. Without it a single
+// explanatory line above `at:` drops the whole marker from this check, silently
+// — which is the opposite of what a checker is for.
+const GAP = String.raw`(?:\s*\n\s*//[^\n]*)*\s*\n\s*`
+const re = new RegExp(
+  String.raw`id: '([^']+)',${GAP}name: '([^']*)',${GAP}kind: '([^']+)',${GAP}at: \{ x: (-?[\d.]+), z: (-?[\d.]+) \}`,
+  'g',
+)
 
 // Every route's waypoints, so a marker can be measured against the lines.
 const routes = []

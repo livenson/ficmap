@@ -395,10 +395,105 @@ export const gameOfThrones: Story = {
       points: [
         { x: -0.302, z: 0.136 },
         { x: 0.325, z: 0.325 },
+        { x: 0.479, z: 0.286 },
         { x: 0.586, z: 0.857 },
         { x: 0.503, z: 0.623 },
         { x: 0.550, z: 0.519 },
         { x: -0.5085, z: 0.0211 },
+      ],
+    },
+    {
+      id: 'roseroad',
+      name: 'The Roseroad & the Ocean Road',
+      color: '#c8a86b',
+      style: 'solid',
+      description:
+        'West and south out of King’s Landing: the Roseroad to Highgarden and ' +
+        'on to Oldtown and the Citadel, and the Gold Road to Casterly Rock ' +
+        'and the Iron Islands beyond it.',
+      points: [
+        { x: -0.8737, z: -0.1365 },
+        { x: -0.8737, z: 0.0024 },
+        { x: -0.6058, z: 0.0646 },
+        { x: -0.8143, z: 0.2581 },
+        { x: -0.8817, z: 0.3548 },
+      ],
+    },
+    {
+      id: 'stormlands-dorne',
+      name: 'The Stormlands & Dorne',
+      color: '#d98f5a',
+      style: 'solid',
+      description:
+        'The road south-east down the coast to Storm’s End and on over the ' +
+        'mountains into Dorne, which is the one kingdom that was never ' +
+        'conquered and never lets anyone forget it.',
+      points: [
+        { x: -0.6058, z: 0.0646 },
+        { x: -0.5444, z: 0.2235 },
+        { x: -0.5262, z: 0.4419 },
+      ],
+    },
+    {
+      id: 'the-eyrie-road',
+      name: 'The High Road',
+      color: '#9bb3c8',
+      style: 'dashed',
+      description:
+        'Up out of the Riverlands through the Bloody Gate to the Eyrie, and ' +
+        'the sail east from Gulltown to Braavos — the road Catelyn takes with ' +
+        'a prisoner, and the one Arya takes alone.',
+      points: [
+        { x: -0.6555, z: -0.0508 },
+        { x: -0.5877, z: -0.1461 },
+        { x: -0.4600, z: -0.1800 },
+        { x: -0.3350, z: -0.1690 },
+      ],
+    },
+    {
+      id: 'narrow-sea',
+      name: 'Down the Narrow Sea',
+      color: '#6fa8c8',
+      style: 'solid',
+      description:
+        'The Free Cities strung down the eastern shore, and past them the ' +
+        'smoking wreck of the peninsula they all used to belong to. Nobody ' +
+        'sails into Valyria on purpose.',
+      points: [
+        { x: -0.3350, z: -0.1690 },
+        { x: -0.3020, z: 0.1360 },
+        { x: -0.3000, z: 0.3200 },
+        { x: 0.0120, z: 0.5320 },
+        { x: 0.2000, z: 0.7000 },
+      ],
+    },
+    {
+      id: 'beyond-the-wall',
+      name: 'Beyond the Wall',
+      color: '#b9d0e0',
+      style: 'dashed',
+      description:
+        'North of Castle Black there is no road, only the haunted forest and ' +
+        'then the country the maps stop describing.',
+      points: [
+        { x: -0.6299, z: -0.7542 },
+        { x: -0.7400, z: -0.7800 },
+        { x: -0.8400, z: -0.7887 },
+      ],
+    },
+    {
+      id: 'the-red-waste',
+      name: 'The Red Waste',
+      color: '#c96f5c',
+      style: 'dashed',
+      description:
+        'Dany walking a khalasar of the old and the lame east out of the ' +
+        'Dothraki sea, through a desert with nothing in it, to the walls of ' +
+        'Qarth.',
+      points: [
+        { x: 0.8820, z: 0.7790 },
+        { x: 0.7200, z: 0.8300 },
+        { x: 0.5860, z: 0.8570 },
       ],
     },
   ],

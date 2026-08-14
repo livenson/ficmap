@@ -47,6 +47,10 @@ export const indianaJones: Story = {
     seed: 'world-dem',
     heightmap: worldHeight,
     aspect: 360 / 140,
+    // A whole-Earth map is the one place where coastline shape IS the subject,
+    // and 320 spends a vertex per ~48 km. 440 puts it near ~35 km and costs
+    // about what the terrain used to cost when it also drew a shadow pass.
+    meshResolution: 440,
     seaLevel: 0.0017,
     heightScale: 5,
     rivers: 0,
@@ -144,7 +148,7 @@ export const indianaJones: Story = {
       id: 'venice',
       name: 'Venice',
       kind: 'city',
-      at: { x: 0.069, z: -0.535 }, // 45.4 N, 12.3 E
+      at: { x: 0.0682, z: -0.5382 }, // 45.7 N, 12.3 E — the lagoon's landward edge
       description:
         'Beneath a library that was once a church, catacombs hold the tomb of a ' +
         'Grail knight — and the rubbing that points the way to the Canyon of the ' +
@@ -203,7 +207,7 @@ export const indianaJones: Story = {
       id: 'syracuse',
       name: 'Syracuse, Sicily',
       kind: 'landmark',
-      at: { x: 0.085, z: -0.415 }, // Syracuse, eastern Sicily (37.07 N, 15.29 E)
+      at: { x: 0.0842, z: -0.415 }, // Syracuse, eastern Sicily (37.05 N, 15.16 E)
       description:
         'Archimedes’ grave, and the reunited Dial of Destiny — which turns out to ' +
         'point not through space but through time, to the siege of Syracuse itself.',
@@ -256,8 +260,11 @@ export const indianaJones: Story = {
       name: 'Raiders of the Lost Ark (1936)',
       color: '#ffce54',
       style: 'solid',
-      description: 'Marshall College to Nepal, on to Cairo and the dig at Tanis, and the Ark home to Washington.',
+      description:
+        'The Peruvian temple in the opening reel, back to Marshall College, on ' +
+        'to Nepal, Cairo and the dig at Tanis, and the Ark home to Washington.',
       points: [
+        { x: -0.433, z: 0.203 }, // the Chachapoyan temple
         { x: -0.405, z: -0.476 }, // Marshall College
         { x: 0.474, z: -0.281 }, // Nepal
         { x: 0.174, z: -0.315 }, // Cairo

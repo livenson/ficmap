@@ -3,6 +3,9 @@ dist
 *.tsbuildinfo
 *.log
 scratch-*
+# throwaway screenshot/probe scripts written while working
+.shot*.mjs
+.probe*.mjs
 .DS_Store
 test-results
 playwright-report

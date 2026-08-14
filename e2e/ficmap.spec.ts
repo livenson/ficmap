@@ -22,6 +22,10 @@ const WORLDS = [
   { id: 'kalevala', title: 'The Kalevala' },
   { id: 'peergynt', title: 'Peer Gynt' },
   { id: 'nils', title: 'Nils Holgersson' },
+  { id: 'tain', title: 'Táin Bó Cúailnge' },
+  { id: 'cid', title: 'The Poem of the Cid' },
+  { id: 'aotearoa', title: 'Te Ika-a-Māui' },
+  { id: 'natural-life', title: 'For the Term of His Natural Life' },
 ]
 
 function trackErrors(page: Page): string[] {
@@ -77,6 +81,78 @@ test('plays a chapter tour and exits', async ({ page }) => {
   await page.locator('.panel--story').getByRole('button', { name: /Exit story/ }).click()
   await expect(page.getByRole('heading', { name: 'Places', exact: true })).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+/**
+ * Walk a whole story and record where Next sits, how long each narration is,
+ * and how tall the chapter title and book line render. Everything above the nav
+ * used to be variable, so a partial walk could pass while a chapter further in
+ * moved the button.
+ */
+async function walkStory(page: Page, world: string) {
+  await selectWorld(page, world)
+  await page.getByRole('button', { name: 'Play story' }).click()
+  await expect(page.locator('.story__nav')).toBeVisible()
+
+  const seen = []
+  for (let i = 0; i < 60; i++) {
+    const row = await page.evaluate(() => {
+      const nav = document.querySelector('.story__nav')!
+      const title = document.querySelector('.panel--story .panel__title')
+      const book = document.querySelector('.story__book')
+      const last = [...document.querySelectorAll('.story__btn')].pop() as HTMLButtonElement
+      return {
+        y: Math.round(nav.getBoundingClientRect().top),
+        titleH: Math.round(title?.getBoundingClientRect().height ?? 0),
+        bookH: Math.round(book?.getBoundingClientRect().height ?? 0),
+        narration: document.querySelector('.story__narration')?.textContent?.length ?? 0,
+        atEnd: last.disabled || !/Next/.test(last.textContent ?? ''),
+      }
+    })
+    seen.push(row)
+    if (row.atEnd) break
+    await page.evaluate(() =>
+      (([...document.querySelectorAll('.story__btn')].pop() as HTMLButtonElement).click()),
+    )
+    await page.waitForTimeout(160)
+  }
+  return seen
+}
+
+test('keeps the Next button still across every chapter of a story', async ({ page }) => {
+  // Narrations differ by several lines and the nav used to sit under them, so
+  // Next slid down the panel on every advance and you had to chase it. Walking
+  // all 22 chapters matters: an earlier six-chapter version of this test passed
+  // while `XLV–XLIX · Nine diseases, a bear, and the dark` — the one title in
+  // the atlas that wraps to three lines — still moved the button 30px.
+  const seen = await walkStory(page, 'kalevala')
+  expect(seen.length, 'walked the whole story').toBeGreaterThan(20)
+
+  const lengths = seen.map((s) => s.narration)
+  expect(
+    Math.max(...lengths) - Math.min(...lengths),
+    'narration lengths are all alike, so this proves nothing',
+  ).toBeGreaterThan(40)
+  const titles = seen.map((s) => s.titleH)
+  expect(
+    new Set(titles).size,
+    'every title renders the same height, so this proves nothing',
+  ).toBeGreaterThan(1)
+
+  const ys = [...new Set(seen.map((s) => s.y))]
+  expect(ys.length, `Next moved between y = ${ys.join(', ')}`).toBe(1)
+})
+
+test('keeps the Next button still across a book boundary', async ({ page }) => {
+  // A multi-book world prints `Book 3 · The Mysterious Island` above the
+  // chapter, and the longer book names wrap to a second line. That moved Next
+  // 15px whenever the story crossed from one book into the next.
+  const seen = await walkStory(page, 'verne-voyages')
+  const books = [...new Set(seen.map((s) => s.bookH))]
+  expect(books.length, 'the book line never changes height, so this proves nothing').toBeGreaterThan(1)
+
+  const ys = [...new Set(seen.map((s) => s.y))]
+  expect(ys.length, `Next moved between y = ${ys.join(', ')}`).toBe(1)
 })
 
 test('shows cross-chapter place references', async ({ page }) => {
@@ -412,5 +488,31 @@ test('flies Nils the length of Sweden', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'West Vemminghög' })).toBeVisible()
   await page.getByRole('button', { name: /^Kebnekaise/ }).first().click()
   await expect(page.getByText(/highest mountain in Sweden/)).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('holds the ford in the Táin and takes Valencia in the Cid', async ({ page }) => {
+  // Both worlds are itineraries, so the thing worth asserting is that the
+  // places the road exists for are actually there.
+  const errors = trackErrors(page)
+  await selectWorld(page, 'tain')
+  await page.getByRole('button', { name: /Ath Fhirdiad/ }).first().click()
+  await expect(page.getByText(/foster-brother/)).toBeVisible()
+
+  await selectWorld(page, 'cid')
+  await page.getByRole('button', { name: /^Valencia/ }).first().click()
+  await expect(page.getByText(/named 109 times/)).toBeVisible()
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
+test('reads the fish and the dog line', async ({ page }) => {
+  const errors = trackErrors(page)
+  await selectWorld(page, 'aotearoa')
+  await page.getByRole('button', { name: /The Anchor Stone/ }).first().click()
+  await expect(page.getByText(/held the canoe steady/)).toBeVisible()
+
+  await selectWorld(page, 'natural-life')
+  await page.getByRole('button', { name: /Eaglehawk Neck/ }).first().click()
+  await expect(page.getByText(/line of dogs chained/)).toBeVisible()
   expect(errors, errors.join('\n')).toHaveLength(0)
 })
