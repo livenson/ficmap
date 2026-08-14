@@ -211,13 +211,13 @@ export function MapScene({
         detailVersion={detail}
       />
       <Water terrain={terrain} />
-      {layers.rivers && <Rivers field={field} terrain={terrain} />}
+      {layers.rivers && <Rivers field={field} terrain={terrain} detailVersion={detail} />}
 
       {/* Ambient life enriches the 3D view; omitted in the flat 2D map and
           when the "Trees & wildlife" layer is switched off for a clean view. */}
       {mode === '3d' && layers.nature && (
         <>
-          <Flora field={field} terrain={terrain} ambient={level.ambient} />
+          <Flora field={field} terrain={terrain} ambient={level.ambient} detailVersion={detail} />
           <Wildlife ambient={level.ambient} aspect={aspect} heaven={heaven} />
           {level.ambient.mosquitoes ? (
             <Mosquitoes swarms={level.ambient.mosquitoes} field={field} terrain={terrain} />
