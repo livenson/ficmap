@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { bake, type Part } from '../engine/bake'
 import type { HeightField } from '../engine/noise'
 import { WORLD_HALF, aspectOf, elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { TerrainConfig } from '../types'
@@ -85,6 +86,24 @@ export function Wights({ field, terrain, count, area }: Props) {
     }
   })
 
+  // One geometry for the body and one for the pair of arms, welded once and
+  // shared by every wight. Fourteen of them at twelve meshes apiece was 168
+  // draw calls a frame — over half of Westeros's total.
+  const { corpse, limbs } = useMemo(() => {
+    const body: Part[] = [
+      { geo: new THREE.CapsuleGeometry(0.16, 0.5, 4, 7), color: '#3b4550' },
+      { geo: new THREE.SphereGeometry(0.15, 8, 8), color: '#59626b', pos: [0, 0.48, 0] },
+      // ice-blue eyes — the one bright thing about them
+      { geo: new THREE.SphereGeometry(0.035, 6, 6), color: '#7fe3ff', pos: [0.06, 0.5, 0.12] },
+      { geo: new THREE.SphereGeometry(0.035, 6, 6), color: '#7fe3ff', pos: [-0.06, 0.5, 0.12] },
+    ]
+    const arms: Part[] = [
+      { geo: new THREE.CapsuleGeometry(0.05, 0.42, 3, 5), color: '#4a545e', pos: [0.2, 0, 0.16], rot: [0, 0, -0.3] },
+      { geo: new THREE.CapsuleGeometry(0.05, 0.42, 3, 5), color: '#4a545e', pos: [-0.2, 0, 0.16], rot: [0, 0, 0.3] },
+    ]
+    return { corpse: bake(body), limbs: bake(arms) }
+  }, [])
+
   return (
     <group>
       {wights.map((w, i) => (
@@ -96,38 +115,18 @@ export function Wights({ field, terrain, count, area }: Props) {
           }}
         >
           {/* ragged body */}
-          <mesh>
-            <capsuleGeometry args={[0.16, 0.5, 4, 7]} />
-            <meshBasicMaterial color="#3b4550" />
+          <mesh geometry={corpse}>
+            <meshBasicMaterial vertexColors />
           </mesh>
-          {/* head */}
-          <mesh position={[0, 0.48, 0]}>
-            <sphereGeometry args={[0.15, 8, 8]} />
-            <meshBasicMaterial color="#59626b" />
-          </mesh>
-          {/* ice-blue eyes — the one bright thing about them */}
-          <mesh position={[0.06, 0.5, 0.12]}>
-            <sphereGeometry args={[0.035, 6, 6]} />
-            <meshBasicMaterial color="#7fe3ff" />
-          </mesh>
-          <mesh position={[-0.06, 0.5, 0.12]}>
-            <sphereGeometry args={[0.035, 6, 6]} />
-            <meshBasicMaterial color="#7fe3ff" />
-          </mesh>
-          {/* outstretched arms */}
+          {/* outstretched arms, which swing */}
           <group
             position={[0, 0.2, 0]}
             ref={(el) => {
               if (el) arms.current[i] = el
             }}
           >
-            <mesh position={[0.2, 0, 0.16]} rotation={[0, 0, -0.3]}>
-              <capsuleGeometry args={[0.05, 0.42, 3, 5]} />
-              <meshBasicMaterial color="#4a545e" />
-            </mesh>
-            <mesh position={[-0.2, 0, 0.16]} rotation={[0, 0, 0.3]}>
-              <capsuleGeometry args={[0.05, 0.42, 3, 5]} />
-              <meshBasicMaterial color="#4a545e" />
+            <mesh geometry={limbs}>
+              <meshBasicMaterial vertexColors />
             </mesh>
           </group>
         </group>
