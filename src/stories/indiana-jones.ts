@@ -46,6 +46,11 @@ export const indianaJones: Story = {
     // Shares Verne's whole-Earth DEM and its exact height/sea calibration.
     seed: 'world-dem',
     heightmap: worldHeight,
+    // Four-times-finer elevation for whatever part of the globe you zoom into,
+    // fetched a few 512px tiles at a time. The base map above holds ~13 km per
+    // pixel — a whole fjord is two pixels — so it softens as you close in no
+    // matter how fine the mesh gets. See scripts/build-dem-tiles.mjs.
+    detailTiles: 'world',
     aspect: 360 / 140,
     // A whole-Earth map is the one place where coastline shape IS the subject,
     // and 320 spends a vertex per ~48 km. 440 puts it near ~35 km and costs

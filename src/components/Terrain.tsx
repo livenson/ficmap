@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
 import { FLAT_FIELD } from '../engine/heightmap'
 import { buildTerrainGeometry } from '../engine/terrain'
-import { planChanged, planLod, visibleMapRect, type LodPlan } from '../engine/lod'
+import { planChanged, planLod, visibleMapRect, type LodPlan, type MapRect } from '../engine/lod'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -23,6 +23,17 @@ interface Props {
    * they skip the pass and halve their triangle count.
    */
   selfShadow?: boolean
+  /**
+   * Told the map rectangle the camera is over, whenever that changes. A world
+   * with finer elevation tiles uses it to fetch the few covering that ground.
+   */
+  onView?: (rect: MapRect) => void
+  /**
+   * Bumped when finer elevation has arrived under the current view. Only the
+   * terrain watches this: the field itself keeps its identity, so the forests,
+   * rivers and everything else memoized on it stay exactly where they are.
+   */
+  detailVersion?: number
 }
 
 /**
@@ -31,7 +42,14 @@ interface Props {
  * get a tiled procedural bump map so light picks out fine surface relief up
  * close — no extra geometry, and the flat biome colours are untouched.
  */
-export function Terrain({ field, terrain, wireframe, selfShadow = true }: Props) {
+export function Terrain({
+  field,
+  terrain,
+  wireframe,
+  selfShadow = true,
+  onView,
+  detailVersion = 0,
+}: Props) {
   // A DEM world shows a flat placeholder sea until its heightmap image has
   // decoded. Tessellating THAT at full resolution built the biggest mesh in the
   // app twice on every load — a million triangles of dead flat plane, thrown
@@ -39,14 +57,17 @@ export function Terrain({ field, terrain, wireframe, selfShadow = true }: Props)
   // as well.
   const placeholder = field === FLAT_FIELD
   const fullResolution = placeholder ? 32 : (terrain.meshResolution ?? 320)
-  const plan = useLodPlan(terrain, fullResolution, placeholder, field)
+  const plan = useLodPlan(terrain, fullResolution, placeholder, field, onView, detailVersion)
 
   const geometry = useMemo(
     () =>
       buildTerrainGeometry(field, terrain, plan ? plan.baseResolution : fullResolution, {
         hole: plan?.rect,
       }),
-    [field, terrain, fullResolution, plan],
+    // `detailVersion` belongs here even though `field` is unchanged: the field
+    // is refined IN PLACE, so its identity deliberately stays put and the only
+    // signal that the ground beneath this mesh has improved is the counter.
+    [field, terrain, fullResolution, plan, detailVersion],
   )
   const detail = useMemo(
     () =>
@@ -55,7 +76,7 @@ export function Terrain({ field, terrain, wireframe, selfShadow = true }: Props)
             patch: { ...plan.rect, refine: plan.refine },
           })
         : null,
-    [field, terrain, plan],
+    [field, terrain, plan, detailVersion],
   )
   const bump = useMemo(() => (terrain.detail ? makeBumpTexture() : null), [terrain.detail])
 
@@ -110,20 +131,28 @@ function useLodPlan(
   fullResolution: number,
   disabled: boolean,
   field: HeightField,
+  onView?: (rect: MapRect) => void,
+  detailVersion = 0,
 ) {
   const { camera } = useThree()
   const [plan, setPlan] = useState<LodPlan | null>(null)
   const since = useRef(0)
-  const samples = useRef<{ w: number; h: number } | undefined>(undefined)
   const current = useRef<LodPlan | null>(null)
   current.current = plan
+  const view = useRef<((rect: MapRect) => void) | undefined>(onView)
+  view.current = onView
 
   // A new world starts over: its old rectangle means nothing on a new map.
   useEffect(() => {
     setPlan(null)
     since.current = 0
-    samples.current = field.samples
   }, [terrain, fullResolution, field])
+
+  // When finer data lands, re-plan at once rather than waiting for the tick:
+  // the whole point of it arriving is that the mesh may now subdivide further.
+  useEffect(() => {
+    since.current = LOD_INTERVAL
+  }, [detailVersion])
 
   useFrame((_, dt) => {
     if (disabled) return
@@ -131,8 +160,18 @@ function useLodPlan(
     if (since.current < LOD_INTERVAL) return
     since.current = 0
     const rect = visibleMapRect(camera, terrain)
-    const next = rect && planLod(rect, terrain, fullResolution, samples.current)
-    if (planChanged(current.current, next ?? null)) setPlan(next ?? null)
+    if (!rect) return
+    // How much data actually covers THIS rectangle, which is not the same as
+    // how much covers the map: detail tiles arrive a few at a time.
+    const samples = field.samplesOver?.(rect) ?? field.samples
+    const next = planLod(rect, terrain, fullResolution, samples)
+    // Ask for finer elevation only once a patch is worth planning at all.
+    // Framed on the whole world every tile is "in view", and requesting them
+    // pulled the entire 24 MB set down on load — 92 requests before the reader
+    // had touched anything. A plan exists only when the view is a small part of
+    // the map, which is exactly when the tiles are worth having.
+    if (next) view.current?.(rect)
+    if (planChanged(current.current, next)) setPlan(next)
   })
 
   return disabled ? null : plan

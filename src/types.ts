@@ -37,6 +37,18 @@ export interface TerrainConfig {
    * used for real-world elevation (DEM) maps. The seed is then unused.
    */
   heightmap?: string
+  /**
+   * Optional name of a finer elevation tile set under `public/dem/`, fetched a
+   * few tiles at a time for whatever part of the map the camera is over.
+   *
+   * The whole-Earth heightmap holds about 13 km per pixel — a hundredth of what
+   * a country-sized one holds — so it softens as you zoom in no matter how fine
+   * the mesh gets. The tiles carry four times its resolution and are cut over
+   * the same pinned metre range, so they refine the same ground rather than
+   * replacing it. Absent on worlds whose heightmap already out-resolves their
+   * mesh, which is all of them but these two.
+   */
+  detailTiles?: string
   /** Fractal noise octaves; more = more fine detail. Default 5. */
   octaves?: number
   /** Base feature size; smaller = larger continents. Default 2.2. */

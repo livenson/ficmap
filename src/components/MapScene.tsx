@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { MapControls, PerspectiveCamera, Sky } from '@react-three/drei'
 import * as THREE from 'three'
 import { makeHeightField, type HeightField } from '../engine/noise'
 import { FLAT_FIELD, loadImageHeightField } from '../engine/heightmap'
+import { loadManifest, makeTileLoader, type TileLoader } from '../engine/tiles'
 import type { TerrainConfig } from '../types'
 import {
   WORLD_SIZE,
@@ -69,7 +70,7 @@ export function MapScene({
   // Height field is the single source of truth for terrain, markers & routes.
   // Procedural terrains resolve synchronously; heightmap (DEM) terrains load
   // their image and swap in once ready (flat sea until then).
-  const field = useHeightField(terrain)
+  const { field, refine, detail } = useHeightField(terrain)
   const controls = useRef<any>(null)
   // Underworld lighting: 'dark' is warm hellfire (Põrgu, magma caverns), while
   // 'cavern' is a cool, phosphorescent glow (an underground sea, ice caves).
@@ -202,7 +203,13 @@ export function MapScene({
         )
       )}
 
-      <Terrain field={field} terrain={terrain} selfShadow={!highSun} />
+      <Terrain
+        field={field}
+        terrain={terrain}
+        selfShadow={!highSun}
+        onView={refine}
+        detailVersion={detail}
+      />
       <Water terrain={terrain} />
       {layers.rivers && <Rivers field={field} terrain={terrain} />}
 
@@ -280,10 +287,25 @@ export function MapScene({
 /**
  * Resolve a terrain's height field. Procedural terrains build synchronously;
  * heightmap terrains load the image asynchronously and swap in when ready.
+ *
+ * A world declaring `detailTiles` gets one more layer: the loaded image is
+ * wrapped in a field that finer tiles can be laid over as they arrive. That
+ * wrapper is handed out ONCE and mutated thereafter — see `makeRefinable` — so
+ * that the forests, rivers, fish and routes memoizing on the field's identity
+ * are not torn down and rebuilt every time a tile lands.
  */
-function useHeightField(terrain: TerrainConfig): HeightField {
+function useHeightField(terrain: TerrainConfig): {
+  field: HeightField
+  /** Ask for finer data over a map rectangle; a no-op without detail tiles. */
+  refine: (rect: { x0: number; x1: number; z0: number; z1: number }) => void
+  /** Bumped when finer data arrives, so the terrain alone can rebuild. */
+  detail: number
+} {
   const [imgField, setImgField] = useState<HeightField | null>(null)
+  const [loader, setLoader] = useState<TileLoader | null>(null)
+  const [detail, setDetail] = useState(0)
   const url = terrain.heightmap
+  const tiles = terrain.detailTiles
 
   useEffect(() => {
     if (!url) {
@@ -292,18 +314,50 @@ function useHeightField(terrain: TerrainConfig): HeightField {
     }
     let alive = true
     setImgField(null)
-    loadImageHeightField(url).then((f) => {
-      if (alive) setImgField(f)
-    })
+    loadImageHeightField(url)
+      .then((f) => {
+        if (alive) setImgField(f)
+      })
+      .catch((e) => {
+        // Previously unhandled, which left a failed heightmap as a permanently
+        // flat sea with nothing said about it.
+        console.error(`heightmap ${url} failed to load; the world stays flat`, e)
+      })
     return () => {
       alive = false
     }
   }, [url])
 
-  return useMemo(() => {
-    if (url) return imgField ?? FLAT_FIELD
+  // The tile loader belongs to the loaded image, so it is built once that
+  // exists and torn down when the world changes under it.
+  useEffect(() => {
+    setLoader(null)
+    setDetail(0)
+    if (!tiles || !imgField) return
+    let made: TileLoader | null = null
+    let alive = true
+    loadManifest(tiles).then((man) => {
+      if (!alive || !man) return
+      made = makeTileLoader(imgField, man, tiles, () => setDetail((v) => v + 1))
+      setLoader(made)
+    })
+    return () => {
+      alive = false
+      made?.dispose()
+    }
+  }, [tiles, imgField])
+
+  const field = useMemo(() => {
+    if (url) return loader?.field ?? imgField ?? FLAT_FIELD
     return makeHeightField(terrain)
-  }, [terrain, url, imgField])
+  }, [terrain, url, imgField, loader])
+
+  const refine = useCallback(
+    (rect: { x0: number; x1: number; z0: number; z1: number }) => loader?.request(rect),
+    [loader],
+  )
+
+  return { field, refine, detail }
 }
 
 /** A resolved camera destination: where to sit and what to look at. */
