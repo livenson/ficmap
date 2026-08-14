@@ -193,6 +193,43 @@ is declared scenic in the script (a summit you only ever look at). This found 71
 places with no route to them, including a whole world — The Forest Song — that
 had no routes at all.
 
+The terrain's zoom-dependent detail is checked the same way, without a browser:
+
+```bash
+node scripts/check-lod.mjs
+```
+
+Zoomed out, the world map draws one uniform mesh. Zoomed in, it draws a coarse
+base with a rectangular hole and a fine patch filling it — fewer triangles, and
+the ground under the camera sampled several times more closely. The script puts
+a real camera exactly where the app puts it and checks both, plus that the two
+meshes meet without a crack and that the patch never tessellates finer than the
+heightmap holds. It is a script rather than an end-to-end test because zoom in a
+headless browser is damped over frames at about one frame a second, so a test
+that turns the wheel and waits cannot tell a camera that never moved from a
+feature that never fired.
+
+## Elevation data
+
+The whole-Earth map is 13 km per pixel; Peer Gynt's Norway is 1.3. That gap is
+data, not geometry, and it is why the world map softens when you zoom in. A
+finer layer is cut into tiles that the app fetches only for the part of the map
+you are looking at:
+
+```bash
+node scripts/build-dem-tiles.mjs world     # 230 tiles, ~24 MB, ~2 min
+node scripts/check-dem-tiles.mjs world
+```
+
+Tiles are cut with exactly the parameters their base map was cut with, over the
+same **pinned** metre range — otherwise a tile, seeing only its own corner of
+the world, would scale its bytes to different extremes and the ground would step
+where the two met. `scripts/check-dem-scale.mjs` reports which presets are
+pinned and so safe to cut from, and cross-checks each against the waterline its
+story declares. `check-dem-tiles.mjs` then measures whether the tiles sit on the
+base map rather than above or below it — cutting one row over the wrong range
+moves it by 9 of 255, against 0.03 for the whole set as shipped.
+
 Scores get the same treatment. The tunes are synthesised live, so a test cannot
 hear them — but it can check that the written bass actually lands where the
 score says it does, underneath the melody:
