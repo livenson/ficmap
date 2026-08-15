@@ -292,6 +292,33 @@ export const PRESETS = {
     maxM: 2400,
     out: '../src/assets/ottokar-height.png',
   },
+  dante: {
+    // Dante's own Italy — the country he walked as an exile, which is the only
+    // part of the Commedia that is on the Earth at all. Florence in the middle,
+    // the dark wood and the Casentino above it, Ravenna in the north-east where
+    // he died and is buried, Rome in the south for the Jubilee of 1300, and the
+    // Apennine spine that he crosses again and again between them.
+    //
+    // The box is deliberately central Italy rather than the whole peninsula:
+    // Sicily and the Alps would push Tuscany down to a thumbnail, and nothing
+    // in the poem's earthly story happens in either.
+    z: 8,
+    bbox: { lonMin: 9.4, lonMax: 14.6, latMin: 41.2, latMax: 45.4 },
+    // ~430 km across at 43°N by ~467 km down.
+    w: 1024,
+    h: 1112,
+    flatOceanM: -6,
+    lakes: true,
+    // The Apennines top out near 2,900 m at the Gran Sasso, on the eastern edge.
+    // Capped just above so the Casentino hills and the Arno valley — where the
+    // poem's own ground is — keep their relief instead of being flattened
+    // against a peak nobody in the story climbs.
+    capM: 2400,
+    landGamma: 0.68,
+    minM: -6,
+    maxM: 2400,
+    out: '../src/assets/dante-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

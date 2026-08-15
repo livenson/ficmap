@@ -33,9 +33,21 @@ import { PRESETS } from './dem-presets.mjs'
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const CACHE = path.join(ROOT, '.cache')
-const SOURCE =
-  'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_rivers_lake_centerlines.geojson'
-const LOCAL = path.join(CACHE, 'ne_10m_rivers_lake_centerlines.geojson')
+/**
+ * Two Natural Earth files, searched in order.
+ *
+ * The global 10m centrelines carry the rivers a world map would name — the
+ * Elbe, the Tagus, the Tiber. They do not carry the Arno, which is only 240 km
+ * long and is nonetheless the river the Commedia is about ("a streamlet that is
+ * born in Falterona"). The European supplement is denser and has it. Anything
+ * smaller than that is not in either, and should not be invented.
+ */
+const SOURCES = [
+  ['ne_10m_rivers_lake_centerlines.geojson', 'global 10m centrelines'],
+  ['ne_10m_rivers_europe.geojson', 'European supplement'],
+]
+const remote = (f) =>
+  `https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/${f}`
 
 /**
  * How far apart to keep points, in kilometres ON THE GROUND.
@@ -60,18 +72,35 @@ if (!preset) {
 }
 const B = preset.bbox
 
-if (!fs.existsSync(LOCAL)) {
-  fs.mkdirSync(CACHE, { recursive: true })
-  process.stderr.write(`fetching Natural Earth river centrelines...\n`)
-  const res = await fetch(SOURCE)
-  if (!res.ok) {
-    console.error(`download failed: ${res.status}`)
-    process.exit(1)
+async function load(file) {
+  const local = path.join(CACHE, file)
+  if (!fs.existsSync(local)) {
+    fs.mkdirSync(CACHE, { recursive: true })
+    process.stderr.write(`fetching ${file}...\n`)
+    const res = await fetch(remote(file))
+    if (!res.ok) {
+      console.error(`download failed: ${res.status}`)
+      process.exit(1)
+    }
+    fs.writeFileSync(local, Buffer.from(await res.arrayBuffer()))
   }
-  fs.writeFileSync(LOCAL, Buffer.from(await res.arrayBuffer()))
+  return JSON.parse(fs.readFileSync(local, 'utf8'))
 }
 
-const data = JSON.parse(fs.readFileSync(LOCAL, 'utf8'))
+let data = null
+let fromWhich = ''
+for (const [file, label] of SOURCES) {
+  const d = await load(file)
+  if (d.features.some((f) => f.properties?.name === riverName)) {
+    data = d
+    fromWhich = label
+    break
+  }
+}
+if (!data) {
+  console.error(`no river named "${riverName}" in either Natural Earth file`)
+  process.exit(1)
+}
 /**
  * EVERY feature with this name, not the first one.
  *
@@ -200,7 +229,8 @@ const points = keptLL.map((p) => toMap(p[0], p[1]))
 const hs = points.map((p) => heightAt(p.x, p.z))
 const rises = hs.reduce((n, h, i) => n + (i > 0 && h > hs[i - 1] + 0.02 ? 1 : 0), 0)
 console.error(
-  `\n${riverName} across "${presetName}": ${clipped.length} source points -> ${points.length} kept`,
+  `\n${riverName} across "${presetName}" (${fromWhich}): ` +
+    `${clipped.length} source points -> ${points.length} kept`,
 )
 // Report the ENDS OF THE KEPT COURSE, not of the raw clip: an earlier version
 // printed the raw ends and so cheerfully reported a mouth that the thinning had

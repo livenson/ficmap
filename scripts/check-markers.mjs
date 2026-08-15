@@ -42,6 +42,16 @@ const WORLDS = {
       'sunken-castle',
     ]),
   },
+  dante: {
+    png: '../src/assets/dante-height.png',
+    story: '../src/stories/dante.ts',
+    bbox: { lonMin: 9.4, lonMax: 14.6, latMin: 41.2, latMax: 45.4 },
+    seaLevel: 0.0025,
+    reach: 0.09,
+    wet: new Set([]),
+    // Named from the valley floor, never climbed in the poem.
+    scenic: new Set(['falterona']),
+  },
   lucerne: {
     png: '../src/assets/lucerne-height.png',
     story: '../src/stories/tell.ts',

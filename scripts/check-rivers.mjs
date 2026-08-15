@@ -64,6 +64,7 @@ const HEIGHTMAPS = {
   faust: '../src/assets/harz-height.png',
   cid: '../src/assets/spain-height.png',
   aotearoa: '../src/assets/aotearoa-height.png',
+  dante: '../src/assets/dante-height.png',
 }
 
 const bundle = await esbuild.build({
