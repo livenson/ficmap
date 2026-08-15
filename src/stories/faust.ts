@@ -94,6 +94,7 @@ export const faust: Story = {
     namedRivers: [
       {
         name: 'The Elbe',
+        marker: 'elbe',
         points: [
           { x: 1.0000, z: 0.5320 }, { x: 0.9662, z: 0.5285 }, { x: 0.9357, z: 0.5285 },
           { x: 0.9096, z: 0.5082 }, { x: 0.8890, z: 0.4861 }, { x: 0.8711, z: 0.4588 },

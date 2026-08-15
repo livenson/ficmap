@@ -82,6 +82,29 @@ export const aotearoa: Story = {
     // Two long islands end to end are unreadable edge-on.
     overhead: true,
     rivers: 8,
+    // The Whanganui, drawn from its real course rather than traced from the
+    // DEM, which at this scale cannot hold a river. The story calls it a scar
+    // cut by a mountain leaving in the night; a scar needs a line.
+    //
+    // Source: Natural Earth 10m river centrelines (public domain), via
+    // `scripts/build-river.mjs aotearoa Whanganui`. From the flanks of the
+    // central volcanoes down to the sea at the town that shares its name.
+    namedRivers: [
+      {
+        name: 'The Whanganui',
+        marker: 'wanganui',
+        points: [
+          { x: 0.4769, z: -0.2583 }, { x: 0.4625, z: -0.2635 }, { x: 0.4491, z: -0.2673 },
+          { x: 0.4379, z: -0.2740 }, { x: 0.4237, z: -0.2751 }, { x: 0.4123, z: -0.2676 },
+          { x: 0.4029, z: -0.2590 }, { x: 0.3924, z: -0.2513 }, { x: 0.3864, z: -0.2407 },
+          { x: 0.3767, z: -0.2312 }, { x: 0.3667, z: -0.2233 }, { x: 0.3775, z: -0.2157 },
+          { x: 0.3855, z: -0.2058 }, { x: 0.3874, z: -0.1951 }, { x: 0.3918, z: -0.1838 },
+          { x: 0.3998, z: -0.1729 }, { x: 0.4112, z: -0.1649 }, { x: 0.4041, z: -0.1548 },
+          { x: 0.4067, z: -0.1432 }, { x: 0.3968, z: -0.1349 }, { x: 0.3927, z: -0.1227 },
+          { x: 0.3856, z: -0.1184 },
+        ],
+      },
+    ],
     biomes: [
       { maxHeight: 0.0025, color: '#215a75', name: 'The sea' },
       { maxHeight: 0.045, color: '#cfc8a4', name: 'Shore' },
@@ -230,7 +253,7 @@ export const aotearoa: Story = {
       id: 'wanganui',
       name: 'The River',
       kind: 'landmark',
-      at: { x: 0.392, z: -0.121 },
+      at: { x: 0.391, z: -0.122 },
       description:
         'The Whanganui, cut by a mountain leaving in the night — the country’s ' +
         'longest navigable river, and in this telling a scar.',

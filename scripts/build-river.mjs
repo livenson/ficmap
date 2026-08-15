@@ -37,8 +37,15 @@ const SOURCE =
   'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_rivers_lake_centerlines.geojson'
 const LOCAL = path.join(CACHE, 'ne_10m_rivers_lake_centerlines.geojson')
 
-/** How far apart to keep points, in map units. ~0.03 is about 9 km here. */
-const SPACING = Number(process.env.SPACING ?? 0.03)
+/**
+ * How far apart to keep points, in kilometres ON THE GROUND.
+ *
+ * Not in map units, which was the first attempt and does not travel: the map is
+ * always -1..1 whatever it covers, so 0.03 units is 9 km across central Germany
+ * and 17 km across New Zealand. Thinning the Whanganui — a 290 km river — at 17
+ * km left ten points and lost every bend it is famous for.
+ */
+const SPACING_KM = Number(process.env.SPACING_KM ?? 8)
 
 const [presetName, riverName] = process.argv.slice(2)
 if (!presetName || !riverName) {
@@ -65,16 +72,27 @@ if (!fs.existsSync(LOCAL)) {
 }
 
 const data = JSON.parse(fs.readFileSync(LOCAL, 'utf8'))
-const feature = data.features.find((f) => f.properties?.name === riverName)
-if (!feature) {
+/**
+ * EVERY feature with this name, not the first one.
+ *
+ * Natural Earth splits a long river across several features — the Tagus is two,
+ * one of 38 points and one of 179 — and `find` took whichever came first. That
+ * gave a 60 km fragment of the middle Tagus, which then read as a river that
+ * climbs, because a fragment has no particular relation to the slope.
+ */
+const features = data.features.filter((f) => f.properties?.name === riverName)
+if (!features.length) {
   console.error(`no river named "${riverName}" in the dataset`)
   process.exit(1)
 }
-const parts = (
-  feature.geometry.type === 'MultiLineString'
-    ? feature.geometry.coordinates
-    : [feature.geometry.coordinates]
-).filter((s) => s.length >= 2)
+const parts = features
+  .flatMap((f) =>
+    f.geometry.type === 'MultiLineString' ? f.geometry.coordinates : [f.geometry.coordinates],
+  )
+  .filter((s) => s.length >= 2)
+if (features.length > 1) {
+  console.error(`  ("${riverName}" is ${features.length} features in the source, merged)`)
+}
 
 /**
  * Stitch the parts into one line.
@@ -159,18 +177,25 @@ const heightAt = (x, z) => {
   return png.data[(py * png.width + px) * 4] / 255
 }
 
-const dense = clipped.map((p) => toMap(p[0], p[1]))
-const points = [dense[0]]
-for (const p of dense.slice(1)) {
-  const q = points[points.length - 1]
-  if (Math.hypot(p.x - q.x, p.z - q.z) > SPACING) points.push(p)
+/** Ground distance between two lon/lat points, in km. */
+const km = (a, b) => {
+  const mid = ((a[1] + b[1]) / 2) * (Math.PI / 180)
+  const dx = (a[0] - b[0]) * Math.cos(mid) * 111.32
+  const dy = (a[1] - b[1]) * 110.57
+  return Math.hypot(dx, dy)
+}
+
+// Thin on the ground, then convert; the map's own units mean different distances
+// in different worlds and cannot be compared to a spacing.
+const keptLL = [clipped[0]]
+for (const p of clipped.slice(1)) {
+  if (km(p, keptLL[keptLL.length - 1]) > SPACING_KM) keptLL.push(p)
 }
 // The last kept point may fall short of the mouth; end exactly at it, without
 // duplicating it when the thinning already landed there.
-const end = dense[dense.length - 1]
-if (Math.hypot(end.x - points[points.length - 1].x, end.z - points[points.length - 1].z) > 1e-6) {
-  points.push(end)
-}
+const last = clipped[clipped.length - 1]
+if (km(last, keptLL[keptLL.length - 1]) > 0.001) keptLL.push(last)
+const points = keptLL.map((p) => toMap(p[0], p[1]))
 
 const hs = points.map((p) => heightAt(p.x, p.z))
 const rises = hs.reduce((n, h, i) => n + (i > 0 && h > hs[i - 1] + 0.02 ? 1 : 0), 0)
