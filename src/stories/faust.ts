@@ -79,7 +79,46 @@ export const faust: Story = {
     // into a strip along the horizon.
     overhead: true,
     heightScale: 15,
-    rivers: 5,
+    rivers: 4,
+    // The Elbe, drawn from its real course rather than traced from the DEM.
+    //
+    // It has to be: this map holds about 0.9 km per pixel and the Elbe at
+    // Magdeburg is some 200 m wide, so the river is a fraction of a pixel and
+    // is not in the heightmap at all. Without this the place marked "The Elbe"
+    // stood on wooded ground with no water anywhere near it.
+    //
+    // Source: Natural Earth 10m river centrelines (public domain), clipped to
+    // this world's box and thinned by `scripts/build-river.mjs harz Elbe`. It
+    // runs from the Bohemian border in the south-east down to Hamburg, where
+    // the dataset ends and the DEM's own estuary takes over.
+    namedRivers: [
+      {
+        name: 'The Elbe',
+        points: [
+          { x: 1.0000, z: 0.5320 }, { x: 0.9662, z: 0.5285 }, { x: 0.9357, z: 0.5285 },
+          { x: 0.9096, z: 0.5082 }, { x: 0.8890, z: 0.4861 }, { x: 0.8711, z: 0.4588 },
+          { x: 0.8558, z: 0.4285 }, { x: 0.8235, z: 0.4271 }, { x: 0.8182, z: 0.3973 },
+          { x: 0.7866, z: 0.3911 }, { x: 0.7760, z: 0.3618 }, { x: 0.7959, z: 0.3295 },
+          { x: 0.8092, z: 0.2981 }, { x: 0.8167, z: 0.2637 }, { x: 0.7891, z: 0.2295 },
+          { x: 0.7563, z: 0.2141 }, { x: 0.7187, z: 0.1737 }, { x: 0.6858, z: 0.1640 },
+          { x: 0.6281, z: 0.1199 }, { x: 0.6235, z: 0.0894 }, { x: 0.5983, z: 0.0711 },
+          { x: 0.5857, z: 0.0406 }, { x: 0.5728, z: 0.0105 }, { x: 0.5439, z: -0.0033 },
+          { x: 0.5358, z: -0.0386 }, { x: 0.5129, z: -0.0585 }, { x: 0.4891, z: -0.0855 },
+          { x: 0.4857, z: -0.1237 }, { x: 0.4478, z: -0.1455 }, { x: 0.4177, z: -0.1477 },
+          { x: 0.3838, z: -0.1416 }, { x: 0.3558, z: -0.1536 }, { x: 0.3011, z: -0.1481 },
+          { x: 0.2682, z: -0.1896 }, { x: 0.2468, z: -0.2131 }, { x: 0.2163, z: -0.2375 },
+          { x: 0.2179, z: -0.2699 }, { x: 0.2357, z: -0.3127 }, { x: 0.2581, z: -0.3355 },
+          { x: 0.2794, z: -0.3596 }, { x: 0.2935, z: -0.3878 }, { x: 0.3012, z: -0.4828 },
+          { x: 0.3007, z: -0.5168 }, { x: 0.2986, z: -0.5498 }, { x: 0.2698, z: -0.5606 },
+          { x: 0.2487, z: -0.5841 }, { x: 0.2209, z: -0.5959 }, { x: 0.1955, z: -0.6171 },
+          { x: 0.1672, z: -0.6317 }, { x: 0.1359, z: -0.6289 }, { x: 0.1190, z: -0.6544 },
+          { x: 0.0925, z: -0.6690 }, { x: 0.0423, z: -0.6913 }, { x: 0.0134, z: -0.7102 },
+          { x: -0.0037, z: -0.7351 }, { x: -0.0350, z: -0.7487 }, { x: -0.0856, z: -0.7695 },
+          { x: -0.1192, z: -0.7637 }, { x: -0.1503, z: -0.7735 }, { x: -0.1818, z: -0.7926 },
+          { x: -0.2136, z: -0.8102 }, { x: -0.2191, z: -0.8161 },
+        ],
+      },
+    ],
     biomes: [
       { maxHeight: 0.005, color: '#2c5a74', name: 'The North Sea' },
       { maxHeight: 0.05, color: '#cfc79f', name: 'Marsh' },
@@ -259,7 +298,9 @@ export const faust: Story = {
       id: 'elbe',
       name: 'The Elbe',
       kind: 'landmark',
-      at: { x: 0.207, z: -0.252 },
+      // On the river, at Magdeburg (11.672E 52.129N). It was three kilometres
+      // off the channel before, which mattered once the channel was drawn.
+      at: { x: 0.217, z: -0.252 },
       description:
         'The river running north past Wittenberg and out to the sea Faust ' +
         'eventually takes land from. Part I is inland and Part II ends on a ' +

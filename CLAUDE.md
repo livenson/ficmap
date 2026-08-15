@@ -46,6 +46,17 @@ a tree stands; `drapeTrees` decides how high. Re-running the placement on
 changed ground moves every tree, because the rejection sampling reads the field.
 Same for rivers: the course is traced once, only the drape follows the ground.
 
+**A country-sized DEM cannot show a river.** The Faust map holds ~0.9 km per
+pixel and the Elbe is some 200 m wide, so it is a fraction of a pixel and simply
+is not in the heightmap. The courses `engine/rivers.ts` traces downhill from that
+heightmap look like rivers and are not any river you could name — so a place
+marked "The Elbe" stood in a conifer forest with no water in sight. A world that
+names a river has to be given its course: `terrain.namedRivers`, built by
+`scripts/build-river.mjs` from Natural Earth's public-domain centrelines, and
+held by `check-rivers` to running downhill, reaching water, and having its
+marker standing on it. The Jalón, the Tagus and the Whanganui are still marked
+this way and still have no river under them.
+
 **A heightmap byte means nothing without its metre range.** Presets normalise to
 whatever their own data contained, which is fine for a map built once and fatal
 for one that will be subdivided — a tile sees a different corner of the world
@@ -99,6 +110,7 @@ and runs it, so it sees what the app sees:
 | `check-refine` | detail tiles overlay the base without seams |
 | `check-dem-scale` | pinned presets agree with their stories |
 | `check-dem-tiles` | tiles sit on the base map, not above or below it |
+| `check-rivers` | a named river runs downhill to water, with its place on it |
 | `profile-worlds` | draws, triangles, heap, per world |
 
 `npm run check` is those — data and geometry, no browser, about twenty seconds,
@@ -150,6 +162,10 @@ So: after writing a check, break the thing it checks and watch it fail. Several
 of these scripts have the measured negative control written into their comments
 — the seam pin gives 1.6e-6 with it and 4.0e-3 without; per-tile clamping gives
 0 versus 18.7 of 255.
+
+- The first `check-rivers` allowed a marker 0.02 map units from its river, and
+  so passed the Elbe marker at the 0.0106 offset it had been written to catch. A
+  threshold picked before measuring the fault is a threshold picked to pass.
 
 **Measure before believing.** A seam check first reported 1.86 bytes and called
 it a crack; it was the terrain's own gradient over the fraction of a pixel being
