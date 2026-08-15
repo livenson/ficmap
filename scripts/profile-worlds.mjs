@@ -12,16 +12,51 @@
  *   node scripts/profile-worlds.mjs [world ...]
  */
 import { chromium } from 'playwright'
+import esbuild from 'esbuild'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const PORT = process.env.PORT ?? 5210
-const WORLDS = process.argv.slice(2).length
-  ? process.argv.slice(2)
-  : [
-      'valdurn', 'kalevipoeg', 'fotr', 'center-earth', 'verne-voyages',
-      'musketeers', 'harry-potter', 'indiana-jones', 'mistborn', 'forest-song',
-      'eneida', 'game-of-thrones', 'lacplesis', 'tell', 'nibelungen', 'faust',
-      'uilenspiegel', 'kalevala', 'peergynt', 'nils',
-    ]
+
+/**
+ * Every world in the atlas, read from the registry rather than listed here.
+ *
+ * This used to be a hand-written array and it silently went stale: five worlds
+ * were added after it and none of them was ever profiled. A profiler that
+ * quietly skips the newest thing you built is worse than no profiler, because
+ * it reports a clean bill of health for code it never ran.
+ */
+async function allWorlds() {
+  const bundle = await esbuild.build({
+    entryPoints: [path.join(ROOT, 'src/stories/index.ts')],
+    bundle: true,
+    write: false,
+    format: 'esm',
+    platform: 'neutral',
+    plugins: [
+      {
+        name: 'stub-assets',
+        setup(build) {
+          build.onResolve({ filter: /\.(png|jpe?g|webp)$/ }, (a) => ({
+            path: a.path,
+            namespace: 'stub',
+          }))
+          build.onLoad({ filter: /.*/, namespace: 'stub' }, () => ({
+            contents: 'export default ""',
+            loader: 'js',
+          }))
+        },
+      },
+    ],
+  })
+  const mod = await import(
+    'data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64')
+  )
+  return mod.stories.map((s) => s.id)
+}
+
+const WORLDS = process.argv.slice(2).length ? process.argv.slice(2) : await allWorlds()
 
 const INSTRUMENT = () => {
   const S = {

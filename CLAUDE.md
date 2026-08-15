@@ -57,6 +57,29 @@ pinned and cross-checks each against its story's declared `seaLevel`.
 Anything composed at runtime — the DEM tiles — must go through
 `import.meta.env.BASE_URL`, or it works in dev and 404s under the Pages subpath.
 
+**A `new THREE.Anything()` in a render body is a dependency that never settles.**
+`Flora` built its base colour inline and listed it in the layout effect that
+places every tree, so the effect ran on every render — re-placing 2,340 trees and
+re-sending three instance matrices and two colour buffers, 505 KB, every time
+anything in the scene changed, down to selecting a place on the map.
+`check-rerender` exists to catch this shape wherever it reappears.
+
+**A transparent material still costs a draw call.** Each marker carried a fully
+transparent sphere as its click target — 38 draw calls and 6,840 triangles a
+frame on the Nils map, producing no pixels. `visible={false}` is the right tool:
+three's `intersect` (`Raycaster.js`) tests `object.layers` and never reads
+`visible`, so an invisible mesh is skipped by the renderer and still found by the
+raycaster. Across the atlas that alone took the mean from 112 to 92 draws a
+frame. `check-hit-targets` pins the raycasting half of that bargain, because it
+is an assumption about a dependency's internals.
+
+**Don't ask for MSAA twice.** `Postprocess` mounts an EffectComposer
+unconditionally, so the scene renders into the composer's own multisampled target
+and `gl={{ antialias: true }}` only bought a second multisampled backbuffer that
+nothing ever drew into — tens of megabytes on a phone at dpr 2. Removing it is
+invisible: 0.138% of pixels differ, against a 0.129% floor from photographing the
+same build twice while the water moves.
+
 **Match the surrounding style.** No semicolons, single quotes, no Prettier
 config in the repo — running `npx prettier` on a file reformats it against house
 style and has to be reverted.
@@ -78,6 +101,16 @@ and runs it, so it sees what the app sees:
 | `check-dem-tiles` | tiles sit on the base map, not above or below it |
 | `profile-worlds` | draws, triangles, heap, per world |
 
+`npm run check` is those — data and geometry, no browser, about twenty seconds,
+and it runs on every push. `npm run check:gpu` is the other kind: it builds the
+site, starts a preview server and drives Chromium, and measures the app through
+the graphics API rather than the clock. Run it when touching rendering.
+
+| script | what it holds |
+|---|---|
+| `check-rerender` | selecting a place rebuilds no geometry |
+| `check-hit-targets` | clicking near a place in the scene still selects it |
+
 **Every check must be able to fail.** This is the single most repeated lesson
 here. Things that have passed green while broken:
 
@@ -94,6 +127,24 @@ here. Things that have passed green while broken:
   the data allows 4×.
 - A tile-scale check read the manifest rather than the tile bytes, so falsifying
   the manifest changed nothing. Testing it meant actually cutting a row wrongly.
+- A check for "does clicking rebuild anything" counted `bufferData` and reported
+  a clean zero over a forest that was in fact being re-sent on every click.
+  three.js allocates an attribute's buffer once with `bufferData`; every later
+  `needsUpdate` goes out as **`bufferSubData`** into that same buffer. Patch both.
+- The same check, once it could see the uploads, then got the *arithmetic* wrong
+  twice. Comparing an idle window against a clicking window of equal wall-clock
+  accused three innocent worlds, because clicking makes r3f render more frames
+  and the rain redraws once a frame. Normalising per frame hid the real fault
+  instead: six clicks' rebuilding averaged over forty frames reads 0.70 uploads a
+  frame, which slips under any sane budget, for something that is really 5
+  uploads and 493 KB per click. What works is subtracting the idle rate scaled to
+  the number of frames the busy window actually rendered.
+- A click-through check disabled `pointer-events` on every ancestor of the label
+  and so switched off the canvas as well, then reported that clicking was broken
+  — against unmodified code. **Run a new check against known-good code before
+  believing what it says about your change.** That positive control is as
+  necessary as the negative one, and it is the step most easily skipped, because
+  a failing check on code you just edited looks like your bug.
 
 So: after writing a check, break the thing it checks and watch it fail. Several
 of these scripts have the measured negative control written into their comments
