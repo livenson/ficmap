@@ -366,6 +366,27 @@ export const PRESETS = {
     maxM: 1400,
     out: '../src/assets/snowqueen-height.png',
   },
+  lusiads: {
+    // Vasco da Gama's road to India, which is what Os Lusiadas is: Lisbon in
+    // the north-west corner, the whole Atlantic down to the Cape, the East
+    // African coast up to Malindi, and the Indian Ocean crossing to Calicut in
+    // the north-east. Nothing above 45N or below 40S is in the poem.
+    z: 5,
+    bbox: { lonMin: -30.0, lonMax: 80.0, latMin: -40.0, latMax: 45.0 },
+    // ~12,240 km across at the equator by ~9,450 km down.
+    w: 1280,
+    h: 988,
+    flatOceanM: -6,
+    // This map is mostly sea, and its business is coastlines. Cap well below
+    // the Himalaya and the Alps, neither of which the fleet goes near, so the
+    // African and Iberian coasts keep their range.
+    capM: 2200,
+    landGamma: 0.62,
+    lakes: true,
+    minM: -6,
+    maxM: 2200,
+    out: '../src/assets/lusiads-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

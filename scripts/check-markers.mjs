@@ -69,6 +69,16 @@ const WORLDS = {
     reach: 0.09,
     wet: new Set([]),
   },
+  lusiads: {
+    png: '../src/assets/lusiads-height.png',
+    story: '../src/stories/lusiads.ts',
+    bbox: { lonMin: -30.0, lonMax: 80.0, latMin: -40.0, latMax: 45.0 },
+    seaLevel: 0.0027,
+    reach: 0.09,
+    // The Isle of Love is raised out of the ocean by Venus and is on no chart;
+    // it is meant to be at sea, because it is.
+    wet: new Set(['isle-of-love']),
+  },
   lucerne: {
     png: '../src/assets/lucerne-height.png',
     story: '../src/stories/tell.ts',
