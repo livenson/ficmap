@@ -205,3 +205,57 @@ export function planChanged(a: LodPlan | null, b: LodPlan | null): boolean {
     a.rect.j1 !== b.rect.j1
   )
 }
+
+/**
+ * How long the camera must hold still before the terrain is rebuilt, and how
+ * long it may drift before it is rebuilt anyway. Seconds.
+ */
+export const STILL_FOR = 0.25
+export const DRIFT_LIMIT = 3.0
+
+/** Mutable state for `shouldReplan`, owned by the caller. */
+export interface ReplanState {
+  still: number
+  drifting: number
+}
+
+/**
+ * Whether now is a good moment to rebuild the terrain.
+ *
+ * Adopting a plan rebuilds a mesh, which is 150-300ms of blocked main thread.
+ * Doing that DURING a zoom is the worst possible moment: the gesture is exactly
+ * when the frame budget matters, and the plan is about to be wrong again
+ * anyway. So this says no while the camera is moving, and yes a quarter-second
+ * after it stops.
+ *
+ * `moved` and `distance` are both in world units, and it is their RATIO that
+ * matters: a camera 300 units out and one 12 units out cover very different
+ * absolute distances for the same apparent motion.
+ *
+ * An earlier version of the terrain deliberately did not wait for stillness, on
+ * the grounds that damping keeps the camera gliding and "still" might never
+ * arrive. That is true only where the scene renders at about one frame a
+ * second, as it does headless here — damping then takes a minute of wall-clock
+ * to converge. At a real frame rate it settles in well under a second.
+ * `DRIFT_LIMIT` is the safety net for the case that reasoning worried about: a
+ * camera that never quite stops still refines, just not mid-gesture.
+ *
+ * Returns true and resets the state; the caller then re-plans.
+ */
+export function shouldReplan(
+  state: ReplanState,
+  moved: number,
+  distance: number,
+  dt: number,
+): boolean {
+  if (moved / Math.max(1, distance) > 0.001) {
+    state.still = 0
+    state.drifting += dt
+  } else {
+    state.still += dt
+  }
+  if (state.still < STILL_FOR && state.drifting < DRIFT_LIMIT) return false
+  state.still = 0
+  state.drifting = 0
+  return true
+}
