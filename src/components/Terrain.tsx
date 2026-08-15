@@ -4,7 +4,15 @@ import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
 import { FLAT_FIELD } from '../engine/heightmap'
 import { buildTerrainGeometry } from '../engine/terrain'
-import { planChanged, planLod, visibleMapRect, type LodPlan, type MapRect } from '../engine/lod'
+import {
+  planChanged,
+  planLod,
+  shouldReplan,
+  visibleMapRect,
+  type LodPlan,
+  type MapRect,
+  type ReplanState,
+} from '../engine/lod'
 import type { TerrainConfig } from '../types'
 
 interface Props {
@@ -57,17 +65,18 @@ export function Terrain({
   // as well.
   const placeholder = field === FLAT_FIELD
   const fullResolution = placeholder ? 32 : (terrain.meshResolution ?? 320)
-  const plan = useLodPlan(terrain, fullResolution, placeholder, field, onView, detailVersion)
+  const plan = useLodPlan(terrain, fullResolution, placeholder, field, onView)
 
   const geometry = useMemo(
     () =>
       buildTerrainGeometry(field, terrain, plan ? plan.baseResolution : fullResolution, {
         hole: plan?.rect,
       }),
-    // `detailVersion` belongs here even though `field` is unchanged: the field
-    // is refined IN PLACE, so its identity deliberately stays put and the only
-    // signal that the ground beneath this mesh has improved is the counter.
-    [field, terrain, fullResolution, plan, detailVersion],
+    // Deliberately NOT `detailVersion`. The base draws only the ground OUTSIDE
+    // the patch's hole, at a resolution far coarser than the tiles hold, so
+    // finer data there changes nothing it could show — and rebuilding it costs
+    // 135ms of blocked main thread it has no way to spend usefully.
+    [field, terrain, fullResolution, plan],
   )
   const detail = useMemo(
     () =>
@@ -76,6 +85,9 @@ export function Terrain({
             patch: { ...plan.rect, refine: plan.refine },
           })
         : null,
+    // `detailVersion` belongs here even though `field` is unchanged: the field
+    // is refined IN PLACE, so its identity deliberately stays put and this
+    // counter is the only signal that the ground under the patch has improved.
     [field, terrain, plan, detailVersion],
   )
   const bump = useMemo(() => (terrain.detail ? makeBumpTexture() : null), [terrain.detail])
@@ -107,36 +119,17 @@ export function Terrain({
   )
 }
 
-/** How often to reconsider the detail plan, in seconds. */
-const LOD_INTERVAL = 0.5
-
-/**
- * Watch the camera and hand back the current detail plan, or null for one
- * uniform mesh.
- *
- * Rebuilding a few hundred thousand triangles is not something to do every
- * frame, so the plan is reconsidered a couple of times a second and adopted
- * only when it names a different rectangle than the one already built. The
- * rectangle is padded and snapped to whole base-grid cells, so an ordinary pan
- * or a small zoom keeps naming the rectangle that is already on screen and
- * nothing is rebuilt at all.
- *
- * Deliberately not gated on the camera being still: with damping the camera
- * keeps gliding for a while after you let go, and on a slow machine "still"
- * may never arrive within a frame budget — the detail would then only appear
- * long after you stopped, or not at all.
- */
 function useLodPlan(
   terrain: TerrainConfig,
   fullResolution: number,
   disabled: boolean,
   field: HeightField,
   onView?: (rect: MapRect) => void,
-  detailVersion = 0,
 ) {
   const { camera } = useThree()
   const [plan, setPlan] = useState<LodPlan | null>(null)
-  const since = useRef(0)
+  const gate = useRef<ReplanState>({ still: 0, drifting: 0 })
+  const last = useRef(new THREE.Vector3())
   const current = useRef<LodPlan | null>(null)
   current.current = plan
   const view = useRef<((rect: MapRect) => void) | undefined>(onView)
@@ -145,20 +138,19 @@ function useLodPlan(
   // A new world starts over: its old rectangle means nothing on a new map.
   useEffect(() => {
     setPlan(null)
-    since.current = 0
+    gate.current = { still: 0, drifting: 0 }
   }, [terrain, fullResolution, field])
-
-  // When finer data lands, re-plan at once rather than waiting for the tick:
-  // the whole point of it arriving is that the mesh may now subdivide further.
-  useEffect(() => {
-    since.current = LOD_INTERVAL
-  }, [detailVersion])
 
   useFrame((_, dt) => {
     if (disabled) return
-    since.current += dt
-    if (since.current < LOD_INTERVAL) return
-    since.current = 0
+
+    const moved = Math.sqrt(last.current.distanceToSquared(camera.position))
+    last.current.copy(camera.position)
+    // Nothing is rebuilt while the camera is moving; one rebuild lands shortly
+    // after it stops. See `shouldReplan` for why, and for what an earlier
+    // version got wrong about it.
+    if (!shouldReplan(gate.current, moved, camera.position.length(), dt)) return
+
     const rect = visibleMapRect(camera, terrain)
     if (!rect) return
     // How much data actually covers THIS rectangle, which is not the same as

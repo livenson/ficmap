@@ -153,6 +153,61 @@ check(
   )
 }
 
+// --- Rebuilds must not happen while the camera is moving.
+//
+// Adopting a plan rebuilds a mesh — 150-300ms of blocked main thread — and
+// doing it mid-zoom is what made zooming feel broken on a phone and a laptop
+// alike. This simulates a damped zoom the way OrbitControls runs one: each
+// frame the camera covers a fraction of the distance still to go, then stops.
+{
+  const simulate = (fps, seconds) => {
+    const dt = 1 / fps
+    const state = { still: 0, drifting: 0 }
+    let pos = 288 // framed on the whole world
+    const target = 12 // as close as the controls allow
+    let replans = 0
+    let movingReplans = 0
+    for (let t = 0; t < seconds; t += dt) {
+      const before = pos
+      // OrbitControls' damping: a fixed fraction of the remaining gap per frame.
+      pos += (target - pos) * 0.08
+      const moved = Math.abs(pos - before)
+      if (m.shouldReplan(state, moved, pos, dt)) {
+        replans++
+        if (moved / Math.max(1, pos) > 0.001) movingReplans++
+      }
+    }
+    return { replans, movingReplans }
+  }
+
+  // At a real frame rate the zoom converges in well under a second, and the
+  // rebuild lands after it: one plan, none of them mid-gesture.
+  const real = simulate(60, 6)
+  check(
+    real.movingReplans === 0,
+    'at 60fps the plan is never reconsidered while the camera is moving',
+    `${real.movingReplans} of ${real.replans} passes fell mid-zoom`,
+  )
+  // The rest are once-a-quarter-second passes taken while parked, which cost a
+  // `planLod` call each and rebuild nothing: `planChanged` sees the same plan.
+  check(
+    real.replans >= 1,
+    'but it does reconsider once the camera settles',
+    `${real.replans} passes while stationary, all naming the same plan`,
+  )
+
+  // The drift safety net: a camera that never stops must still refine. At one
+  // frame a second — which is what this project's headless environment renders
+  // at, and the reason an earlier version wrongly concluded that waiting for
+  // stillness would never fire — the fallback is what keeps it working.
+  const slow = simulate(1, 30)
+  check(
+    slow.replans >= 1,
+    'and a camera that never settles still refines, via the drift limit',
+    `${slow.replans} replans at one frame a second`,
+  )
+}
+
 // --- The two meshes must meet exactly, or the world tears along the join.
 console.log('')
 const seam = seamGap(base, patch, nearPlan.rect, cfg, nearPlan.baseResolution)

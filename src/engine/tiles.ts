@@ -20,6 +20,18 @@ const url = (set: string, file: string) =>
 const IN_FLIGHT = 4
 
 /**
+ * How long to let tile arrivals accumulate before telling anyone, in ms.
+ *
+ * Rebuilding the terrain costs about 300ms of blocked main thread, and a zoom
+ * pulls in a few dozen tiles. Announcing each one as it landed meant a rebuild
+ * per tile — ten seconds of stalls across a single zoom, which is what made
+ * zooming feel broken. They arrive in bursts anyway, so waiting for the burst
+ * to finish turns thirty rebuilds into two or three and loses nothing: the
+ * ground is equally correct either way, it just sharpens a beat later.
+ */
+const SETTLE_MS = 350
+
+/**
  * How many decoded tiles to keep. Each is `tile²` bytes — 256 KB at 512px — so
  * this is a few tens of megabytes at most, and panning the length of a
  * continent does not grow without bound.
@@ -78,6 +90,16 @@ export function makeTileLoader(
   const seen: string[] = []
   let alive = true
   let running = 0
+  let settle: ReturnType<typeof setTimeout> | null = null
+
+  /** Tell the app once a burst of arrivals has finished, not once per tile. */
+  const announce = () => {
+    if (settle) clearTimeout(settle)
+    settle = setTimeout(() => {
+      settle = null
+      if (alive) onChange()
+    }, SETTLE_MS)
+  }
 
   const pump = () => {
     while (alive && running < IN_FLIGHT && queue.length) {
@@ -96,7 +118,7 @@ export function makeTileLoader(
           // a few more megabytes. The cap is a backstop against a very long
           // session panning the whole globe.
           if (seen.length > KEEP) seen.shift()
-          onChange()
+          announce()
         })
         .catch(() => {
           // A tile that will not load is not fatal: the base map still covers
@@ -124,6 +146,7 @@ export function makeTileLoader(
     dispose() {
       alive = false
       queue.length = 0
+      if (settle) clearTimeout(settle)
     },
   }
 }
