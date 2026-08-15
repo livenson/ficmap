@@ -144,7 +144,7 @@ function useLodPlan(
   useFrame((_, dt) => {
     if (disabled) return
 
-    const moved = Math.sqrt(last.current.distanceToSquared(camera.position))
+    const moved = last.current.distanceTo(camera.position)
     last.current.copy(camera.position)
     // Nothing is rebuilt while the camera is moving; one rebuild lands shortly
     // after it stops. See `shouldReplan` for why, and for what an earlier
