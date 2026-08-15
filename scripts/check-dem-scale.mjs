@@ -69,12 +69,20 @@ for (const [name, p] of Object.entries(PRESETS)) {
   pinned.push({ name, asset, sea, uses })
   for (const u of uses) {
     // Stories round the fraction for readability, so compare at that precision.
-    const ok = Math.abs(u.seaLevel - sea) <= 5e-5
+    //
+    // A waterline at or below zero is not a number to match, it is a statement:
+    // the whole map is above the waterline and there is no water on it. That
+    // happens when a preset is pinned to ground that never reaches the sea —
+    // South Bohemia's plateau bottoms out at 344 m. Such a story must declare a
+    // seaLevel of zero or less; declaring a positive one would flood a country
+    // that has no coast, and still fails here.
+    const dry = sea <= 0
+    const ok = dry ? u.seaLevel <= 0 : Math.abs(u.seaLevel - sea) <= 5e-5
     if (!ok) bad++
     console.log(
       `${ok ? '  ' : '!!'} ${name.padEnd(10)} ${String(p.minM).padStart(6)}..${String(p.maxM).padEnd(6)} m ` +
-        `→ waterline ${sea.toFixed(6)}   ${u.story} declares ${u.seaLevel}` +
-        `${ok ? '' : '  ← DISAGREES'}`,
+        `→ waterline ${sea.toFixed(6)}${dry ? ' (no water on this map)' : ''}   ` +
+        `${u.story} declares ${u.seaLevel}${ok ? '' : '  ← DISAGREES'}`,
     )
   }
   if (!uses.length) console.log(`   ${name.padEnd(10)} pinned but no story uses ${asset}`)

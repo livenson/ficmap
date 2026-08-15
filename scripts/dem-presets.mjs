@@ -319,6 +319,31 @@ export const PRESETS = {
     maxM: 2400,
     out: '../src/assets/dante-height.png',
   },
+  svejk: {
+    // Svejk's Budejovice anabasis: the corner of South Bohemia he walks round
+    // in circles. The box holds every place he names, from Tabor in the
+    // north-east — where he got off the train — to Ceske Budejovice in the
+    // south-east, where he was trying to go, with Horazdovice out west marking
+    // how far the wrong way he got.
+    z: 10,
+    bbox: { lonMin: 13.55, lonMax: 14.80, latMin: 48.90, latMax: 49.55 },
+    // 91 km across at 49N by 72 km down.
+    w: 1024,
+    h: 810,
+    // Landlocked, and gently rolling: the highest ground in the box is under
+    // 900 m and most of it is the Blata, the pond country south of Pisek. The
+    // waterline is the carved ponds, which are the landscape's whole character.
+    floorM: 0,
+    lakes: true,
+    capM: 900,
+    landGamma: 0.85,
+    // Pinned to the ground that is actually there. South Bohemia is a plateau:
+    // the lowest pixel in this box is 344 m, so a range starting at zero throws
+    // away half the bytes and every biome band below the middle goes unused.
+    minM: 330,
+    maxM: 900,
+    out: '../src/assets/svejk-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

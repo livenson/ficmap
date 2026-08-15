@@ -52,6 +52,15 @@ const WORLDS = {
     // Named from the valley floor, never climbed in the poem.
     scenic: new Set(['falterona']),
   },
+  svejk: {
+    png: '../src/assets/svejk-height.png',
+    story: '../src/stories/svejk.ts',
+    bbox: { lonMin: 13.55, lonMax: 14.80, latMin: 48.90, latMax: 49.55 },
+    // No water anywhere on this map; South Bohemia here is a plateau.
+    seaLevel: 0,
+    reach: 0.09,
+    wet: new Set([]),
+  },
   lucerne: {
     png: '../src/assets/lucerne-height.png',
     story: '../src/stories/tell.ts',
