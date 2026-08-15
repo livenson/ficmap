@@ -344,6 +344,28 @@ export const PRESETS = {
     maxM: 900,
     out: '../src/assets/svejk-height.png',
   },
+  snowqueen: {
+    // Gerda's road north. Andersen never names the town the two children live
+    // in, but every place he DOES name is north of it — Lapland, Finland, and
+    // the Snow Queen's "fixed abode ... on the Island called Spitzbergen" — so
+    // the box runs from Denmark to Svalbard, which is 2,800 km of latitude and
+    // makes this the tallest world in the atlas.
+    z: 6,
+    bbox: { lonMin: 4.0, lonMax: 34.0, latMin: 54.5, latMax: 80.0 },
+    // ~1,300 km across at 67N by ~2,830 km down.
+    w: 600,
+    h: 1300,
+    flatOceanM: -6,
+    // Nothing in this story happens on a mountain; the Scandes are scenery it
+    // is flown over. Capped so the Danish and Swedish lowlands where the first
+    // half takes place keep their relief.
+    capM: 1400,
+    landGamma: 0.6,
+    lakes: true,
+    minM: -6,
+    maxM: 1400,
+    out: '../src/assets/snowqueen-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

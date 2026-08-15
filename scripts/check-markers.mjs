@@ -61,6 +61,14 @@ const WORLDS = {
     reach: 0.09,
     wet: new Set([]),
   },
+  snowqueen: {
+    png: '../src/assets/snowqueen-height.png',
+    story: '../src/stories/snowqueen.ts',
+    bbox: { lonMin: 4.0, lonMax: 34.0, latMin: 54.5, latMax: 80.0 },
+    seaLevel: 0.0043,
+    reach: 0.09,
+    wet: new Set([]),
+  },
   lucerne: {
     png: '../src/assets/lucerne-height.png',
     story: '../src/stories/tell.ts',

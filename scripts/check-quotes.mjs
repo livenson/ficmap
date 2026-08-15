@@ -38,7 +38,7 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
  * was rendered from the original for this atlas.
  */
 const SPECIFIC = [
-  /trans\.|translated|tr\./i,
+  /translat|trans\.|tr\./i,
   /\bact\b|\bsc\.|\bscene\b|\bcanto\b|\bbook\b|\bchapter\b|\brune\b|\bline\b/i,
   /\b1[5-9]\d{2}\b|\b20\d{2}\b/,
   /rendered from the/i,
