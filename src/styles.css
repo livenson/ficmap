@@ -473,6 +473,39 @@ body,
      to the Next button. */
   min-height: 120px;
 }
+/* The line from the text itself, when a chapter carries one. Set apart from the
+   narration around it, because it is the only part of the panel that is not
+   this atlas's own words. */
+.story__quote {
+  margin: 0 0 18px;
+  padding: 10px 0 10px 14px;
+  border-left: 2px solid var(--accent, #ffcf6b);
+}
+.story__quote-line {
+  margin: 0;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre-line;
+}
+.story__quote-original {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--ink-dim, #9aa7b4);
+  white-space: pre-line;
+}
+.story__quote-source {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-dim, #9aa7b4);
+}
 /*
  * The nav is the first thing in the story panel, above the book line, the
  * counter and the title, so nothing that changes with the chapter can move it.
