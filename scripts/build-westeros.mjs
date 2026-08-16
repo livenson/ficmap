@@ -69,8 +69,15 @@ const img = ([px, py]) => [
 ]
 
 const WESTEROS_PX = [
-  // --- north coast, above the Wall (the Lands of Always Winter) ---
-  [120, 100], [250, 82], [400, 92], [520, 100], [610, 108], [700, 118],
+  // --- the Lands of Always Winter, running off the top of the map ---
+  //
+  // These pixel rows are NEGATIVE on purpose. The traced reference image stops
+  // a little north of the Wall, and tracing it literally left the Lands of
+  // Always Winter as open sea with a label floating on it — the far north was
+  // water. In the books the land does not end up there; the maps just stop. So
+  // the polygon is carried past the top edge of the world, which is how the
+  // published maps present it too: the ice runs off the paper.
+  [140, -20], [260, -170], [430, -250], [600, -200], [730, -70], [800, 40],
   // --- north-east: Eastwatch, the Bay of Seals, the Grey Cliffs ---
   [790, 138], [782, 182], [800, 250], [862, 220], [900, 262], [948, 330],
   [930, 420], [890, 500], [930, 570], [908, 622],
@@ -99,7 +106,7 @@ const WESTEROS_PX = [
   [140, 652], [186, 602], [152, 546],
   // --- the western North: Stony Shore, Sea Dragon Point, the Bay of Ice ---
   [286, 472], [300, 402], [246, 356], [300, 332], [336, 302], [300, 266],
-  [332, 216], [300, 176], [250, 122],
+  [332, 216], [300, 176], [250, 122], [190, 40],
 ]
 const WESTEROS = WESTEROS_PX.map(img)
 
@@ -198,6 +205,13 @@ for (let j = 0; j < H; j++) {
       clamp01(westeros * 2)
     // The Lands of Always Winter / Frostfangs above it.
     h += smooth(wallZ - 0.02, wallZ - 0.14, wz) * (0.2 + 0.24 * fbm(wx * 6 + 2, wz * 6)) * westeros
+    // And beyond the Frostfangs, the ice itself. This second ramp starts at
+    // the Wall and carries the far north over 0.84, which is where the story's
+    // biome table turns white — without it the new land came out the same
+    // grey-brown as the Mountains of the Moon, which is not what "always
+    // winter" means. It also puts the deep north well above the tree line, so
+    // nothing scatters up there.
+    h += smooth(-0.76, -0.88, wz) * 0.36 * westeros
     // The Mountains of the Moon, walling the Vale.
     h += cone(wx, wz, ...img([790, 1010]).slice(0, 2), 0.055, 0.42) * westeros
     // The Westerlands hills above Casterly Rock.
@@ -227,6 +241,13 @@ for (let j = 0; j < H; j++) {
     }
     const gully = smooth(0.15, 0.85, pingpong(1 + fbm(wx * 6, wz * 6) * 2.4))
     h -= gully * 0.05 * land * smooth(0.42, 0.72, h)
+
+    // The far north is ice, not scree. Adding relief and hoping the noise lands
+    // in the white band gave a mottled field — half Ice & Snow, half Mountains
+    // — so the ice is held above the biome table's white line (0.84) outright,
+    // ramping in from the Wall so the haunted forest and the Frostfangs below
+    // it keep their own colours.
+    h = Math.max(h, smooth(-0.80, -0.90, wz) * westeros * 0.9)
 
     h = clamp01(h)
     if (land < 0.05) h = Math.min(h, 0.13)
