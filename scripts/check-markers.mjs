@@ -163,6 +163,20 @@ const WORLDS = {
     ]),
     scenic: new Set(['cape-raoul', 'frenchmans']),
   },
+  khunphaen: {
+    png: '../src/assets/siam-height.png',
+    story: '../src/stories/khunphaen.ts',
+    bbox: { lonMin: 97.8, lonMax: 103.4, latMin: 12.8, latMax: 19.6 },
+    seaLevel: 0.0033,
+    reach: 0.09,
+    // Nothing in this world is meant to be in the sea.
+    wet: new Set([]),
+    // Two places the poem reaches through a person rather than a journey:
+    // Simala is the governor of Phichit's daughter, Kaeo Kiriya the governor
+    // of Sukhothai's, and no march in either of these two books goes to
+    // either town.
+    scenic: new Set(['phichit', 'sukhothai']),
+  },
   ottokar: {
     png: '../src/assets/ottokar-height.png',
     story: '../src/stories/ottokar.ts',

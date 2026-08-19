@@ -387,6 +387,36 @@ export const PRESETS = {
     maxM: 2200,
     out: '../src/assets/lusiads-height.png',
   },
+  siam: {
+    // Khun Chang Khun Phaen country. The love triangle happens in Suphanburi
+    // and Kanchanaburi, the trials and the jail in Ayutthaya, and the campaign
+    // of the First Sequel goes north up the Ping past Kamphaeng Phet to Chiang
+    // Mai — with Vientiane away east, because the princess the two kings
+    // quarrel over is sent from there. So the box holds the whole central
+    // plain, the northern hills, and the head of the Gulf the Chao Phraya
+    // runs into.
+    z: 8,
+    bbox: { lonMin: 97.8, lonMax: 103.4, latMin: 12.8, latMax: 19.6 },
+    // Square-ish pixels on the ground: the box is 5.6 degrees of longitude at
+    // ~16.2N (~599 km) by 6.8 degrees of latitude (~754 km).
+    w: 1024,
+    h: 1290,
+    // Doi Inthanon is 2,565 m and stands in the north-west corner of the box.
+    // The story is not about it: Suphanburi, Ayutthaya and the whole Chao
+    // Phraya plain sit between 2 and 30 m, and against a 2,565 m ceiling the
+    // country the poem happens in is the bottom 1% of the range and renders as
+    // one black sheet. Capped at 1,800 with a strong gamma so the plain, the
+    // Khorat scarp and the northern valleys separate.
+    capM: 1800,
+    landGamma: 0.5,
+    flatOceanM: -6,
+    lakes: true,
+    // Pinned so `check-dem-scale` can compute the waterline rather than trust
+    // a number copied out of a build log.
+    minM: -6,
+    maxM: 1800,
+    out: '../src/assets/siam-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which
