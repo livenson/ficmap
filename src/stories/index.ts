@@ -33,6 +33,7 @@ import { meghaduta } from './meghaduta'
 import { ramayana } from './ramayana'
 import { klondike } from './klondike'
 import { noli } from './noli'
+import { xiyou } from './xiyou'
 
 /**
  * The atlas registry. To add a world:
@@ -75,6 +76,7 @@ export const stories: Story[] = [
   ramayana,
   klondike,
   noli,
+  xiyou,
 ]
 
 export function getStory(id: string | null | undefined): Story {

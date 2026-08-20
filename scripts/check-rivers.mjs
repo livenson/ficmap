@@ -108,6 +108,7 @@ const PRESET_OF = {
   meghaduta: 'meghaduta',
   ramayana: 'ramayana',
   klondike: 'klondike',
+  xiyou: 'xiyou',
   cid: 'spain',
   aotearoa: 'aotearoa',
   dante: 'dante',

@@ -542,11 +542,13 @@ export const PRESETS = {
     // the box has to hold all of it, so this is a continental map rather than
     // a country one.
     z: 6,
-    bbox: { lonMin: 66.0, lonMax: 112.0, latMin: 21.5, latMax: 46.0 },
-    // 46 degrees of longitude at ~33.75N (~4,257 km) by 24.5 of latitude
+    // Two degrees further west than the places need, so Samarkand and the Iron
+    // Gates are not standing on the frame.
+    bbox: { lonMin: 64.0, lonMax: 112.0, latMin: 21.5, latMax: 46.0 },
+    // 48 degrees of longitude at ~33.75N (~4,442 km) by 24.5 of latitude
     // (~2,727 km).
     w: 1536,
-    h: 984,
+    h: 943,
     // Tibet fills the middle of this box at 4,500 m and the pilgrim goes round
     // it — that detour IS the Silk Road, and the map should show why. Capped at
     // 4,500 so the plateau saturates into the slab it is, while the corridor,

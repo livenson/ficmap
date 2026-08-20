@@ -218,6 +218,21 @@ const WORLDS = {
     // drawn course.
     scenic: new Set(['the-yukon', 'stewart-river', 'white-river']),
   },
+  xiyou: {
+    png: '../src/assets/xiyou-height.png',
+    story: '../src/stories/xiyou.ts',
+    bbox: { lonMin: 64, lonMax: 112, latMin: 21.5, latMax: 46 },
+    seaLevel: 0.0022,
+    reach: 0.10,
+    // Nothing here is meant to be in the sea. The one piece of water inland is
+    // the Turpan Depression, which really is 154 m below sea level — see the
+    // note in the story — and the Gaochang pin is deliberately on the ridge
+    // north-east of it rather than in the basin.
+    wet: new Set([]),
+    // River markers, held instead by `check-rivers` to standing on their own
+    // drawn course.
+    scenic: new Set(['the-wei', 'the-huang']),
+  },
   noli: {
     png: '../src/assets/luzon-height.png',
     story: '../src/stories/noli.ts',
