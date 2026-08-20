@@ -224,8 +224,11 @@ const WORLDS = {
     bbox: { lonMin: 103.5, lonMax: 124.5, latMin: 17.8, latMax: 42.6 },
     seaLevel: 0.0076,
     reach: 0.10,
-    // Every place in this poem is a town on dry ground.
-    wet: new Set([]),
+    // Hàng Châu is on the water on purpose: the pin is the last point of the
+    // drawn Qiantang, and that river is the place — Kiều goes into it. Moving
+    // the pin to the bank to satisfy a checker would be moving the story to
+    // suit the tool.
+    wet: new Set(['hang-chau']),
   },
   xiyou: {
     png: '../src/assets/xiyou-height.png',

@@ -18,7 +18,10 @@
  */
 import { PNG } from 'pngjs'
 import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { PRESETS } from './dem-presets.mjs'
+import { readShapes, unzipMember } from './shapefile.mjs'
 
 const preset = PRESETS[process.argv[2] ?? 'estonia']
 if (!preset) {
@@ -146,6 +149,98 @@ const sample = (sx, sy) => {
   return a * (1 - fx) * (1 - fy) + b * fx * (1 - fy) + c * (1 - fx) * fy + d * fx * fy
 }
 
+/**
+ * A land mask for the output grid, from the GSHHG shoreline.
+ *
+ * WHY THIS EXISTS. The elevation data does not know where an estuary is. Over
+ * the Qiantang below Hangzhou, Terrarium reads +8 to +11 m the whole way across
+ * and along — sampled directly at z10, so it is what the source says rather
+ * than what the resampling did to it — and the same is true of every wide
+ * mudflat river mouth. The Kiều map therefore shipped with fifty-five
+ * kilometres of Hangzhou Bay drawn as farmland, and the Tiền Đường, which is
+ * the river that poem's crisis happens in, could not be drawn at all: its
+ * course ends at Hangzhou, which the map called dry land.
+ *
+ * GSHHG's full/high-resolution shoreline does know: it puts a coastline vertex
+ * 0.4 km from where both Natural Earth and WDBII end the river. So where the
+ * shoreline says sea and the DEM reads at or below `coastM` metres, the sea
+ * wins.
+ *
+ * THE ELEVATION GUARD IS THE POINT. Replacing the DEM's coast with a vector one
+ * wholesale would redraw every shore on the map against a generalised outline
+ * and lose real ground. `coastM` keeps it to the disagreement that matters:
+ * low, flat, wet places the DEM has called land. Anything standing higher than
+ * the limit is left exactly as the elevation data has it, whatever the polygon
+ * says.
+ *
+ * Rasterised by scanline rather than tested point-by-point: the Eurasia ring
+ * alone is millions of vertices, and asking "is this pixel inside" a million
+ * times over is hours of work for something one pass over the edges answers.
+ */
+const GSHHG_URL = 'https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-shp-2.3.7.zip'
+const GSHHG_MEMBER = 'GSHHS_shp/h/GSHHS_h_L1.shp'
+
+async function loadLandMask(bbox) {
+  const ROOT = path.dirname(fileURLToPath(import.meta.url))
+  const zip = path.join(ROOT, '..', '.cache', 'gshhg-shp-2.3.7.zip')
+  if (!fs.existsSync(zip)) {
+    fs.mkdirSync(path.dirname(zip), { recursive: true })
+    console.log('fetching the GSHHG shoreline (149 MB, cached in .cache/)...')
+    const res = await fetch(GSHHG_URL)
+    if (!res.ok) throw new Error(`GSHHG download failed: ${res.status}`)
+    fs.writeFileSync(zip, Buffer.from(await res.arrayBuffer()))
+  }
+  // A degree of margin so a ring that only clips the box still contributes its
+  // edges; a ring dropped here would leave a straight coastline down the frame.
+  const pad = { lonMin: bbox.lonMin - 1, lonMax: bbox.lonMax + 1, latMin: bbox.latMin - 1, latMax: bbox.latMax + 1 }
+  const rings = readShapes(unzipMember(zip, GSHHG_MEMBER), pad)
+
+  // Bucket every edge by the rows it spans, so each row only sees its own.
+  const rowOf = (lat) => ((bbox.latMax - lat) / (bbox.latMax - bbox.latMin)) * (H - 1)
+  const buckets = Array.from({ length: H }, () => [])
+  let edges = 0
+  for (const ring of rings) {
+    for (let i = 1; i < ring.length; i++) {
+      const a = ring[i - 1]
+      const b = ring[i]
+      if (a[1] === b[1]) continue
+      const r0 = Math.max(0, Math.ceil(Math.min(rowOf(a[1]), rowOf(b[1]))))
+      const r1 = Math.min(H - 1, Math.floor(Math.max(rowOf(a[1]), rowOf(b[1]))))
+      if (r1 < r0) continue
+      for (let r = r0; r <= r1; r++) buckets[r].push([a, b])
+      edges++
+    }
+  }
+
+  const mask = new Uint8Array(W * H)
+  for (let j = 0; j < H; j++) {
+    const lat = bbox.latMax - (j / (H - 1)) * (bbox.latMax - bbox.latMin)
+    const xs = []
+    for (const [a, b] of buckets[j]) {
+      // Half-open in latitude, so a vertex shared by two edges counts once.
+      if (a[1] > lat === b[1] > lat) continue
+      xs.push(a[0] + ((lat - a[1]) / (b[1] - a[1])) * (b[0] - a[0]))
+    }
+    xs.sort((p, q) => p - q)
+    for (let k = 0; k + 1 < xs.length; k += 2) {
+      let i0 = Math.ceil(((xs[k] - bbox.lonMin) / (bbox.lonMax - bbox.lonMin)) * (W - 1))
+      let i1 = Math.floor(((xs[k + 1] - bbox.lonMin) / (bbox.lonMax - bbox.lonMin)) * (W - 1))
+      i0 = Math.max(0, i0)
+      i1 = Math.min(W - 1, i1)
+      for (let i = i0; i <= i1; i++) mask[j * W + i] = 1
+    }
+  }
+  let land = 0
+  for (let k = 0; k < mask.length; k++) land += mask[k]
+  console.log(
+    `shoreline: ${rings.length} rings, ${edges} edges, ` +
+      `${((100 * land) / mask.length).toFixed(1)}% of the box is land`,
+  )
+  return mask
+}
+
+const landMask = preset.coastM != null ? await loadLandMask(BBOX) : null
+
 const out = new Float32Array(W * H)
 let mn = Infinity,
   mx = -Infinity
@@ -196,6 +291,33 @@ for (let j = 0; j < H; j++)
  * come out as a different byte in the tile than in the base map, and the two
  * would disagree wherever they meet.
  */
+/**
+ * Where the shoreline says sea and the ground is low, it is sea.
+ *
+ * Applied after sampling rather than inside it, so the mask is built once and
+ * the loop above stays about elevation.
+ */
+if (landMask) {
+  const deep = preset.flatOceanM ?? -10
+  let fixed = 0
+  for (let k = 0; k < W * H; k++) {
+    if (landMask[k]) continue
+    if (out[k] > preset.coastM || out[k] <= deep) continue
+    out[k] = deep
+    fixed++
+  }
+  console.log(
+    `coastline: ${fixed} pixel(s) the shoreline calls sea and the DEM read as ` +
+      `land at or below ${preset.coastM} m (${((100 * fixed) / (W * H)).toFixed(2)}% of the map)`,
+  )
+  mn = Infinity
+  mx = -Infinity
+  for (let k = 0; k < W * H; k++) {
+    if (out[k] < mn) mn = out[k]
+    if (out[k] > mx) mx = out[k]
+  }
+}
+
 const MIN_M = preset.minM ?? mn
 const MAX_M = preset.maxM ?? mx
 if (preset.minM != null && (mn < MIN_M || mx > MAX_M)) {

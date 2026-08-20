@@ -595,6 +595,13 @@ export const PRESETS = {
     landGamma: 0.55,
     // The Bohai, the Yellow Sea, the East China Sea and the Gulf of Tonkin.
     flatOceanM: -20,
+    // The elevation data does not know where an estuary is: sampled at z10 it
+    // reads +8 to +11 m the whole way across the Qiantang below Hangzhou, and
+    // this map shipped once with fifty-five kilometres of Hangzhou Bay drawn as
+    // farmland — which is also why the Tiền Đường could not be drawn. Below
+    // 20 m the GSHHG shoreline overrules the DEM; above it nothing changes, so
+    // real ground is never traded for a generalised outline.
+    coastM: 20,
     // Tai Hu, Hongze, Poyang, Dongting, Chao Hu and Gaoyou — the lakes of the
     // Yangtze and Huai plains, all within 32 m of the sea, so almost nothing
     // here is above the limit. Measured, it drops 117 pixels: the sliver of the

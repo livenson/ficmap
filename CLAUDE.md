@@ -57,19 +57,55 @@ held by `check-rivers` to running downhill, reaching water, and having its
 marker standing on it. The Jalón, the Tagus and the Whanganui are still marked
 this way and still have no river under them.
 
-**A river you cannot draw honestly is a river you leave off.** `check-rivers`
-accepts exactly three endings — water within 10 km, the edge of the map, or a
-confluence with another drawn course — and three rivers this atlas wanted have
-been refused by it and stayed refused. The Tarim has no mouth at all: it runs
-into the Taklamakan and stops. Natural Earth's Ganges centreline ends 88 km
-short of the Bay of Bengal and its Brahmaputra ends 110 km from *that*, so
-neither rescues the other. Its Qiantang exists only as the upper "Fuchun" and
-stops at Hangzhou, where the lowest ground within ten kilometres reads 0.0431
-against a waterline of 0.0076. In each case the place that stands on the river
-carries it in prose instead — Pāṭaliputra, Hàng Châu — because a line stopping
-in a field with a river's name beside it is the Elbe fault again rather than a
-milder version of it. The Philippines has no centrelines in the layer at all,
-which is why the Pasig is drawn as a route and not as water.
+**When a check refuses something, look upstream of the thing it refused.**
+`check-rivers` accepts exactly three endings — water within 10 km, the edge of
+the map, or a confluence with another drawn course — and it once refused four
+rivers at the same time, which looked like four rivers that could not be drawn.
+Three of the four were something else:
+
+- **The Ganges was a bug in the builder.** Natural Earth carries the whole
+  delta, and `build-river`'s greedy stitcher took a Sundarbans channel that
+  dead-ends 88 km from any water while four other leaves of the same feature
+  reach the Bay of Bengal. Where several channels leave one node the greedy pass
+  takes the longest and never reconsiders, which is fine on a river with one
+  mouth and a coin toss on a delta. It now walks the unused channels when its
+  own tail reaches nothing. All 27 courses already committed reproduce
+  byte-identically, because the repair cannot fire on a river that already ends
+  properly — which is the negative control built into the change.
+- **The Tiền Đường was a bug in the map.** Both public-domain hydrographic
+  sources end the Qiantang at Hangzhou within 3 m of each other, and GSHHG's
+  high-resolution shoreline puts the coast 0.4 km from that point, because
+  Hangzhou Bay reaches the city. The heightmap disagreed, so the river ended in
+  a field the reader could see. See the next note.
+- **The Pasig is not in any public-domain source.** Natural Earth has no
+  Philippine centrelines at all; WDBII, searched at all eleven of its levels
+  over the whole of Luzon, has the Cagayan, the Agno, the Abra and the Pampanga
+  and no Pasig. OpenStreetMap has it and is ODbL rather than public domain,
+  which is a licence decision rather than a technical one. So it stays a route.
+- **Only the Tarim is a river that genuinely cannot be drawn.** It has no mouth:
+  it runs into the Taklamakan and stops, no branch of it arrives anywhere, and
+  the desert marker says so instead.
+
+The rule the refusals were defending is still the rule — a line stopping in a
+field with a river's name beside it is the Elbe fault again. The lesson is that
+"the check says no" is the start of the diagnosis and not the end of it.
+
+**The elevation data does not know where an estuary is.** Terrarium reads +8 to
++11 m the whole way across and along the Qiantang below Hangzhou — sampled
+directly at z10, so it is the source rather than the resampling — and the Kiều
+map shipped with fifty-five kilometres of Hangzhou Bay drawn as farmland. No
+zoom level fixes that; only vector shoreline data knows. `coastM`
+(`build-heightmap.mjs`) lets GSHHG's shoreline overrule the DEM *below a given
+elevation*, and the elevation guard is the whole design: replacing the coast
+wholesale would trade real ground for a generalised outline, while the limit
+confines it to the low, flat, wet places the DEM has miscalled land. Measured on
+the Kiều map: 3,874 pixels, 0.28% of it. Opt-in, so no other preset moves.
+
+**Nothing on the map is above suspicion, including the ground.** Two independent
+public-domain river datasets agreeing to within 3 m, against one elevation
+dataset, is not a tie — and the instinct on the first pass was to believe the
+heightmap and leave the river off, because the heightmap is what the reader
+sees. Measure the disagreement before deciding which source is wrong.
 
 **One water plane means a high lake is a hole.** The renderer draws water at a
 single `seaLevel`, so the only way to make a lake read as water is to sink it to

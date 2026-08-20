@@ -33,13 +33,21 @@ import luzonHeight from '../assets/luzon-height.png'
  * the rest of the story, on the Quezon shore facing Lamon Bay.
  *
  * NO NAMED RIVER, and the Pasig is the reason. Half of El Filibusterismo's
- * opening is a steamer working up it, and it is not drawn here: Natural Earth's
- * 10m centrelines — the source every other river in this atlas comes from —
- * carry nothing at all in the Philippines, and the Pasig is 25 km long, which
- * is under two pixels of this map. So the route "Up the Pasig" is a line of
- * travel and not a river, and the only water drawn on this map is Manila Bay,
- * the Pacific, Laguna de Bay and Lake Taal, which come from the lake and ocean
- * data rather than from a course anyone traced.
+ * opening is a steamer working up it, and it is not drawn here, because no
+ * public-domain source this atlas can reach has its course. Natural Earth's 10m
+ * centrelines — where every other river here comes from — carry nothing in the
+ * Philippines at all. WDBII, inside GSHHG, was searched at every one of its
+ * eleven levels over the whole of Luzon: it has the Cagayan, the Agno and the
+ * Abra in the north and the Pampanga reaching Manila Bay, and no Pasig. It is
+ * 25 km long and about 100 m wide, which is a third of a pixel of this map, and
+ * both datasets are drawn at scales that drop it.
+ *
+ * OpenStreetMap has it, and OpenStreetMap is ODbL rather than public domain —
+ * a different licence from everything else this atlas is built on, and not a
+ * choice to make quietly on a repository's behalf. So the route "Up the Pasig"
+ * is a line of travel and not a river, and the only water drawn on this map is
+ * Manila Bay, the Pacific, Laguna de Bay and Lake Taal, which come from the
+ * ocean and lake polygons rather than from a course anyone traced.
  *
  * Markers sit at their true coordinates —
  *

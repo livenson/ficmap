@@ -33,15 +33,22 @@ import kieuHeight from '../assets/kieu-height.png'
  * the public-domain alternative is Abel des Michels' French of 1884–85, which is
  * prose. Nothing here is passed off as a translator's work.
  *
- * ONE RIVER DRAWN, ONE REFUSED. The Red River is drawn and Thăng Long stands on
- * it, and the Yangtze is drawn with the embassy's crossing at Wuchang standing
- * on it. The Tiền Đường — the river Kiều throws herself into, which the poem
- * names twenty lines before the end of her suffering — is NOT drawn: Natural
- * Earth's 10m centrelines have its upper course under the name Fuchun and stop
- * at Hangzhou, where the lowest ground within ten kilometres is 0.0431 against a
- * waterline of 0.0076 and there is no other course for it to join. Drawing a
- * line that stops in a field and putting "Tiền Đường" on it would be worse than
- * leaving it off, so Hàng Châu carries the river in its own description.
+ * THREE RIVERS, AND THE THIRD TOOK A FIX TO THE MAP. The Red River is drawn and
+ * Thăng Long stands on it; the Yangtze is drawn and the embassy's crossing at
+ * Wuchang stands on it. The Tiền Đường — the river Kiều throws herself into,
+ * which the poem names twenty lines before the end of her suffering — shipped
+ * once as a river this atlas could not draw, and the reason turned out to be the
+ * elevation data rather than the river data.
+ *
+ * Both public-domain hydrographic sources end the course at Hangzhou at the same
+ * point, 120.149E 30.196N (Natural Earth files it as the Fuchun; WDBII stops at
+ * 120.146E 30.196N). That is not them stopping short: GSHHG's high-resolution
+ * shoreline puts a coastline vertex 0.4 km from it, because Hangzhou Bay reaches
+ * the city. Terrarium disagrees — sampled at z10 it reads +8 to +11 m the whole
+ * way across and along the estuary — so this map drew fifty-five kilometres of
+ * sea as farmland, and a river ending at the coast looked like a river stopping
+ * in a field. The heightmap builder now lets the shoreline overrule the DEM
+ * below 20 m (`coastM`), the bay is on the map, and the river ends in it.
  *
  * Markers sit at their true coordinates —
  *
@@ -110,11 +117,14 @@ export const kieu: Story = {
      * Only the LOWER Yangtze is here. Natural Earth splits the river into two
      * differently-named features — "Chang Jiang" above Yueyang and "Yangtze"
      * below it — and the upper one is left off because nothing in either road
-     * touches the river west of the crossing. See the header note for the
-     * Tiền Đường, which is refused for a better reason.
+     * touches the river west of the crossing.
+     *
+     * The Tiền Đường is filed under "Fuchun", the name of its middle course
+     * above Hangzhou; it is the same water. See the header note for why it took
+     * a change to the heightmap before it could be drawn.
      *
      * Source: Natural Earth 10m river centrelines (public domain), via
-     * `scripts/build-river.mjs kieu Hong | Yangtze`.
+     * `scripts/build-river.mjs kieu Hong | Yangtze | Fuchun`.
      */
     namedRivers: [
       {
@@ -128,6 +138,19 @@ export const kieu: Story = {
           { x: -0.8092, z: 0.7283 }, { x: -0.7897, z: 0.7309 }, { x: -0.7723, z: 0.7407 },
           { x: -0.7704, z: 0.7557 }, { x: -0.7593, z: 0.7674 }, { x: -0.7459, z: 0.7785 },
           { x: -0.7353, z: 0.7909 }, { x: -0.7191, z: 0.7994 }, { x: -0.7142, z: 0.7984 },
+        ],
+      },
+      {
+        name: 'Sông Tiền Đường, the Qiantang',
+        marker: 'hang-chau',
+        points: [
+          { x: 0.3605, z: 0.0397 }, { x: 0.3787, z: 0.0423 }, { x: 0.3901, z: 0.0450 },
+          { x: 0.4071, z: 0.0417 }, { x: 0.4169, z: 0.0354 }, { x: 0.4284, z: 0.0409 },
+          { x: 0.4444, z: 0.0383 }, { x: 0.4577, z: 0.0418 }, { x: 0.4705, z: 0.0470 },
+          { x: 0.4836, z: 0.0534 }, { x: 0.4948, z: 0.0562 }, { x: 0.5092, z: 0.0550 },
+          { x: 0.5242, z: 0.0534 }, { x: 0.5333, z: 0.0470 }, { x: 0.5386, z: 0.0347 },
+          { x: 0.5477, z: 0.0266 }, { x: 0.5585, z: 0.0200 }, { x: 0.5662, z: 0.0131 },
+          { x: 0.5831, z: 0.0094 }, { x: 0.5844, z: 0.0004 }, { x: 0.5856, z: 0.0003 },
         ],
       },
       {
@@ -278,7 +301,9 @@ export const kieu: Story = {
       id: 'hang-chau',
       name: 'Hàng Châu & the Tiền Đường',
       kind: 'city',
-      at: { x: 0.5857, z: -0.0040 },
+      // On the water, deliberately: the pin is the last point of the drawn
+      // course, which is the Qiantang along the southern edge of the city.
+      at: { x: 0.5856, z: 0.0003 },
       description:
         'Hangzhou, at the mouth of the Tiền Đường — the Qiantang, whose tidal ' +
         'bore is the loudest thing in the region and which the ghost of Đạm ' +
@@ -286,8 +311,9 @@ export const kieu: Story = {
         'would end. Từ Hải’s rebel state is broken near here on her own ' +
         'advice; she is married off to a chieftain as a spoil, and on the ' +
         'first night on the water she hears the tide and understands where ' +
-        'she is. The river is not drawn on this map — see the note on ' +
-        '`namedRivers` for why not.',
+        'she is. The river IS drawn here, and getting it took a change to the ' +
+        'elevation data: the DEM read this estuary as farmland, so the course ' +
+        'ended at a coast the map did not have.',
     },
   ],
 
@@ -335,7 +361,7 @@ export const kieu: Story = {
         { x: 0.2286, z: -0.7823 },
         { x: 0.4105, z: -0.5331 },
         { x: 0.6000, z: -0.1105 },
-        { x: 0.5857, z: -0.0040 },
+        { x: 0.5856, z: 0.0003 },
       ],
       description:
         'Beijing to Lâm Truy to Vô Tích to the river at Hàng Châu. Every leg ' +

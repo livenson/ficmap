@@ -114,28 +114,23 @@ export const xiyou: Story = {
      * record sails down it, and is robbed on it by pirates who plan to
      * sacrifice him to Durga.
      *
-     * TWO RIVERS THIS MAP WANTED AND DID NOT GET, both refused by
-     * `check-rivers` for the same rule — a drawn course has to end in water, at
-     * the edge of the map, or in another river — and both refusals are right.
+     * The Ganges took a fix to the builder to get. Natural Earth carries the
+     * whole delta, and the greedy stitcher in `build-river` went down a
+     * Sundarbans channel that dead-ends at 90.01E 22.49N — 88 km from any water
+     * on this map — while four other leaves of the same feature reach the Bay of
+     * Bengal. `check-rivers` refused it, correctly, and the first version of
+     * this world left the river off and said so. The builder now walks the
+     * unused channels when its own tail reaches nothing and takes one that gets
+     * to water; all 27 courses already committed reproduce byte-identically,
+     * because the repair cannot fire on a river that already ends properly.
      *
-     * The Tarim has no mouth. It runs east into the Taklamakan and stops, which
-     * is a fact about the river rather than a gap in the data, and there is no
-     * honest way to draw it arriving anywhere. The desert marker says so
-     * instead.
-     *
-     * The Ganges is the harder one, because it obviously does reach the sea.
-     * Natural Earth's 10m centreline does not: it ends at 90.01E 22.49N, and
-     * the nearest water on this map is 88 km further south — the Padma and the
-     * Meghna, which carry it the rest of the way, are not in the layer under
-     * any name. Merging the Brahmaputra does not save it either; that course
-     * stops at Dhaka, 110 km short of the Ganges' own end and nowhere near
-     * joining it. So the river the second half of this journey moves along is
-     * not on the map, and Pāṭaliputra stands on its bank without it — which is
-     * the honest version of the situation, rather than a line stopping in a
-     * field with the word "Ganges" on it.
+     * The Tarim is still not here, and that refusal stands. It has no mouth: it
+     * runs east into the Taklamakan and stops, which is a fact about the river
+     * rather than a gap in the data, and no branch of it arrives anywhere. The
+     * desert marker says so instead.
      *
      * Source: Natural Earth 10m river centrelines (public domain), via
-     * `scripts/build-river.mjs xiyou Wei | Huang`.
+     * `scripts/build-river.mjs xiyou Wei | Huang | Ganges`.
      */
     namedRivers: [
       {
@@ -155,6 +150,37 @@ export const xiyou: Story = {
           { x: 0.8781, z: -0.0590 }, { x: 0.8848, z: -0.0565 }, { x: 0.8894, z: -0.0648 },
           { x: 0.8964, z: -0.0644 }, { x: 0.9041, z: -0.0679 }, { x: 0.9112, z: -0.0696 },
           { x: 0.9197, z: -0.0729 }, { x: 0.9274, z: -0.0706 }, { x: 0.9289, z: -0.0713 },
+        ],
+      },
+      {
+        name: 'The Ganges',
+        marker: 'pataliputra',
+        points: [
+          { x: -0.3400, z: 0.2336 }, { x: -0.3403, z: 0.2532 }, { x: -0.3503, z: 0.2612 },
+          { x: -0.3608, z: 0.2727 }, { x: -0.3742, z: 0.2810 }, { x: -0.3846, z: 0.2868 },
+          { x: -0.3922, z: 0.3002 }, { x: -0.4028, z: 0.2945 }, { x: -0.4098, z: 0.3102 },
+          { x: -0.4088, z: 0.3301 }, { x: -0.4170, z: 0.3444 }, { x: -0.4124, z: 0.3650 },
+          { x: -0.4134, z: 0.3839 }, { x: -0.4121, z: 0.4023 }, { x: -0.4085, z: 0.4228 },
+          { x: -0.4052, z: 0.4404 }, { x: -0.3983, z: 0.4571 }, { x: -0.3906, z: 0.4702 },
+          { x: -0.3801, z: 0.4757 }, { x: -0.3696, z: 0.4835 }, { x: -0.3626, z: 0.4980 },
+          { x: -0.3530, z: 0.5061 }, { x: -0.3487, z: 0.5232 }, { x: -0.3409, z: 0.5382 },
+          { x: -0.3329, z: 0.5505 }, { x: -0.3283, z: 0.5689 }, { x: -0.3212, z: 0.5861 },
+          { x: -0.3121, z: 0.6015 }, { x: -0.3081, z: 0.6189 }, { x: -0.2994, z: 0.6302 },
+          { x: -0.2890, z: 0.6326 }, { x: -0.2794, z: 0.6453 }, { x: -0.2733, z: 0.6608 },
+          { x: -0.2643, z: 0.6711 }, { x: -0.2538, z: 0.6725 }, { x: -0.2475, z: 0.6874 },
+          { x: -0.2386, z: 0.6985 }, { x: -0.2280, z: 0.7013 }, { x: -0.2176, z: 0.7041 },
+          { x: -0.2080, z: 0.6971 }, { x: -0.2008, z: 0.6834 }, { x: -0.1913, z: 0.6745 },
+          { x: -0.1819, z: 0.6650 }, { x: -0.1716, z: 0.6717 }, { x: -0.1607, z: 0.6542 },
+          { x: -0.1492, z: 0.6546 }, { x: -0.1388, z: 0.6567 }, { x: -0.1271, z: 0.6547 },
+          { x: -0.1174, z: 0.6622 }, { x: -0.1088, z: 0.6728 }, { x: -0.0986, z: 0.6758 },
+          { x: -0.0856, z: 0.6806 }, { x: -0.0760, z: 0.6881 }, { x: -0.0647, z: 0.6847 },
+          { x: -0.0544, z: 0.6934 }, { x: -0.0427, z: 0.6907 }, { x: -0.0317, z: 0.6918 },
+          { x: -0.0232, z: 0.6811 }, { x: -0.0142, z: 0.6935 }, { x: -0.0069, z: 0.7104 },
+          { x: -0.0032, z: 0.7284 }, { x: 0.0024, z: 0.7441 }, { x: 0.0094, z: 0.7583 },
+          { x: 0.0185, z: 0.7673 }, { x: 0.0221, z: 0.7847 }, { x: 0.0295, z: 0.7986 },
+          { x: 0.0362, z: 0.8193 }, { x: 0.0329, z: 0.8370 }, { x: 0.0423, z: 0.8461 },
+          { x: 0.0448, z: 0.8660 }, { x: 0.0474, z: 0.8862 }, { x: 0.0538, z: 0.9013 },
+          { x: 0.0538, z: 0.9212 }, { x: 0.0559, z: 0.9485 }, { x: 0.0563, z: 0.9614 },
         ],
       },
       {
@@ -414,8 +440,8 @@ export const xiyou: Story = {
         'somewhere on it he was taken by pirates who worshipped Durgā, ' +
         'decided he was the handsomest passenger and therefore the right ' +
         'sacrifice, and were interrupted by a squall violent enough that they ' +
-        'let him go and asked for instruction instead. The Ganges itself is ' +
-        'not drawn on this map; see the note on `namedRivers` for why not.',
+        'let him go and asked for instruction instead. The river drawn under ' +
+        'this pin is the real course; the city sits 0.0028 map units off it.',
     },
     {
       id: 'nalanda',
