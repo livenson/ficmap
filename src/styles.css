@@ -187,7 +187,14 @@ body,
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Pinned to the panel width from `atlasLayout.PANEL`, not left to size
+     itself. As max-content it took its width from the widest child, which is
+     the chip row — six long titles on one line came to 838 px, overflowed the
+     780 px popup, and dragged the tab strip out of view with it. Fixed here,
+     the chips wrap inside the maps instead. */
   flex: 0 0 auto;
+  width: 500px;
+  max-width: 100%;
 }
 .atlasmap__panel-title {
   margin: 0 0 6px;
@@ -210,11 +217,14 @@ body,
   stroke: rgba(200, 215, 205, 0.42);
   stroke-width: 1;
 }
-.atlasmap__hit {
-  fill: transparent;
-}
-.atlasmap__pin {
+.atlasmap__svg {
   cursor: pointer;
+}
+/* The panel resolves the pointer to the nearest pin, so the dots themselves
+   must never intercept it — otherwise a dot drawn later would take a hit
+   meant for its neighbour, which is the fault this replaced. */
+.atlasmap__pin {
+  pointer-events: none;
 }
 .atlasmap__dot {
   fill: var(--accent);
@@ -229,23 +239,67 @@ body,
   stroke: var(--accent);
   stroke-width: 2.5;
 }
-.atlasmap__pin:focus {
-  outline: none;
+/* One label at a time, over the pin under the pointer. The plate behind it is
+   a stroke rather than a rect, so it hugs the glyphs at any string length
+   without measuring text. */
+.atlasmap__label {
+  font-family: inherit;
+  font-size: 13px;
+  fill: #fff;
+  paint-order: stroke;
+  stroke: #0b1015;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
 }
-.atlasmap__pin:focus-visible .atlasmap__dot {
-  stroke: #fff;
-  stroke-width: 2.5;
+/* Where the inset above is cut from. Faint on purpose: it is orientation, not
+   content, and it sits under the pins. */
+.atlasmap__locator {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  opacity: 0.5;
 }
+.atlasmap__shelf {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.atlasmap__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.atlasmap__chip {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--panel-2);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.atlasmap__chip:hover {
+  border-color: var(--accent);
+}
+.atlasmap__chip.is-active {
+  background: rgba(255, 210, 122, 0.16);
+  border-color: var(--accent);
+}
+
 .atlasmap__side {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-width: 190px;
+  min-width: 200px;
   /* Scrolls on its own so the maps stay put while the names move. Matched to
-     the stacked maps' height so the two columns end together. */
-  max-height: 650px;
+     the stacked maps and shelf beside it so the two columns end together. */
+  max-height: 700px;
   overflow-y: auto;
-  flex: 1 1 190px;
+  flex: 1 1 auto;
 }
 .atlasmap__names {
   display: flex;

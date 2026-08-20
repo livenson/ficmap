@@ -123,6 +123,7 @@ the graphics API rather than the clock. Run it when touching rendering.
 |---|---|
 | `check-rerender` | selecting a place rebuilds no geometry |
 | `check-hit-targets` | clicking near a place in the scene still selects it |
+| `check-picker-map` | every pin on the world picker's map names itself, on mouse and on touch |
 
 **Every check must be able to fail.** This is the single most repeated lesson
 here. Things that have passed green while broken:
@@ -167,6 +168,17 @@ of these scripts have the measured negative control written into their comments
 - The first `check-rivers` allowed a marker 0.02 map units from its river, and
   so passed the Elbe marker at the 0.0106 offset it had been written to catch. A
   threshold picked before measuring the fault is a threshold picked to pass.
+
+- A hit target wider than the gap between two targets silently eats its
+  neighbour. The picker's map gave each pin a 13 px invisible disc so a
+  fingertip could find a 4.5 px dot — but the closest pair of pins is 12.5 px
+  apart, so one disc covered the other's centre entirely and whichever drew
+  second won every time: hovering Ottokar named Švejk. Shrinking the discs to
+  fit would have traded the bug for targets too small to hit. Resolving the
+  pointer to the NEAREST pin on the panel has neither problem, and it cannot
+  regress when a world is added. The general shape: per-item hit areas need
+  item spacing > 2x their radius, and if you cannot guarantee that, do not use
+  per-item hit areas.
 
 - A world can go missing from a UI without anything looking broken. The picker's
   map draws a perfectly tidy Europe whether it holds twenty pins or nineteen —
