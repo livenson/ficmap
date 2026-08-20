@@ -30,6 +30,7 @@ export const faust: Story = {
   subtitle: 'A wager, a mountain and two floors that are not places',
   author: 'J. W. von Goethe',
   region: 'Germany, the Mothers & the gorges',
+  earth: { lon: 10.62, lat: 51.75, place: 'The Harz, Germany' },
   epoch: 'Parts I & II · 1808 and 1832',
   group: 'epic',
   intro:

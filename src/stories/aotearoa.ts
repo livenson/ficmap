@@ -35,6 +35,7 @@ export const aotearoa: Story = {
   subtitle: 'The fish, the canoe and the anchor stone',
   author: 'Māori tradition · coll. W. Dittmer',
   region: 'Aotearoa New Zealand',
+  earth: { lon: 174.2, lat: -40.9, place: 'Aotearoa New Zealand' },
   epoch: 'Traditions collected 1907',
   group: 'epic',
   intro:

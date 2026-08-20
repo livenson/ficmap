@@ -33,6 +33,7 @@ export const peergynt: Story = {
   subtitle: 'Round about, said the Boyg',
   author: 'Henrik Ibsen',
   region: 'Gudbrandsdalen & the western fjords',
+  earth: { lon: 9.5, lat: 61.6, place: 'Gudbrandsdalen, Norway' },
   epoch: 'Norwegian dramatic poem · 1867',
   group: 'epic',
   intro:

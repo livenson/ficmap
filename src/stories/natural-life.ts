@@ -32,6 +32,7 @@ export const naturalLife: Story = {
   subtitle: 'Van Diemen’s Land, and no way off it',
   author: 'Marcus Clarke',
   region: 'Tasmania',
+  earth: { lon: 146.6, lat: -42.3, place: 'Tasmania' },
   epoch: 'Australian novel · 1874',
   group: 'adventure',
   intro:

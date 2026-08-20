@@ -31,6 +31,7 @@ export const nibelungen: Story = {
   subtitle: 'The road east, travelled twice',
   author: 'Anonymous',
   region: 'The Rhine & the Danube',
+  earth: { lon: 8.36, lat: 49.63, place: 'Worms, on the Rhine' },
   epoch: 'German heroic epic · c. 1200',
   group: 'epic',
   intro:

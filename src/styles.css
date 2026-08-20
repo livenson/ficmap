@@ -133,6 +133,164 @@ body,
   flex-direction: column;
   gap: 2px;
 }
+/* The map tab needs far more room than a 320px name list: two panels side by
+   side plus a column of names. Widened only in that mode, and clamped to the
+   viewport so it cannot hang off a laptop screen. */
+.worldpicker__menu.is-map {
+  width: min(780px, calc(100vw - 32px));
+  /* Taller than the list's 70vh: the two stacked maps plus their titles come to
+     about 660 px, and at 70vh that clipped the world map on a 950 px-high
+     window. */
+  max-height: 86vh;
+}
+.worldpicker__tabs {
+  display: flex;
+  gap: 2px;
+  margin: -6px -6px 4px;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  position: sticky;
+  top: -6px;
+  z-index: 2;
+}
+.worldpicker__tab {
+  flex: 0 0 auto;
+  padding: 5px 14px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-dim);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.worldpicker__tab:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.05);
+}
+.worldpicker__tab.is-active {
+  background: var(--accent);
+  color: #16202c;
+  font-weight: 600;
+}
+
+/* ---------- The map tab ---------- */
+.atlasmap {
+  display: flex;
+  gap: 16px;
+  padding: 8px 4px 4px;
+  align-items: flex-start;
+}
+.atlasmap__maps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+.atlasmap__panel-title {
+  margin: 0 0 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.atlasmap__svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: rgba(31, 85, 112, 0.16);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.atlasmap__land {
+  fill: rgba(190, 205, 190, 0.16);
+  stroke: rgba(200, 215, 205, 0.42);
+  stroke-width: 1;
+}
+.atlasmap__hit {
+  fill: transparent;
+}
+.atlasmap__pin {
+  cursor: pointer;
+}
+.atlasmap__dot {
+  fill: var(--accent);
+  stroke: #16202c;
+  stroke-width: 1.5;
+}
+.atlasmap__pin.is-lit .atlasmap__dot {
+  fill: #fff;
+}
+.atlasmap__pin.is-active .atlasmap__dot {
+  fill: #fff;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+.atlasmap__pin:focus {
+  outline: none;
+}
+.atlasmap__pin:focus-visible .atlasmap__dot {
+  stroke: #fff;
+  stroke-width: 2.5;
+}
+.atlasmap__side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 190px;
+  /* Scrolls on its own so the maps stay put while the names move. Matched to
+     the stacked maps' height so the two columns end together. */
+  max-height: 650px;
+  overflow-y: auto;
+  flex: 1 1 190px;
+}
+.atlasmap__names {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.atlasmap__name {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  cursor: pointer;
+}
+.atlasmap__name.is-lit {
+  background: rgba(255, 255, 255, 0.09);
+}
+.atlasmap__name.is-active {
+  background: rgba(255, 210, 122, 0.16);
+}
+.atlasmap__name-title {
+  font-size: 13px;
+}
+.atlasmap__name-place {
+  font-size: 11px;
+  color: var(--ink-dim);
+}
+
+/* Below the width that fits two panels and a name column, stack them and let
+   the popup scroll — the maps stay usable, they just sit one above the other. */
+@media (max-width: 820px) {
+  .atlasmap {
+    flex-direction: column;
+  }
+  .atlasmap__side {
+    max-height: none;
+    min-width: 0;
+  }
+}
+
 .worldpicker__search {
   position: sticky;
   top: -6px;

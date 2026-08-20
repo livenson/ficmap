@@ -35,6 +35,7 @@ export const tain: Story = {
   subtitle: 'One boy, one ford at a time',
   author: 'Anonymous · trans. L. W. Faraday',
   region: 'Connacht, Meath & Ulster',
+  earth: { lon: -7.6, lat: 53.8, place: 'Connacht, Ireland' },
   epoch: 'Irish epic · written down c. 1100',
   group: 'epic',
   intro:

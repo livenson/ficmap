@@ -35,6 +35,7 @@ export const nils: Story = {
   subtitle: 'The length of Sweden on a farm goose',
   author: 'Selma Lagerlöf',
   region: 'Sweden, Skåne to Lapland',
+  earth: { lon: 15.0, lat: 59.2, place: 'Sweden' },
   epoch: 'Swedish novel · 1906–07',
   group: 'adventure',
   intro:

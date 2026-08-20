@@ -21,6 +21,7 @@ export const kalevipoeg: Story = {
   subtitle: 'The Estonian epic, as a map across three books',
   author: 'F. R. Kreutzwald',
   region: 'Estonia & Põrgu',
+  earth: { lon: 25.6, lat: 58.75, place: 'Estonia' },
   epoch: 'Estonian national epic · 1857',
   group: 'epic',
   intro:

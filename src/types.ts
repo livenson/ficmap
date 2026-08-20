@@ -11,6 +11,30 @@
  * place markers in 2D and they snap onto the 3D landscape automatically.
  */
 
+/**
+ * Where on Earth a world is, for the picker's map.
+ *
+ * Hand-set rather than derived from the world's DEM bounding box, because the
+ * centre of a box is often nowhere: Os Lusíadas spans Portugal and the Atlantic
+ * sea road to India and its box centre is open ocean, and the Snow Queen runs
+ * from Copenhagen to Svalbard and centres in the Norwegian Sea. The pin should
+ * say what country this is, which is an editorial call.
+ *
+ * `check-atlas-map.mjs` then holds each pin INSIDE its world's own DEM box, so
+ * an editorial call cannot drift into a wrong one, and holds every world to
+ * being reachable from the picker one way or another.
+ *
+ * Omitted by the worlds that have no point on Earth — Middle-earth, Westeros,
+ * Scadrial, Valdurn — and by the two whole-Earth worlds, which are everywhere
+ * rather than somewhere. Those are listed beside the map instead.
+ */
+export interface EarthPin {
+  lon: number
+  lat: number
+  /** What the pin is standing on, shown on hover — e.g. "Estonia". */
+  place: string
+}
+
 /** A 2D position in normalized map space, range [-1, 1] on each axis. */
 export interface MapPoint {
   x: number
@@ -461,6 +485,11 @@ export interface Story {
   author?: string
   /** Where the world is set, shown in the world picker (e.g. "Wizarding Britain"). */
   region?: string
+  /**
+   * Where on Earth this world is, for the picker's map tab. Omit for a world
+   * that is not on Earth, or is all of it; those are listed beside the map.
+   */
+  earth?: EarthPin
   /** When it is from — publication or era (e.g. "Published 1997–2007"). */
   epoch?: string
   /**

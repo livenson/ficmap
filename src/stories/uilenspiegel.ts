@@ -26,6 +26,7 @@ export const uilenspiegel: Story = {
   subtitle: 'The ashes of Claes beat on my heart',
   author: 'Charles De Coster',
   region: 'Flanders, Brabant & the Zeeland sea',
+  earth: { lon: 3.28, lat: 51.25, place: 'Damme, Flanders' },
   epoch: 'Belgian national epic · 1867 · set in the 1500s',
   group: 'epic',
   intro:

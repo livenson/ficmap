@@ -19,6 +19,7 @@ export const harryPotter: Story = {
   subtitle: 'Wizarding Britain, over the real map',
   author: 'J. K. Rowling',
   region: 'Wizarding Britain',
+  earth: { lon: -1.9, lat: 54.2, place: 'Britain' },
   epoch: 'Published 1997–2007',
   group: 'fantasy',
   intro:

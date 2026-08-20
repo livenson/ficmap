@@ -37,6 +37,7 @@ export const kalevala: Story = {
   subtitle: 'The road north, and the thing worth stealing',
   author: 'Elias Lönnrot',
   region: 'Karelia & the Northland',
+  earth: { lon: 31.0, lat: 64.2, place: 'Karelia' },
   epoch: 'Finnish national epic · 1835 / 1849',
   group: 'epic',
   intro:

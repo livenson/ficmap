@@ -111,6 +111,7 @@ and runs it, so it sees what the app sees:
 | `check-dem-scale` | pinned presets agree with their stories |
 | `check-dem-tiles` | tiles sit on the base map, not above or below it |
 | `check-rivers` | a named river runs downhill to water, with its place on it |
+| `check-atlas-map` | every world is pickable off the picker's map, and no two pins collide |
 | `profile-worlds` | draws, triangles, heap, per world |
 
 `npm run check` is those — data and geometry, no browser, about twenty seconds,
@@ -166,6 +167,14 @@ of these scripts have the measured negative control written into their comments
 - The first `check-rivers` allowed a marker 0.02 map units from its river, and
   so passed the Elbe marker at the 0.0106 offset it had been written to catch. A
   threshold picked before measuring the fault is a threshold picked to pass.
+
+- A world can go missing from a UI without anything looking broken. The picker's
+  map draws a perfectly tidy Europe whether it holds twenty pins or nineteen —
+  one pin two pixels behind another is invisible, and so is one nudged off the
+  panel. `check-atlas-map` counts them instead of trusting the picture, and it
+  imports the component's own layout module rather than reimplementing the
+  projection, because a check that reimplements the thing it checks is testing
+  its own copy.
 
 **Measure before believing.** A seam check first reported 1.86 bytes and called
 it a crack; it was the terrain's own gradient over the fraction of a pixel being
