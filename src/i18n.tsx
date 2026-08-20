@@ -40,7 +40,7 @@ const DICT: Dict = {
   tabList: { en: 'List', et: 'Loend' },
   tabMap: { en: 'Map', et: 'Kaart' },
   atlasEurope: { en: 'Europe', et: 'Euroopa' },
-  atlasWorld: { en: 'The rest of the world', et: 'Ülejäänud maailm' },
+  atlasWorld: { en: 'Africa, Asia & the Pacific', et: 'Aafrika, Aasia ja Vaikne ookean' },
   atlasOnEarth: { en: 'On Earth', et: 'Maa peal' },
   atlasElsewhere: { en: 'Everywhere, or nowhere', et: 'Kõikjal või eikuskil' },
   mentionedIn: { en: 'Mentioned in', et: 'Mainitud' },

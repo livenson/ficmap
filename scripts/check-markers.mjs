@@ -177,6 +177,31 @@ const WORLDS = {
     // either town.
     scenic: new Set(['phichit', 'sukhothai']),
   },
+  meghaduta: {
+    png: '../src/assets/meghaduta-height.png',
+    story: '../src/stories/meghaduta.ts',
+    bbox: { lonMin: 73.5, lonMax: 83.0, latMin: 20.0, latMax: 32.5 },
+    // Wholly inland: the waterline is the floor of the range, not a coast.
+    seaLevel: 0,
+    reach: 0.09,
+    wet: new Set([]),
+    // The three rivers the cloud is told to drink from. A river marker stands
+    // ON its drawn course, which on a map this coarse is often a pixel the DEM
+    // reads as water — that is the course being correct, not the pin being
+    // wrong, and `check-rivers` is what holds those.
+    scenic: new Set(['reva', 'vetravati', 'charmanvati', 'nichaih', 'brahmavarta']),
+  },
+  ramayana: {
+    png: '../src/assets/ramayana-height.png',
+    story: '../src/stories/ramayana.ts',
+    bbox: { lonMin: 71.5, lonMax: 87.0, latMin: 5.5, latMax: 28.0 },
+    seaLevel: 0.0033,
+    reach: 0.10,
+    wet: new Set([]),
+    // River markers, held instead by `check-rivers` to standing on their own
+    // drawn course.
+    scenic: new Set(['ganga', 'panchavati-river', 'kishkindha-river']),
+  },
   ottokar: {
     png: '../src/assets/ottokar-height.png',
     story: '../src/stories/ottokar.ts',

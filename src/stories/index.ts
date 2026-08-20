@@ -29,6 +29,8 @@ import { svejk } from './svejk'
 import { snowqueen } from './snowqueen'
 import { lusiads } from './lusiads'
 import { khunphaen } from './khunphaen'
+import { meghaduta } from './meghaduta'
+import { ramayana } from './ramayana'
 
 /**
  * The atlas registry. To add a world:
@@ -67,6 +69,8 @@ export const stories: Story[] = [
   snowqueen,
   lusiads,
   khunphaen,
+  meghaduta,
+  ramayana,
 ]
 
 export function getStory(id: string | null | undefined): Story {
