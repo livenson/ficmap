@@ -46,6 +46,7 @@ export const ottokar: Story = {
   subtitle: 'The richest man in Christendom, and the field he lost it on',
   author: 'Franz Grillparzer',
   region: 'Bohemia, Austria & the Marchfeld',
+  earth: { lon: 14.42, lat: 50.09, place: 'Prague, Bohemia' },
   epoch: 'Austrian tragedy · 1823 · set 1261–1278',
   group: 'epic',
   intro:

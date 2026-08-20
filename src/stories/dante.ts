@@ -47,6 +47,7 @@ export const dante: Story = {
   subtitle: 'Down, across, and up, in a hundred cantos',
   author: 'Dante Alighieri',
   region: 'Italy, and the three realms',
+  earth: { lon: 11.26, lat: 43.77, place: 'Florence' },
   epoch: 'Easter week, 1300 · written to 1321',
   group: 'epic',
   intro:

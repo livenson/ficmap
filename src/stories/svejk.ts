@@ -49,6 +49,7 @@ export const svejk: Story = {
   subtitle: 'All roads lead to České Budějovice',
   author: 'Jaroslav Hašek',
   region: 'Southern Bohemia',
+  earth: { lon: 14.47, lat: 48.97, place: 'Southern Bohemia' },
   epoch: 'Novel · 1921–23 · set 1914–15',
   group: 'epic',
   intro:

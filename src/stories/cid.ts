@@ -29,6 +29,7 @@ export const cid: Story = {
   subtitle: 'Born in a good hour, and banished in it',
   author: 'Anonymous · trans. Rose & Bacon',
   region: 'Castile, Aragon & Valencia',
+  earth: { lon: -3.7, lat: 42.34, place: 'Burgos, Castile' },
   epoch: 'Castilian epic · c. 1200',
   group: 'epic',
   intro:

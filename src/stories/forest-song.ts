@@ -18,6 +18,7 @@ export const forestSong: Story = {
   subtitle: 'Lisova pisnia — a fairy-tale of the Volhynian woods',
   author: 'Lesya Ukrainka',
   region: 'Volhynia · Polissia',
+  earth: { lon: 25.3, lat: 51.05, place: 'Volhynia, Ukraine' },
   epoch: 'Written 1911',
   group: 'epic',
   intro:

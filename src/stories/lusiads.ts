@@ -38,6 +38,7 @@ export const lusiads: Story = {
   subtitle: 'The road to India, and a giant who is a cape',
   author: 'Luís de Camões',
   region: 'The Atlantic, the Cape & the Indian Ocean',
+  earth: { lon: -9.14, lat: 38.71, place: 'Lisbon' },
   epoch: 'Epic · 1572 · the voyage of 1497–99',
   group: 'epic',
   intro:

@@ -40,6 +40,7 @@ export const snowqueen: Story = {
   subtitle: 'A girl walks to Spitsbergen',
   author: 'Hans Christian Andersen',
   region: 'Denmark to Svalbard',
+  earth: { lon: 12.57, lat: 55.68, place: 'Copenhagen' },
   epoch: 'Tale · 1844',
   group: 'epic',
   intro:

@@ -20,6 +20,7 @@ export const musketeers: Story = {
   subtitle: 'Dumas — the Three Musketeers cycle, over the real France',
   author: 'Alexandre Dumas',
   region: 'France & England',
+  earth: { lon: 2.35, lat: 48.86, place: 'Paris' },
   epoch: 'The d’Artagnan Romances · 1844–1850',
   group: 'adventure',
   intro:

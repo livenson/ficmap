@@ -36,6 +36,7 @@ export const lacplesis: Story = {
   subtitle: 'The Bear-Slayer, mapped along the Daugava',
   author: 'Andrejs Pumpurs',
   region: 'Latvia, the sky palace & the crystal castle',
+  earth: { lon: 24.6, lat: 56.95, place: 'Latvia' },
   epoch: 'Latvian national epic · 1888 · set in the 13th c.',
   group: 'epic',
   intro:

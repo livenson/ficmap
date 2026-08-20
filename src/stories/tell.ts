@@ -45,6 +45,7 @@ export const tell: Story = {
   subtitle: 'The lake, the apple and the sunken lane',
   author: 'Friedrich Schiller',
   region: 'Lake Lucerne & the forest cantons',
+  earth: { lon: 8.55, lat: 46.93, place: 'Lake Lucerne, Switzerland' },
   epoch: 'Play · 1804 · set in 1307',
   group: 'epic',
   intro:

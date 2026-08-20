@@ -18,6 +18,7 @@ export const centerEarth: Story = {
   subtitle: 'Down through Snæfellsjökull, floor by floor',
   author: 'Jules Verne',
   region: 'Iceland → the centre',
+  earth: { lon: -23.78, lat: 64.81, place: 'Snæfellsjökull, Iceland' },
   epoch: 'Published 1864',
   group: 'adventure',
   intro:

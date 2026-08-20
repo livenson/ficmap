@@ -48,6 +48,7 @@ export const khunphaen: Story = {
   subtitle: 'Two men, one woman, and fifty years of it',
   author: 'Thai traditional · trans. Baker & Pasuk',
   region: 'Siam — Suphanburi to Chiang Mai',
+  earth: { lon: 100.11, lat: 14.47, place: 'Suphanburi, Thailand' },
   epoch: 'Sepha folk epic · printed 1872, standard edition 1917',
   group: 'epic',
   intro:

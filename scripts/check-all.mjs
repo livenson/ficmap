@@ -40,6 +40,7 @@ const jobs = [
   ['music: bass under melody', 'check-music.mjs', []],
   ['terrain detail plan & seams', 'check-lod.mjs', []],
   ['heightmap elevation scales', 'check-dem-scale.mjs', []],
+  ['world picker map', 'check-atlas-map.mjs', []],
   ...markerWorlds.map((w) => [`markers: ${w}`, 'check-markers.mjs', [w]]),
 ]
 

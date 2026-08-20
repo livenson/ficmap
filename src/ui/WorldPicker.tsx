@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Story } from '../types'
 import { useT } from '../i18n'
+import { AtlasMap } from './AtlasMap'
 
 interface Props {
   stories: Story[]
@@ -29,9 +30,16 @@ const GROUPS = [
  * arbitrary because it is just the order they were written. So the menu groups
  * them into sections and offers a filter box that matches title, author and
  * setting, which is faster than scanning once the atlas is large.
+ *
+ * Past about twenty-five it stops answering a second question: not "where is
+ * the world I can name" but "what has this atlas got for Denmark". The list
+ * cannot, because it groups by genre and genre has nothing to do with place. So
+ * there is a second tab with a map — see `AtlasMap`. The list stays the default,
+ * because naming a world you already want is still the common case.
  */
 export function WorldPicker({ stories, currentId, onPick }: Props) {
   const [open, setOpen] = useState(false)
+  const [tab, setTab] = useState<'list' | 'map'>('list')
   const [query, setQuery] = useState('')
   const ref = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -60,7 +68,7 @@ export function WorldPicker({ stories, currentId, onPick }: Props) {
     if (!open) return
     setQuery('')
     inputRef.current?.focus()
-  }, [open])
+  }, [open, tab])
 
   const sub = (s: Story) => [s.region, s.epoch].filter(Boolean).join(' · ')
 
@@ -96,7 +104,37 @@ export function WorldPicker({ stories, currentId, onPick }: Props) {
       </button>
 
       {open && (
-        <div className="worldpicker__menu" role="listbox" aria-label="World">
+        <div className={`worldpicker__menu ${tab === 'map' ? 'is-map' : ''}`} aria-label="World">
+          <div className="worldpicker__tabs" role="tablist">
+            <button
+              role="tab"
+              aria-selected={tab === 'list'}
+              className={`worldpicker__tab ${tab === 'list' ? 'is-active' : ''}`}
+              onClick={() => setTab('list')}
+            >
+              {t('tabList')}
+            </button>
+            <button
+              role="tab"
+              aria-selected={tab === 'map'}
+              className={`worldpicker__tab ${tab === 'map' ? 'is-active' : ''}`}
+              onClick={() => setTab('map')}
+            >
+              {t('tabMap')}
+            </button>
+          </div>
+
+          {tab === 'map' ? (
+            <AtlasMap
+              stories={stories}
+              currentId={currentId}
+              onPick={(id) => {
+                onPick(id)
+                setOpen(false)
+              }}
+            />
+          ) : (
+          <div role="listbox" aria-label="World">
           <input
             ref={inputRef}
             className="worldpicker__search"
@@ -138,6 +176,8 @@ export function WorldPicker({ stories, currentId, onPick }: Props) {
               ))}
             </div>
           ))}
+          </div>
+          )}
         </div>
       )}
     </div>

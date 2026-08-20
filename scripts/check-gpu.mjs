@@ -28,6 +28,7 @@ const jobs = [
   ['selecting a place rebuilds nothing', 'check-rerender.mjs', ['forest-song']],
   ['                          (Tell)', 'check-rerender.mjs', ['tell']],
   ['invisible hit targets are raycast', 'check-hit-targets.mjs', ['peergynt']],
+  ['the world picker map is usable', 'check-picker-map.mjs', []],
 ]
 
 console.log('building...')

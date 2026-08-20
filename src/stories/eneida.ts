@@ -24,6 +24,7 @@ export const eneida: Story = {
   subtitle: 'Aeneas among the Cossacks',
   author: 'Ivan Kotliarevsky',
   region: 'The Mediterranean · Olympus · Peklo',
+  earth: { lon: 15.2, lat: 38.2, place: 'The Mediterranean' },
   epoch: 'Published 1798',
   group: 'epic',
   intro:
