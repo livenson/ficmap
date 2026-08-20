@@ -181,6 +181,10 @@ export const lusiads: Story = {
       id: 'malindi',
       name: 'Malindi',
       kind: 'port',
+      // Natural Earth puts Malindi at 40.10E 3.21S and this pin is about 16 km
+      // inland of that, on purpose: at 9.5 km per pixel this map's coast cannot
+      // hold a port, and the exact coordinate reads as open water. Sixteen
+      // kilometres is under two pixels here. Do not "correct" it seaward.
       at: { x: 0.272, z: 0.135 },
       description:
         'The turning point, and the frame for half the epic: a friendly king, ' +

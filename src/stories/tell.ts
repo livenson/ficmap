@@ -832,8 +832,13 @@ export const tell: Story = {
             'did not live to see any of it; he died a few days before, holding ' +
             'two of their hands, still giving instructions.',
           quote: {
+            // The ellipsis is load-bearing: Martin has three lines between
+            // these two — "Let freedom's haunts be one in heart and mind! Set
+            // watches on your mountain tops, that league May answer league,
+            // when comes the hour to strike." Running them together without
+            // marking the cut would claim he wrote a couplet he did not.
             text:
-              'Hold fast together, then — forever fast!\n' +
+              'Hold fast together, then, — forever fast! …\n' +
               'Be one — be one — be one —',
             original: 'Seyd einig — einig — einig —',
             source: 'Attinghausen’s last words, Act IV, sc. 2 · trans. Theodore Martin',

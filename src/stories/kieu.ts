@@ -209,7 +209,7 @@ export const kieu: Story = {
         'provincial town once the Nguyễn moved the court to Huế, and the place ' +
         'the tribute embassy of 1813 set out from with him at its head. The ' +
         'river drawn under this pin is the real one, from published geodata; ' +
-        'the marker is 0.0009 map units off the course, which is why it can ' +
+        'the marker is 0.0008 map units off the course, which is why it can ' +
         'stand for it.',
     },
     {
@@ -243,7 +243,7 @@ export const kieu: Story = {
         'Wuchang, where the embassy road crosses the Yangtze — the halfway ' +
         'point and the hinge of the journey, with the Yellow Crane Tower on ' +
         'the bluff above the ferry. The river drawn here is the real course; ' +
-        'the town sits 0.0023 map units off it.',
+        'the town sits 0.0019 map units off it.',
     },
     {
       id: 'bac-kinh',

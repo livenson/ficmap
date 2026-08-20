@@ -441,7 +441,7 @@ export const xiyou: Story = {
         'decided he was the handsomest passenger and therefore the right ' +
         'sacrifice, and were interrupted by a squall violent enough that they ' +
         'let him go and asked for instruction instead. The river drawn under ' +
-        'this pin is the real course; the city sits 0.0028 map units off it.',
+        'this pin is the real course; the city sits 0.0033 map units off it.',
     },
     {
       id: 'nalanda',

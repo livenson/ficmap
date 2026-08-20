@@ -5,23 +5,29 @@ import svejkHeight from '../assets/svejk-height.png'
  * The Good Soldier Švejk — Jaroslav Hašek, 1921-23, unfinished because he died
  * at thirty-nine with the fourth book half-written.
  *
- * Twenty-six worlds in this atlas and not one of them was funny. This one is a
- * comedy, and it earns its place on a MAP better than most of them, because its
- * best chapter is a route: Švejk's budějovická anabáze, in which a soldier sent
- * by train from Tábor to České Budějovice — 60 km south-east — gets off at a
- * station, misses the train, sets out on foot, and walks for days in a wide
- * circle the wrong way round southern Bohemia.
+ * The atlas had no comedy in it until this one, and this one earns its place on
+ * a MAP better than most, because its best chapter is a route: Švejk's
+ * budějovická anabáze, in which a soldier sent by train from Tábor to České
+ * Budějovice — 60 km south-east — gets off at a station, misses the train, sets
+ * out on foot, and walks for days in a wide circle the wrong way round southern
+ * Bohemia.
  *
- * Hašek gives the itinerary twice, in full, and the second time as a flat list.
- * It is drawn here exactly as he wrote it, and the joke is in the geometry:
+ * Hašek writes the itinerary out in full TWICE, and the two lists are not the
+ * same. Švejk recites his own to the cavalry captain and it stops where the
+ * chapter's joke does; the one-year volunteer in the cell recites a longer one
+ * that runs on to the end. Both are drawn here as he wrote them —
  *
- *   Tábor – Milevsko – Květov – Vráž – Malčín – Čížová – Sedlec – Horažďovice
- *   – Radomyšl – Putim – Štěkno – Strakonice – Volyně – Dub – Vodňany
- *   – Protivín – A ZAS PUTIM — "and Putim again" — Písek, Budějovice.
+ *   Švejk       Tábor – Milevsko – Květov – Vráž – Malčín – Čížová – Sedlec
+ *               – Horažďovice – Radomyšl – Putim – Štěkno – Strakonice – Volyň
+ *               – Dub – Vodňany – Protivín – A ZAS PUTIM, "and Putim again"
+ *   the cadet   …the same, and then Písek, Budějovice.
  *
  * He reaches Putim, carries on for four more villages, and arrives back at
  * Putim. He is then arrested and sent to Budějovice by train, from Písek, under
  * escort, which is how he was going in the first place.
+ *
+ * (Hašek spells it "Volyň"; the town is "Volyně" today, and the marker below
+ * uses the modern name while the quotation keeps his.)
  *
  * The surface is a REAL heightmap of that corner of South Bohemia, with every
  * town at its true coordinates —
@@ -436,13 +442,20 @@ export const svejk: Story = {
             'and he turns north — Protivín, and then the itinerary Hašek ' +
             'writes out in full ends with three words that are the whole ' +
             'chapter: a zas Putim. And Putim again.',
+          // Hašek gives the itinerary twice and they are not the same list.
+          // This is Švejk's own, recited to the cavalry captain, which ends
+          // where the chapter does; the one-year volunteer in the cell recites
+          // a longer one that runs on to Písek and Budějovice. An earlier
+          // version of this quote mixed the two and spelt Hašek's "Volyň" as
+          // "Volyně". Checked against the Czech text at cs.wikisource.org.
           quote: {
             text:
-              'Tábor, Milevsko, Květov, Vráž, Malčín, Čížová, Sedlec,\n' +
-              'Horažďovice, Radomyšl, Putim, Štěkno, Strakonice, Volyně, Dub,\n' +
-              'Vodňany, Protivín, Putim, Písek, Budějovice.',
-            original: '— a zas Putim.',
-            source: 'Švejk’s own itinerary, Book II, ch. 2',
+              'Milevsko – Květov – Vráž – Malčín – Čížová – Sedlec –\n' +
+              'Horažďovice – Radomyšl – Putim – Štěkno – Strakonice – Volyň –\n' +
+              'Dub – Vodňany – Protivín – a zas Putim.',
+            source:
+              'Švejk naming his route to the cavalry captain, Book II, ch. 2 · ' +
+              'Osudy dobrého vojáka Švejka, Czech text at cs.wikisource.org',
           },
           focus: { marker: 'vodnany', distance: 34, pitch: 42 },
           reveal: { markers: ['volyne', 'dub', 'vodnany', 'protivin'], regions: ['r-blata', 'r-sumava'] },

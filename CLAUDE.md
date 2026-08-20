@@ -171,6 +171,7 @@ and runs it, so it sees what the app sees:
 | `check-dem-scale` | pinned presets agree with their stories |
 | `check-dem-tiles` | tiles sit on the base map, not above or below it |
 | `check-rivers` | a named river runs downhill to water, with its place on it |
+| `check-formulas` | a story's stated lon/lat formula is the one its map uses |
 | `check-atlas-map` | every world is pickable off the picker's map, and no two pins collide |
 | `profile-worlds` | draws, triangles, heap, per world |
 
@@ -228,6 +229,30 @@ of these scripts have the measured negative control written into their comments
 - The first `check-rivers` allowed a marker 0.02 map units from its river, and
   so passed the Elbe marker at the 0.0106 offset it had been written to catch. A
   threshold picked before measuring the fault is a threshold picked to pass.
+
+- **A quotation is a claim, and 3 of 31 of them were wrong.** Read end to end
+  against the named edition, the atlas's quotes came out: the Snow Queen's
+  Snow-Flower saying "I can give her no greater power than she has already"
+  where Gutenberg 1597 says "no more power than what she has already";
+  Attinghausen's dying speech in Wilhelm Tell splicing two of Martin's lines
+  with three lines silently cut out between them; and Švejk's itinerary
+  attributed to Švejk when the version quoted was the one-year volunteer's, and
+  spelling Hašek's "Volyň" as "Volyně". None of them was invented and all three
+  read perfectly well, which is the point — a paraphrase that has quotation
+  marks round it is indistinguishable from a quotation until somebody opens the
+  book. The other 28 are verbatim, including every one in a language the
+  checker's author does not read, because the test is mechanical: normalise
+  whitespace and quote marks, search the source, and print where the match
+  breaks off. OCR sources need a letters-only pass — Beal's Si-Yu-Ki hyphenates
+  across line breaks, and "impos¬ sible" is not a wrong quotation.
+
+- **A stated formula and the map it describes drift apart silently.** Twenty-two
+  worlds carry `map x = (lon − A) / B − 1` in their header, and it is the
+  instruction for placing the next marker. Widening a preset's box — which
+  happened twice while fitting the Journey to the West and Kiều maps — leaves
+  every existing marker correct and every word of that comment wrong, and
+  nothing noticed, because `check-markers` reads coordinates back through the
+  preset and so agrees with itself. `check-formulas` compares the two.
 
 - A tool that is only correct because a checker exists is the wrong way round.
   `build-river` had no orientation step at all: it emitted whatever direction
