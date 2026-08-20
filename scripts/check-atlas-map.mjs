@@ -30,9 +30,13 @@
  *   Kalevipoeg's lat 58.75 -> 88.0             both of the above, and off-panel
  *   layoutAtlas dropping a story               1 world reachable from neither
  *
- * As shipped: 30 worlds placed — 20 in the inset, 4 on the world map, 6 on the
- * shelf — closest pair 12.5 px in the inset and 38.4 px on the world map, and
- * 22 pins checked against a DEM box.
+ * As shipped: 36 worlds placed — 20 in the inset, 10 on the world map, 6 on the
+ * shelf — closest pair 12.5 px in the inset and 11.1 px on the world map, and
+ * 28 pins checked against a DEM box. The world panel's closest pair is
+ * Meghadūta and Rāmāyaṇa, both in India; the three worlds added for the
+ * Philippines, China and Vietnam all land clear of everything, the tightest of
+ * them 15.1 px (Khun Chang Khun Phaen to the Tale of Kiều). A second world in
+ * one country is what tightens this panel, not a first world in a new one.
  *
  * Usage:
  *   node scripts/check-atlas-map.mjs

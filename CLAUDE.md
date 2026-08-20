@@ -57,6 +57,30 @@ held by `check-rivers` to running downhill, reaching water, and having its
 marker standing on it. The Jalón, the Tagus and the Whanganui are still marked
 this way and still have no river under them.
 
+**A river you cannot draw honestly is a river you leave off.** `check-rivers`
+accepts exactly three endings — water within 10 km, the edge of the map, or a
+confluence with another drawn course — and three rivers this atlas wanted have
+been refused by it and stayed refused. The Tarim has no mouth at all: it runs
+into the Taklamakan and stops. Natural Earth's Ganges centreline ends 88 km
+short of the Bay of Bengal and its Brahmaputra ends 110 km from *that*, so
+neither rescues the other. Its Qiantang exists only as the upper "Fuchun" and
+stops at Hangzhou, where the lowest ground within ten kilometres reads 0.0431
+against a waterline of 0.0076. In each case the place that stands on the river
+carries it in prose instead — Pāṭaliputra, Hàng Châu — because a line stopping
+in a field with a river's name beside it is the Elbe fault again rather than a
+milder version of it. The Philippines has no centrelines in the layer at all,
+which is why the Pasig is drawn as a route and not as water.
+
+**One water plane means a high lake is a hole.** The renderer draws water at a
+single `seaLevel`, so the only way to make a lake read as water is to sink it to
+the waterline — fine for Laguna de Bay at −1 m, and a shaft straight through the
+map for Nam Co at 4,724. The Journey to the West box came out with six black
+pits punched in Tibet before `lakeMaxM` (`build-heightmap.mjs`) bounded which
+lakes get carved; above the limit the DEM's own flat pan is kept, which is less
+true than a lake and much less wrong than a shaft. Measured: 4,551 pixels saved
+there, 117 on the Kiều map. The option is opt-in, so every preset that predates
+it is unchanged by construction rather than by a rebuild.
+
 **A heightmap byte means nothing without its metre range.** Presets normalise to
 whatever their own data contained, which is fine for a map built once and fatal
 for one that will be subdivided — a tile sees a different corner of the world
