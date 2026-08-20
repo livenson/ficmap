@@ -65,7 +65,16 @@ export function Flora({ field, terrain, ambient, detailVersion = 0 }: Props) {
     [placed, field, terrain, detailVersion],
   )
   const conifer = ambient.treeKind === 'conifer'
-  const base = new THREE.Color(ambient.treeColor ?? (conifer ? '#3f6f4a' : '#5a9455'))
+  // Memoized, and it matters far more than it looks. This colour is a dependency
+  // of the layout effect below, so a fresh `THREE.Color` on every render made
+  // that effect re-run on every render — re-placing every tree in the wood and
+  // re-sending three instance matrices and two colour buffers to the GPU. On the
+  // Forest Song world that is 505 KB, and it was paid every time anything in the
+  // scene changed, down to selecting a place on the map.
+  const base = useMemo(
+    () => new THREE.Color(ambient.treeColor ?? (conifer ? '#3f6f4a' : '#5a9455')),
+    [ambient.treeColor, conifer],
+  )
 
   const trunkRef = useRef<THREE.InstancedMesh>(null)
   const lowRef = useRef<THREE.InstancedMesh>(null)

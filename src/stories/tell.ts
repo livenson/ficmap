@@ -23,7 +23,21 @@ import lucerneHeight from '../assets/lucerne-height.png'
  * the boat in the föhn storm and the walk over the Axen — are a race between
  * water and land round the same shore.
  *
- * Narration paraphrases Schiller; it quotes no translation.
+ * Narration paraphrases Schiller. The QUOTATIONS do not: they are checked
+ * against two Project Gutenberg editions read side by side —
+ *
+ *   German   Wilhelm Tell, Ein Schauspiel (Stuttgart: Cotta, 1862), eBook 77182
+ *   English  trans. Theodore Martin (d. 1909, public domain), eBook 2782
+ *
+ * with each line's act and scene given, so any of them can be looked up. Where
+ * Martin's verse wanders far from the German — the boy's boast in Act III is
+ * the case here — the English is rendered plainly from the original instead and
+ * says so, rather than putting words in Martin's mouth.
+ *
+ * That reading also settled a detail worth having: Gessler does not invent the
+ * apple. Walter, aged about eight, boasts to him that his father can shoot an
+ * apple off a tree at a hundred paces, and Gessler picks the boast up and sets
+ * it at eighty, on the boy's own head.
  */
 export const tell: Story = {
   id: 'tell',
@@ -582,6 +596,13 @@ export const tell: Story = {
             'his wife and Baumgarten split his skull with an axe, and the horse ' +
             'is behind him. The ferryman looks at the lake and says no. Tell ' +
             'takes the boat out.',
+          quote: {
+            text:
+              'The brave man thinks upon himself the last.\n' +
+              'Put trust in God, and help him in his need!',
+            original: 'Der brave Mann denkt an sich selbst zuletzt.',
+            source: 'Act I, sc. 1 · trans. Theodore Martin',
+          },
           focus: { marker: 'fluelen', distance: 40, pitch: 40 },
           reveal: {
             markers: ['fluelen', 'brunnen', 'altdorf', 'buerglen', 'stans'],
@@ -626,6 +647,13 @@ export const tell: Story = {
             'nothing else. Thirty-three men come to it in the dark from three ' +
             'cantons and swear to be one people — and, being who they are, also ' +
             'agree to wait for New Year and to pay for any property they break.',
+          quote: {
+            text:
+              'A band of brothers true we swear to be,\n' +
+              'Never to part in danger or in death!',
+            original: 'Wir wollen seyn ein einzig Volk von Brüdern,',
+            source: 'Act II, sc. 2 · trans. Theodore Martin',
+          },
           focus: { marker: 'rutli', distance: 30, pitch: 38 },
           reveal: {
             markers: ['rutli', 'seelisberg', 'attinghausen', 'gersau'],
@@ -680,11 +708,22 @@ export const tell: Story = {
           id: 'ii-3',
           title: 'The apple',
           narration:
-            'Gessler arrives and invents the sentence on the spot: the famous ' +
-            'marksman will shoot an apple off his own son’s head at eighty ' +
-            'paces, or both of them die. Walter stands under the lime tree and ' +
-            'refuses to be tied. Tell takes two bolts out of the quiver and ' +
-            'puts one of them in his shirt.',
+            'Gessler does not think of the apple. Walter does. Asked whether ' +
+            'his father is really the best shot in the country, the boy says ' +
+            'proudly that he can take an apple off a tree at a hundred paces — ' +
+            'and hands the bailiff the sentence. Gessler moves it to eighty, ' +
+            'and onto the boy. Walter stands under the lime tree and refuses to ' +
+            'be tied. Tell takes two bolts out of the quiver and puts one of ' +
+            'them in his shirt.',
+          quote: {
+            text:
+              '— And that is true, sir: at a hundred paces\n' +
+              'my father brings the apple off the tree.',
+            original:
+              'Und das muß wahr seyn, Herr, ’nen Apfel schießt\n' +
+              'Der Vater dir vom Baum auf hundert Schritte.',
+            source: 'Walter Tell, Act III, sc. 3 · rendered from the German',
+          },
           focus: { marker: 'altdorf', distance: 20, pitch: 34 },
           highlight: { markers: ['altdorf'] },
         },
@@ -697,6 +736,14 @@ export const tell: Story = {
             'answer. Tell gives him one: if the first had killed my child, the ' +
             'second was for you, and I would not have missed. Gessler keeps his ' +
             'word about the life and has him chained for the boat.',
+          quote: {
+            text:
+              'If that my hand had struck my darling child,\n' +
+              'This second arrow I had aimed at you,\n' +
+              'And, be assured, I should not then have miss’d.',
+            original: 'Mit diesem zweiten Pfeil durchschoß ich — euch,',
+            source: 'Act III, sc. 3 · trans. Theodore Martin',
+          },
           focus: { marker: 'altdorf', distance: 22, pitch: 36 },
           highlight: { markers: ['altdorf', 'fluelen'] },
         },
@@ -755,6 +802,15 @@ export const tell: Story = {
             'and cannot get out of it. A wedding party comes up the road first, ' +
             'and then a woman with her children to beg for her imprisoned ' +
             'husband, and then Gessler. Tell has the second bolt.',
+          quote: {
+            text:
+              'Through this ravine he needs must come. There is\n' +
+              'No other way to Kussnacht. Here I’ll do it!',
+            original:
+              'Durch diese hohle Gasse muß er kommen;\n' +
+              'Es führt kein andrer Weg nach Küßnacht.',
+            source: 'Act IV, sc. 3 · trans. Theodore Martin',
+          },
           focus: { marker: 'hohle-gasse', distance: 20, pitch: 34 },
           highlight: { markers: ['hohle-gasse'] },
         },
@@ -769,7 +825,18 @@ export const tell: Story = {
             'Nobody is killed in the castles — that was in the oath too — and ' +
             'Rudenz carries Bertha out of one of them as it burns. Word also ' +
             'comes that the emperor Albrecht has been murdered by his own ' +
-            'nephew, and that his widow Elisabeth has let the cantons alone.',
+            'nephew, and that his widow Elisabeth has let the cantons alone. ' +
+            'Attinghausen, the old baron who spent the play telling his nephew ' +
+            'that the nobility were finished and the farmers were the future, ' +
+            'did not live to see any of it; he died a few days before, holding ' +
+            'two of their hands, still giving instructions.',
+          quote: {
+            text:
+              'Hold fast together, then — forever fast!\n' +
+              'Be one — be one — be one —',
+            original: 'Seyd einig — einig — einig —',
+            source: 'Attinghausen’s last words, Act IV, sc. 2 · trans. Theodore Martin',
+          },
           focus: { marker: 'sarnen', distance: 50, pitch: 46 },
           reveal: { routes: ['castles-fall'] },
           highlight: { routes: ['castles-fall'], markers: ['bertha'] },

@@ -42,6 +42,43 @@ const WORLDS = {
       'sunken-castle',
     ]),
   },
+  dante: {
+    png: '../src/assets/dante-height.png',
+    story: '../src/stories/dante.ts',
+    bbox: { lonMin: 9.4, lonMax: 14.6, latMin: 41.2, latMax: 45.4 },
+    seaLevel: 0.0025,
+    reach: 0.09,
+    wet: new Set([]),
+    // Named from the valley floor, never climbed in the poem.
+    scenic: new Set(['falterona']),
+  },
+  svejk: {
+    png: '../src/assets/svejk-height.png',
+    story: '../src/stories/svejk.ts',
+    bbox: { lonMin: 13.55, lonMax: 14.80, latMin: 48.90, latMax: 49.55 },
+    // No water anywhere on this map; South Bohemia here is a plateau.
+    seaLevel: 0,
+    reach: 0.09,
+    wet: new Set([]),
+  },
+  snowqueen: {
+    png: '../src/assets/snowqueen-height.png',
+    story: '../src/stories/snowqueen.ts',
+    bbox: { lonMin: 4.0, lonMax: 34.0, latMin: 54.5, latMax: 80.0 },
+    seaLevel: 0.0043,
+    reach: 0.09,
+    wet: new Set([]),
+  },
+  lusiads: {
+    png: '../src/assets/lusiads-height.png',
+    story: '../src/stories/lusiads.ts',
+    bbox: { lonMin: -30.0, lonMax: 80.0, latMin: -40.0, latMax: 45.0 },
+    seaLevel: 0.0027,
+    reach: 0.09,
+    // The Isle of Love is raised out of the ocean by Venus and is on no chart;
+    // it is meant to be at sea, because it is.
+    wet: new Set(['isle-of-love']),
+  },
   lucerne: {
     png: '../src/assets/lucerne-height.png',
     story: '../src/stories/tell.ts',
@@ -125,6 +162,20 @@ const WORLDS = {
       'the-escape',
     ]),
     scenic: new Set(['cape-raoul', 'frenchmans']),
+  },
+  khunphaen: {
+    png: '../src/assets/siam-height.png',
+    story: '../src/stories/khunphaen.ts',
+    bbox: { lonMin: 97.8, lonMax: 103.4, latMin: 12.8, latMax: 19.6 },
+    seaLevel: 0.0033,
+    reach: 0.09,
+    // Nothing in this world is meant to be in the sea.
+    wet: new Set([]),
+    // Two places the poem reaches through a person rather than a journey:
+    // Simala is the governor of Phichit's daughter, Kaeo Kiriya the governor
+    // of Sukhothai's, and no march in either of these two books goes to
+    // either town.
+    scenic: new Set(['phichit', 'sukhothai']),
   },
   ottokar: {
     png: '../src/assets/ottokar-height.png',

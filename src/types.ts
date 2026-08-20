@@ -17,6 +17,22 @@ export interface MapPoint {
   z: number
 }
 
+/** A real river, named, with its course in map space from source to mouth. */
+export interface NamedRiver {
+  /** For the story to refer to, and to keep the data readable. */
+  name: string
+  /**
+   * The marker that stands for this river, if there is one. `check-rivers` holds
+   * that marker to being ON the course — which is the whole point of drawing it.
+   *
+   * Named explicitly rather than matched by text: Te Ika-a-Māui calls its marker
+   * "The River", which contains nothing of "Whanganui", so a name match found
+   * no marker and cheerfully checked nothing at all.
+   */
+  marker?: string
+  points: MapPoint[]
+}
+
 /** A colored elevation band. Bands are matched from lowest to highest. */
 export interface BiomeBand {
   /** Upper elevation bound in [0, 1]; the band applies at or below this. */
@@ -73,6 +89,20 @@ export interface TerrainConfig {
   biomes: BiomeBand[]
   /** Number of rivers traced downhill from the highlands to the sea. Default 0. */
   rivers?: number
+  /**
+   * Real, named rivers, drawn from their actual course rather than traced from
+   * the heightmap.
+   *
+   * A country-sized DEM cannot hold a river: the Faust map is about 0.9 km per
+   * pixel and the Elbe is some 200 m wide, so it is a fraction of a pixel and
+   * never appears. `rivers` above traces plausible courses downhill from that
+   * same heightmap — they look right, and none of them IS any river you could
+   * name. So a world that names one has to be given its course.
+   *
+   * Points are map space, source to mouth. `scripts/build-river.mjs` produces
+   * them from published geodata; say in the story where they came from.
+   */
+  namedRivers?: NamedRiver[]
   /** River line color (default a river blue; e.g. lava-orange for ash worlds). */
   riverColor?: string
   /**
@@ -283,11 +313,33 @@ export interface ChapterReveal {
  * flies to `focus`, the narration shows in the panel, and any `reveal` ids are
  * added to what's visible (so the map can unfold as the tale is told).
  */
+/**
+ * A line from the source text itself, shown under a chapter's narration.
+ *
+ * The narration in this atlas paraphrases — it has to, to keep a whole book to
+ * a paragraph a beat. But a paraphrase of "Through this ravine he needs must
+ * come" is a waste of the line. Where a text has words worth hearing, and they
+ * are out of copyright, they go here and are quoted properly.
+ *
+ * `source` is not optional, and is the point: it names the edition or the
+ * translator. A line without one has no business on the map.
+ */
+export interface Quote {
+  /** The line, in the language the reader is being shown it in. */
+  text: string
+  /** The original, where it is famous in its own right and worth seeing. */
+  original?: string
+  /** Who wrote or translated this, and from where. Always say. */
+  source: string
+}
+
 export interface Chapter {
   id: string
   title: string
   /** Narration shown in the panel for this beat. */
   narration: string
+  /** A line from the text itself, if there is one worth hearing here. */
+  quote?: Quote
   focus?: CameraFocus
   /** Places revealed by (and kept visible from) this chapter onward. */
   reveal?: ChapterReveal

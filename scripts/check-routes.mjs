@@ -67,6 +67,17 @@ const SCENIC = new Set([
   // Mistborn: an ashmount drawn on the Final Empire map. Nobody in Era 1 goes
   // anywhere near it.
   'mistborn/surface/doriel',
+  // The Lands of Always Winter: where the Others come FROM. The rangings reach
+  // the Frostfangs and the Fist of the First Men; nobody in the published books
+  // reaches this, which is rather the point of it.
+  'game-of-thrones/surface/always-winter',
+  // Khun Chang Khun Phaen: the poem reaches these two towns through a person,
+  // not a journey. Simala is the governor of Phichit's daughter and Kaeo
+  // Kiriya the governor of Sukhothai's, and neither the Original Story nor the
+  // First Sequel sends anyone down either road — the northern march goes up
+  // the Ping, which passes neither.
+  'khunphaen/surface/phichit',
+  'khunphaen/surface/sukhothai',
   // King Ottokar: the Tauern are the southern horizon of the map and nobody in
   // the play crosses them; Salzburg belongs to its archbishop and to neither
   // side of the quarrel, so no army in this play has business there.

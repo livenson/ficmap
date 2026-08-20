@@ -292,6 +292,131 @@ export const PRESETS = {
     maxM: 2400,
     out: '../src/assets/ottokar-height.png',
   },
+  dante: {
+    // Dante's own Italy — the country he walked as an exile, which is the only
+    // part of the Commedia that is on the Earth at all. Florence in the middle,
+    // the dark wood and the Casentino above it, Ravenna in the north-east where
+    // he died and is buried, Rome in the south for the Jubilee of 1300, and the
+    // Apennine spine that he crosses again and again between them.
+    //
+    // The box is deliberately central Italy rather than the whole peninsula:
+    // Sicily and the Alps would push Tuscany down to a thumbnail, and nothing
+    // in the poem's earthly story happens in either.
+    z: 8,
+    bbox: { lonMin: 9.4, lonMax: 14.6, latMin: 41.2, latMax: 45.4 },
+    // ~430 km across at 43°N by ~467 km down.
+    w: 1024,
+    h: 1112,
+    flatOceanM: -6,
+    lakes: true,
+    // The Apennines top out near 2,900 m at the Gran Sasso, on the eastern edge.
+    // Capped just above so the Casentino hills and the Arno valley — where the
+    // poem's own ground is — keep their relief instead of being flattened
+    // against a peak nobody in the story climbs.
+    capM: 2400,
+    landGamma: 0.68,
+    minM: -6,
+    maxM: 2400,
+    out: '../src/assets/dante-height.png',
+  },
+  svejk: {
+    // Svejk's Budejovice anabasis: the corner of South Bohemia he walks round
+    // in circles. The box holds every place he names, from Tabor in the
+    // north-east — where he got off the train — to Ceske Budejovice in the
+    // south-east, where he was trying to go, with Horazdovice out west marking
+    // how far the wrong way he got.
+    z: 10,
+    bbox: { lonMin: 13.55, lonMax: 14.80, latMin: 48.90, latMax: 49.55 },
+    // 91 km across at 49N by 72 km down.
+    w: 1024,
+    h: 810,
+    // Landlocked, and gently rolling: the highest ground in the box is under
+    // 900 m and most of it is the Blata, the pond country south of Pisek. The
+    // waterline is the carved ponds, which are the landscape's whole character.
+    floorM: 0,
+    lakes: true,
+    capM: 900,
+    landGamma: 0.85,
+    // Pinned to the ground that is actually there. South Bohemia is a plateau:
+    // the lowest pixel in this box is 344 m, so a range starting at zero throws
+    // away half the bytes and every biome band below the middle goes unused.
+    minM: 330,
+    maxM: 900,
+    out: '../src/assets/svejk-height.png',
+  },
+  snowqueen: {
+    // Gerda's road north. Andersen never names the town the two children live
+    // in, but every place he DOES name is north of it — Lapland, Finland, and
+    // the Snow Queen's "fixed abode ... on the Island called Spitzbergen" — so
+    // the box runs from Denmark to Svalbard, which is 2,800 km of latitude and
+    // makes this the tallest world in the atlas.
+    z: 6,
+    bbox: { lonMin: 4.0, lonMax: 34.0, latMin: 54.5, latMax: 80.0 },
+    // ~1,300 km across at 67N by ~2,830 km down.
+    w: 600,
+    h: 1300,
+    flatOceanM: -6,
+    // Nothing in this story happens on a mountain; the Scandes are scenery it
+    // is flown over. Capped so the Danish and Swedish lowlands where the first
+    // half takes place keep their relief.
+    capM: 1400,
+    landGamma: 0.6,
+    lakes: true,
+    minM: -6,
+    maxM: 1400,
+    out: '../src/assets/snowqueen-height.png',
+  },
+  lusiads: {
+    // Vasco da Gama's road to India, which is what Os Lusiadas is: Lisbon in
+    // the north-west corner, the whole Atlantic down to the Cape, the East
+    // African coast up to Malindi, and the Indian Ocean crossing to Calicut in
+    // the north-east. Nothing above 45N or below 40S is in the poem.
+    z: 5,
+    bbox: { lonMin: -30.0, lonMax: 80.0, latMin: -40.0, latMax: 45.0 },
+    // ~12,240 km across at the equator by ~9,450 km down.
+    w: 1280,
+    h: 988,
+    flatOceanM: -6,
+    // This map is mostly sea, and its business is coastlines. Cap well below
+    // the Himalaya and the Alps, neither of which the fleet goes near, so the
+    // African and Iberian coasts keep their range.
+    capM: 2200,
+    landGamma: 0.62,
+    lakes: true,
+    minM: -6,
+    maxM: 2200,
+    out: '../src/assets/lusiads-height.png',
+  },
+  siam: {
+    // Khun Chang Khun Phaen country. The love triangle happens in Suphanburi
+    // and Kanchanaburi, the trials and the jail in Ayutthaya, and the campaign
+    // of the First Sequel goes north up the Ping past Kamphaeng Phet to Chiang
+    // Mai — with Vientiane away east, because the princess the two kings
+    // quarrel over is sent from there. So the box holds the whole central
+    // plain, the northern hills, and the head of the Gulf the Chao Phraya
+    // runs into.
+    z: 8,
+    bbox: { lonMin: 97.8, lonMax: 103.4, latMin: 12.8, latMax: 19.6 },
+    // Square-ish pixels on the ground: the box is 5.6 degrees of longitude at
+    // ~16.2N (~599 km) by 6.8 degrees of latitude (~754 km).
+    w: 1024,
+    h: 1290,
+    // Doi Inthanon is 2,565 m and stands in the north-west corner of the box.
+    // The story is not about it: Suphanburi, Ayutthaya and the whole Chao
+    // Phraya plain sit between 2 and 30 m, and against a 2,565 m ceiling the
+    // country the poem happens in is the bottom 1% of the range and renders as
+    // one black sheet. Capped at 1,800 with a strong gamma so the plain, the
+    // Khorat scarp and the northern valleys separate.
+    capM: 1800,
+    landGamma: 0.5,
+    flatOceanM: -6,
+    lakes: true,
+    // Pinned so `check-dem-scale` can compute the waterline rather than trust
+    // a number copied out of a build log.
+    minM: -6,
+    maxM: 1800,
+    out: '../src/assets/siam-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

@@ -65,6 +65,19 @@ export function StoryPlayer({ flat, index, onPrev, onNext, onJump, onExit }: Pro
 
       <p className="panel__body story__narration">{current.chapter.narration}</p>
 
+      {current.chapter.quote && (
+        // The line itself, where the text has one worth hearing. Deliberately
+        // never translated by this app: it is quoted from a named edition, and
+        // the credit is part of the quote rather than a footnote.
+        <blockquote className="story__quote">
+          <p className="story__quote-line">{current.chapter.quote.text}</p>
+          {current.chapter.quote.original && (
+            <p className="story__quote-original">{current.chapter.quote.original}</p>
+          )}
+          <cite className="story__quote-source">{current.chapter.quote.source}</cite>
+        </blockquote>
+      )}
+
       <div className="story__rail">
         {flat.map((f, i) => {
           const bookHeader =

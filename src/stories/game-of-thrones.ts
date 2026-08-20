@@ -84,7 +84,7 @@ export const gameOfThrones: Story = {
       id: 'always-winter',
       name: 'The Lands of Always Winter',
       kind: 'danger',
-      at: { x: -0.84, z: -0.7887 },
+      at: { x: -0.78, z: -0.906 },
       description:
         'The frozen wastes north of the Wall, where the Free Folk range among ' +
         'the Frostfangs and the haunted forest — and where the Others and their ' +
@@ -499,7 +499,12 @@ export const gameOfThrones: Story = {
   ],
   regions: [
     // Westerosi labels sit over the traced continent, from the canonical map.
-    { id: 'beyond', name: 'The Lands of Always Winter', at: { x: -0.79, z: -0.80 }, scale: 0.55 },
+    // Kept off the skyline and west of Castle Black's chip. Deeper into the ice
+    // — z -0.93, where the marker stands — the label renders within a few
+    // pixels of the horizon, where the tilt compresses the last fifth of the map
+    // into nothing and the haze eats what is left, and it lands straight on top
+    // of the Castle Black chip besides.
+    { id: 'beyond', name: 'The Lands of Always Winter', at: { x: -0.87, z: -0.875 }, scale: 0.5 },
     { id: 'the-north', name: 'The North', at: { x: -0.72, z: -0.44 }, scale: 0.7 },
     { id: 'riverlands', name: 'The Riverlands', at: { x: -0.73, z: -0.12 }, scale: 0.5 },
     { id: 'the-vale', name: 'The Vale of Arryn', at: { x: -0.58, z: -0.19 }, scale: 0.5 },

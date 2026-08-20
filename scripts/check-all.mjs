@@ -30,11 +30,13 @@ const QUIET = process.argv.includes('--quiet')
 const markerWorlds = [
   'latvia', 'lucerne', 'nibelungen', 'harz', 'flanders', 'tain', 'cid',
   'aotearoa', 'tasmania', 'ottokar', 'verne', 'indiana', 'kalevala',
-  'peergynt', 'nils',
+  'peergynt', 'nils', 'khunphaen',
 ]
 
 const jobs = [
   ['route coverage, whole atlas', 'check-routes.mjs', []],
+  ['named rivers reach the sea', 'check-rivers.mjs', []],
+  ['quotations name their source', 'check-quotes.mjs', []],
   ['music: bass under melody', 'check-music.mjs', []],
   ['terrain detail plan & seams', 'check-lod.mjs', []],
   ['heightmap elevation scales', 'check-dem-scale.mjs', []],

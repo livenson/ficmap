@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "check": "node scripts/check-all.mjs",
-    "test": "playwright test"
+    "test": "playwright test",
+    "check:gpu": "node scripts/check-gpu.mjs",
+    "profile": "node scripts/profile-worlds.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.114.0",

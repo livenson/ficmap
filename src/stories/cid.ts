@@ -79,6 +79,40 @@ export const cid: Story = {
     // the wall.
     heightScale: 11,
     rivers: 8,
+    // The Tagus, drawn from its real course. Same reason as the Elbe on the
+    // Faust map: at roughly a kilometre per pixel this DEM cannot hold a river,
+    // and the courses traced downhill from it are not the Tagus. The poem's
+    // reconciliation happens on this bank, so the bank has to be here.
+    //
+    // Source: Natural Earth 10m river centrelines (public domain), via
+    // `scripts/build-river.mjs spain Tajo` — it is filed under its Spanish
+    // name. It runs from the Sierra de Albarracin west past Toledo and off the
+    // western edge of the map, on its way to Lisbon and a sea this world does
+    // not reach.
+    namedRivers: [
+      {
+        name: 'The Tagus',
+        marker: 'tagus',
+        points: [
+          { x: -0.0356, z: 0.1777 }, { x: -0.0286, z: 0.1453 }, { x: -0.0352, z: 0.1146 },
+          { x: -0.0463, z: 0.0872 }, { x: -0.0697, z: 0.0774 }, { x: -0.0887, z: 0.0577 },
+          { x: -0.1213, z: 0.0696 }, { x: -0.1497, z: 0.0756 }, { x: -0.1803, z: 0.0780 },
+          { x: -0.1970, z: 0.0960 }, { x: -0.2190, z: 0.1082 }, { x: -0.2426, z: 0.1127 },
+          { x: -0.2584, z: 0.1361 }, { x: -0.2689, z: 0.1662 }, { x: -0.2802, z: 0.1914 },
+          { x: -0.2899, z: 0.2177 }, { x: -0.2958, z: 0.2484 }, { x: -0.3098, z: 0.2719 },
+          { x: -0.3256, z: 0.2943 }, { x: -0.3416, z: 0.3238 }, { x: -0.3611, z: 0.3448 },
+          { x: -0.3840, z: 0.3689 }, { x: -0.4066, z: 0.3809 }, { x: -0.4539, z: 0.3801 },
+          { x: -0.4795, z: 0.3866 }, { x: -0.4963, z: 0.4084 }, { x: -0.5229, z: 0.4249 },
+          { x: -0.5485, z: 0.4446 }, { x: -0.5785, z: 0.4439 }, { x: -0.6002, z: 0.4492 },
+          { x: -0.6245, z: 0.4568 }, { x: -0.6503, z: 0.4568 }, { x: -0.6679, z: 0.4398 },
+          { x: -0.6921, z: 0.4218 }, { x: -0.7166, z: 0.4056 }, { x: -0.7387, z: 0.4131 },
+          { x: -0.7614, z: 0.4439 }, { x: -0.7783, z: 0.4759 }, { x: -0.8004, z: 0.4813 },
+          { x: -0.8259, z: 0.4752 }, { x: -0.8465, z: 0.4810 }, { x: -0.8648, z: 0.4662 },
+          { x: -0.8902, z: 0.4668 }, { x: -0.9106, z: 0.4786 }, { x: -0.9401, z: 0.4806 },
+          { x: -0.9610, z: 0.4811 }, { x: -0.9868, z: 0.4652 }, { x: -0.9990, z: 0.4593 },
+        ],
+      },
+    ],
     biomes: [
       { maxHeight: 0.0023, color: '#26526c', name: 'The sea' },
       { maxHeight: 0.04, color: '#cdc7a0', name: 'The coast' },
@@ -451,7 +485,7 @@ export const cid: Story = {
       id: 'tagus',
       name: 'The Tagus',
       kind: 'landmark',
-      at: { x: -0.556, z: 0.440 },
+      at: { x: -0.556, z: 0.444 },
       description:
         'Where he meets the king who exiled him — the reconciliation happens ' +
         'on a riverbank, with the Cid refusing to cross until he is invited, ' +

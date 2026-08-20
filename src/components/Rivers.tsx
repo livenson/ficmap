@@ -26,11 +26,27 @@ export function Rivers({ field, terrain, detailVersion = 0 }: Props) {
     () => generateRivers(field, terrain, terrain.rivers ?? 0),
     [field, terrain],
   )
+  // Real rivers come with their course already; only their height is in doubt,
+  // and that is settled by the drape like everything else.
+  const named = terrain.namedRivers ?? []
   const color = terrain.riverColor ?? '#3f86b0'
 
-  if (rivers.length === 0) return null
+  if (rivers.length === 0 && named.length === 0) return null
   return (
     <>
+      {named.map((r) => (
+        <RiverLine
+          key={`named:${r.name}`}
+          path={r.points}
+          field={field}
+          terrain={terrain}
+          color={color}
+          // A named river is the real one and carries the map: drawn a little
+          // stronger than the traced courses around it, which are scenery.
+          width={2.8}
+          detailVersion={detailVersion}
+        />
+      ))}
       {rivers.map((path, i) => (
         <RiverLine
           key={i}
@@ -38,6 +54,7 @@ export function Rivers({ field, terrain, detailVersion = 0 }: Props) {
           field={field}
           terrain={terrain}
           color={color}
+          width={2}
           detailVersion={detailVersion}
         />
       ))}
@@ -50,12 +67,14 @@ function RiverLine({
   field,
   terrain,
   color,
+  width,
   detailVersion,
 }: {
   path: { x: number; z: number }[]
   field: HeightField
   terrain: TerrainConfig
   color: string
+  width: number
   detailVersion: number
 }) {
   const points = useMemo(() => {
@@ -77,5 +96,5 @@ function RiverLine({
     // The course is fixed; only where it lies on the hillside is redone.
   }, [path, field, terrain, detailVersion])
 
-  return <Line points={points} color={color} lineWidth={2} transparent opacity={0.85} />
+  return <Line points={points} color={color} lineWidth={width} transparent opacity={0.85} />
 }

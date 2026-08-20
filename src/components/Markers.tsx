@@ -1,9 +1,39 @@
 import { useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
+import * as THREE from 'three'
 import type { HeightField } from '../engine/noise'
 import { elevationAt, mapToWorld, mapToWorldX } from '../engine/terrain'
 import type { Marker, MarkerKind, TerrainConfig } from '../types'
+
+/**
+ * One stem and one hit sphere, shared by every place on every map.
+ *
+ * Written inline, each marker built its own pair — 69 of each on the Nils map,
+ * identical in every respect. They live for the life of the page and are never
+ * disposed, which is exactly why they are module-level singletons rather than a
+ * `useMemo`: a per-marker `geometry={}` prop is not disposed by r3f either, so
+ * making them per-marker only means making more of them and keeping them all.
+ */
+const STEM = new THREE.CylinderGeometry(0.06, 0.06, 2.8, 6)
+const STEM_MATERIAL = new THREE.MeshStandardMaterial({
+  color: '#00000055',
+  transparent: true,
+  opacity: 0.4,
+})
+/**
+ * The click target around each pin, so a tap near a marker in the scene selects
+ * it — which is what makes the flat 2D map usable, where the HTML label is a
+ * fiddly thing to hit.
+ *
+ * It is `visible={false}`, and that is not the same as the fully transparent
+ * material it used to carry. A transparent material is still drawn: on the Nils
+ * map these were 38 draw calls and 6,840 triangles every frame, producing not
+ * one pixel. An invisible object is skipped by the renderer and still hit by the
+ * raycaster — three's `intersect` tests `layers` and never reads `visible`
+ * (`Raycaster.js`) — so the click target is unchanged and the cost is gone.
+ */
+const HIT = new THREE.SphereGeometry(2.6, 10, 10)
 
 interface Props {
   markers: Marker[]
@@ -91,25 +121,19 @@ export function Markers({
         return (
           <group key={m.id} position={[wx, wy, wz]}>
             {/* A stem so the pin floats above the surface and is clickable. */}
-            <mesh position={[0, 1.4, 0]}>
-              <cylinderGeometry args={[0.06, 0.06, 2.8, 6]} />
-              <meshStandardMaterial color="#00000055" transparent opacity={0.4} />
-            </mesh>
-            {/* An invisible sphere around the pin, so a click near the marker in
-                the scene selects it via raycasting — reliable in the flat 2D
-                view where the tiny HTML label is fiddly to hit. */}
+            <mesh position={[0, 1.4, 0]} geometry={STEM} material={STEM_MATERIAL} />
+            {/* The click target — invisible, but still raycast. See HIT above. */}
             <mesh
               position={[0, 3, 0]}
+              geometry={HIT}
+              visible={false}
               onClick={(e) => {
                 e.stopPropagation()
                 onSelect(m.id)
               }}
               onPointerOver={() => (document.body.style.cursor = 'pointer')}
               onPointerOut={() => (document.body.style.cursor = 'auto')}
-            >
-              <sphereGeometry args={[2.6, 10, 10]} />
-              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-            </mesh>
+            />
             {/* Labels shrink with distance only in 3D; in the flat 2D map they
                 stay a constant, readable, clickable size at any zoom. */}
             <Html
