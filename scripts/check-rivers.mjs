@@ -105,6 +105,8 @@ const MOUTH_KM = 10
 const PRESET_OF = {
   faust: 'harz',
   khunphaen: 'siam',
+  meghaduta: 'meghaduta',
+  ramayana: 'ramayana',
   cid: 'spain',
   aotearoa: 'aotearoa',
   dante: 'dante',

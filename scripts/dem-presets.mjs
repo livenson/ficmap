@@ -417,6 +417,55 @@ export const PRESETS = {
     maxM: 1800,
     out: '../src/assets/siam-height.png',
   },
+  meghaduta: {
+    // The Cloud Messenger's route: Ramagiri (Ramtek, above Nagpur) north-west
+    // over the Vindhyas to Amarkantak and the Narmada, across Malwa by Vidisha
+    // and Ujjain to Dasapura, then up the Gangetic plain past Kurukshetra to
+    // where the Ganges comes down at Kankhal, and on into the Himalaya to
+    // Kailasa. The poem names them in order; the box is drawn round the list.
+    z: 8,
+    bbox: { lonMin: 73.5, lonMax: 83.0, latMin: 20.0, latMax: 32.5 },
+    // Square-ish pixels: 9.5 degrees of longitude at ~26.3N (~949 km) by 12.5
+    // degrees of latitude (~1,386 km).
+    w: 1024,
+    h: 1497,
+    // Kailasa is 6,638 m and the box catches the high Himalaya behind it, while
+    // the poem's own country — Malwa, the Narmada valley, the Gangetic plain —
+    // runs 150 to 600 m. Capped and gammaed hard so the ground the cloud
+    // actually crosses separates instead of being the bottom 8% of the range.
+    capM: 5200,
+    landGamma: 0.55,
+    lakes: true,
+    // Wholly inland: there is no sea anywhere in this box, so the waterline is
+    // the floor rather than a coast. See the story's `seaLevel` note.
+    minM: 0,
+    maxM: 5200,
+    out: '../src/assets/meghaduta-height.png',
+  },
+  ramayana: {
+    // The exile route, end to end: Ayodhya on the Sarayu, south-west through
+    // Prayag and Chitrakuta into the Dandaka forest, Panchavati on the Godavari
+    // at Nashik, Kishkindha on the Tungabhadra at Hampi, and down to the strait
+    // at Rameswaram with Lanka beyond it. Mithila is in the east for the first
+    // book.
+    z: 7,
+    bbox: { lonMin: 71.5, lonMax: 87.0, latMin: 5.5, latMax: 28.0 },
+    // 15.5 degrees of longitude at ~16.8N (~1,650 km) by 22.5 degrees of
+    // latitude (~2,495 km).
+    w: 1024,
+    h: 1548,
+    // The northern edge clips the Himalaya, which is nowhere in this story and
+    // would otherwise take the whole range: capped at 2,400 so the Western
+    // Ghats, the Deccan and the Vindhyas — the country the walk actually
+    // crosses — get the top of the scale instead.
+    capM: 2400,
+    landGamma: 0.6,
+    flatOceanM: -8,
+    lakes: true,
+    minM: -8,
+    maxM: 2400,
+    out: '../src/assets/ramayana-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

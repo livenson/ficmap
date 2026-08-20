@@ -86,7 +86,10 @@ export const PANEL = {
   // Europe is the taller of the two and that is not a mistake: twenty of the
   // atlas's twenty-four Earth worlds are in it, and the world map below carries
   // four. The inset is the main map here; the globe is the context.
-  world: { w: 500, h: 200 },
+  // 290 rather than 200: the world view now covers 210 degrees of longitude by
+  // 122 of latitude, and 500x290 is that shape undistorted. The old 500x200
+  // was the full globe, where India's two worlds merged into one dot.
+  world: { w: 500, h: 290 },
   europe: { w: 500, h: 400 },
 }
 
