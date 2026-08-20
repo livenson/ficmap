@@ -578,11 +578,14 @@ export const PRESETS = {
     // Duong, which is the Qiantang. The 1813 embassy road from Thang Long to
     // Beijing runs the length of the map, and Nguyen Du rode it.
     z: 7,
-    bbox: { lonMin: 103.5, lonMax: 122.0, latMin: 17.8, latMax: 41.5 },
-    // 18.5 degrees of longitude at ~29.65N (~1,790 km) by 23.7 of latitude
-    // (~2,638 km) — much taller than it is wide.
-    w: 900,
-    h: 1326,
+    // East to 124.5 for Lieu Duong — Liaoyang in Liaoning, at 123.2E — which
+    // is where Kim Trong is called away to bury his uncle, and therefore the
+    // reason the betrothal is not there to protect her.
+    bbox: { lonMin: 103.5, lonMax: 124.5, latMin: 17.8, latMax: 42.6 },
+    // 21 degrees of longitude at ~30.2N (~2,020 km) by 24.8 of latitude
+    // (~2,761 km) — taller than it is wide.
+    w: 1000,
+    h: 1367,
     // Every place in this poem is lowland: Beijing 44 m, Linzi 30, Wuxi 5,
     // Hangzhou 10, Hanoi 10. The relief in the box is the frame around them —
     // the western Sichuan edge, the Qinling, the Taihang, and Fansipan above

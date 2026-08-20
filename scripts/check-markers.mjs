@@ -218,6 +218,15 @@ const WORLDS = {
     // drawn course.
     scenic: new Set(['the-yukon', 'stewart-river', 'white-river']),
   },
+  kieu: {
+    png: '../src/assets/kieu-height.png',
+    story: '../src/stories/kieu.ts',
+    bbox: { lonMin: 103.5, lonMax: 124.5, latMin: 17.8, latMax: 42.6 },
+    seaLevel: 0.0076,
+    reach: 0.10,
+    // Every place in this poem is a town on dry ground.
+    wet: new Set([]),
+  },
   xiyou: {
     png: '../src/assets/xiyou-height.png',
     story: '../src/stories/xiyou.ts',
