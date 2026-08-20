@@ -218,6 +218,16 @@ const WORLDS = {
     // drawn course.
     scenic: new Set(['the-yukon', 'stewart-river', 'white-river']),
   },
+  noli: {
+    png: '../src/assets/luzon-height.png',
+    story: '../src/stories/noli.ts',
+    bbox: { lonMin: 119.8, lonMax: 122.4, latMin: 13.2, latMax: 15.4 },
+    seaLevel: 0.0093,
+    reach: 0.09,
+    // Two of these are water and are meant to be: the bay every ship in either
+    // novel arrives across, and the lake the whole second book opens on.
+    wet: new Set(['manila-bay', 'laguna']),
+  },
   ottokar: {
     png: '../src/assets/ottokar-height.png',
     story: '../src/stories/ottokar.ts',

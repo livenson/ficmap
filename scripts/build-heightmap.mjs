@@ -164,7 +164,23 @@ for (let j = 0; j < H; j++)
     // or below it is carved just under, so it renders as water.
     if (preset.seaM != null && m <= preset.seaM) m = preset.seaM - 6
     // Carve real inland lakes below sea level so they render as water.
-    if (lakePolys && m > LAKE_M && inLake(lon, lat, lakePolys)) m = LAKE_M
+    //
+    // `lakeMaxM` bounds which ones. The engine draws ONE water plane, at
+    // `seaLevel`, so the only way to make a lake read as water is to sink it to
+    // the waterline — which is fine for a lake that is already near it, and
+    // punches a hole straight through the map for one that is not. The Journey
+    // to the West box holds Nam Co, Siling Co and Yamzho Yumco at about 4,600 m
+    // on the Tibetan plateau; carved to -4 m they came out as six black pits in
+    // the plateau rather than as lakes. Above the limit the DEM's own reading is
+    // kept, which is a flat pan at the lake's real surface — less true than a
+    // lake and much less wrong than a shaft.
+    if (
+      lakePolys &&
+      m > LAKE_M &&
+      (preset.lakeMaxM == null || m <= preset.lakeMaxM) &&
+      inLake(lon, lat, lakePolys)
+    )
+      m = LAKE_M
     out[j * W + i] = m
     if (m < mn) mn = m
     if (m > mx) mx = m
