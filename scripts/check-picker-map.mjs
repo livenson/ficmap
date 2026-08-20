@@ -48,7 +48,12 @@ const PORT = process.env.PORT ?? 5210
 const EXEC = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium'
 
 const b = await chromium.launch({ executablePath: EXEC })
-const p = await b.newPage({ viewport: { width: 1500, height: 950 } })
+// 1280x800, not something roomier. The popup's height is the binding
+// constraint on whether the off-Earth worlds are reachable without scrolling,
+// and checking that at a generous viewport guarantees nothing about a laptop:
+// the chip row was clipped at 1400x920 while this check was passing at
+// 1500x950. Check where it is tight.
+const p = await b.newPage({ viewport: { width: 1280, height: 800 } })
 await p.goto(`http://localhost:${PORT}/?world=snow-queen`, { waitUntil: 'load' })
 // The 3D scene renders about a frame a second here; the picker is HTML and is
 // ready long before that, but the page has to settle before it can be clicked.
@@ -63,6 +68,53 @@ const fail = (msg) => {
   console.log(`  !! ${msg}`)
   problems++
 }
+
+/**
+ * Measured BEFORE anything is hovered, and with the popup's own scroll asserted
+ * to be at the top.
+ *
+ * This block used to sit after the hover loop and reported a clean pass while
+ * zero of the six chips were on screen at 1280x800. Playwright's `hover()`
+ * scrolls its target into view, so twenty-seven hovers had quietly scrolled the
+ * popup down before anything was measured — the check was describing a state no
+ * reader ever sees. What a reader sees is the tab the instant it opens.
+ */
+const rest = await p.evaluate(() => {
+  const menu = document.querySelector('.worldpicker__menu')
+  const mb = menu.getBoundingClientRect()
+  const chips = [...document.querySelectorAll('.atlasmap__chip')]
+  const f = [...menu.querySelectorAll('[tabindex="0"], button, input, a[href]')]
+  return {
+    scrollTop: menu.scrollTop,
+    chips: chips.length,
+    // Every chip, not the box around them: a wrapping row can spill past the
+    // popup while its container's own rect still looks fine.
+    chipsInView: chips.filter((c) => {
+      const b = c.getBoundingClientRect()
+      return b.top >= mb.top - 1 && b.bottom <= mb.bottom + 1
+    }).length,
+    pinsFocusable: f.filter((e) => e.classList.contains('atlasmap__pin')).length,
+    toFirstName: f.findIndex((e) => e.classList.contains('atlasmap__name')),
+  }
+})
+if (rest.scrollTop !== 0) {
+  fail(`the popup was already scrolled to ${rest.scrollTop} before measuring — the measurement is not of the opening state`)
+}
+if (!rest.chips) fail('no off-Earth worlds are offered at all')
+if (rest.chipsInView < rest.chips) {
+  fail(
+    `only ${rest.chipsInView} of the ${rest.chips} off-Earth worlds are on screen when the ` +
+      `tab opens — the rest need scrolling to find`,
+  )
+}
+if (rest.pinsFocusable) fail(`${rest.pinsFocusable} map pins are in the tab order`)
+if (rest.toFirstName > 12) {
+  fail(`${rest.toFirstName} tab stops before the first world name — the map is in the way`)
+}
+console.log(
+  `${rest.chipsInView}/${rest.chips} off-Earth chips on screen at open; ` +
+    `${rest.toFirstName} tab stops to the first name`,
+)
 
 const ids = await p.$$eval('.atlasmap__pin', (els) => els.map((e) => e.dataset.id))
 if (ids.length < 20) fail(`only ${ids.length} pins rendered — the map is not drawing`)
@@ -105,32 +157,6 @@ console.log(`${ids.length} pins hovered`)
 if (noLabel.length) fail(`${noLabel.length} pins name nothing on hover: ${noLabel.join(', ')}`)
 if (offPanel.length) fail(`${offPanel.length} labels run off their panel: ${offPanel.join(', ')}`)
 if (wrongText.length) fail(`${wrongText.length} pins name the wrong world: ${wrongText.join(', ')}`)
-
-const rest = await p.evaluate(() => {
-  const menu = document.querySelector('.worldpicker__menu')
-  const shelf = document.querySelector('.atlasmap__shelf')
-  const mb = menu.getBoundingClientRect()
-  const sb = shelf?.getBoundingClientRect()
-  const f = [...menu.querySelectorAll('[tabindex="0"], button, input, a[href]')]
-  return {
-    shelfInView: sb ? sb.top >= mb.top && sb.bottom <= mb.bottom : false,
-    chips: document.querySelectorAll('.atlasmap__chip').length,
-    pinsFocusable: f.filter((e) => e.classList.contains('atlasmap__pin')).length,
-    toFirstName: f.findIndex((e) => e.classList.contains('atlasmap__name')),
-  }
-})
-if (!rest.chips) fail('no off-Earth worlds are offered at all')
-if (!rest.shelfInView) {
-  fail(`the ${rest.chips} off-Earth worlds are out of view — they need scrolling to find`)
-}
-if (rest.pinsFocusable) fail(`${rest.pinsFocusable} map pins are in the tab order`)
-if (rest.toFirstName > 12) {
-  fail(`${rest.toFirstName} tab stops before the first world name — the map is in the way`)
-}
-console.log(
-  `${rest.chips} off-Earth worlds shown as chips, in view: ${rest.shelfInView}; ` +
-    `${rest.toFirstName} tab stops to the first name`,
-)
 
 // Touch has no hover, so the label would never appear and one tap would change
 // the world under the reader's finger. First tap names it, second opens it.

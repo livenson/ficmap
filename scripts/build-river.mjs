@@ -114,11 +114,42 @@ if (!features.length) {
   console.error(`no river named "${riverName}" in the dataset`)
   process.exit(1)
 }
-const parts = features
+/**
+ * Only the parts anywhere near this world.
+ *
+ * Merging every feature of a name was the fix for the Tagus, which Natural
+ * Earth splits in two — and it over-corrected. River names are not unique:
+ * asking for the White River that joins the Yukon also collected the White
+ * Rivers of Indiana, Arkansas, Vermont and South Dakota, the stitcher chained
+ * whichever was longest, and the result was a course three thousand kilometres
+ * from the map, reported as "does not cross this world's bounding box".
+ *
+ * A degree of margin lets a segment that only clips the corner still be
+ * chained; anything further away is a different river with the same name.
+ */
+const MARGIN = 1
+const nearBox = (p) =>
+  p[0] >= B.lonMin - MARGIN &&
+  p[0] <= B.lonMax + MARGIN &&
+  p[1] >= B.latMin - MARGIN &&
+  p[1] <= B.latMax + MARGIN
+
+const allParts = features
   .flatMap((f) =>
     f.geometry.type === 'MultiLineString' ? f.geometry.coordinates : [f.geometry.coordinates],
   )
   .filter((s) => s.length >= 2)
+const parts = allParts.filter((s) => s.some(nearBox))
+if (!parts.length) {
+  console.error(`no part of "${riverName}" comes near this world's bounding box`)
+  process.exit(1)
+}
+if (parts.length < allParts.length) {
+  console.error(
+    `  (${allParts.length - parts.length} of ${allParts.length} "${riverName}" segments are ` +
+      `elsewhere in the world and were dropped)`,
+  )
+}
 if (features.length > 1) {
   console.error(`  ("${riverName}" is ${features.length} features in the source, merged)`)
 }
@@ -145,8 +176,24 @@ const near = (a, b, tol = 0.02) => Math.abs(a[0] - b[0]) < tol && Math.abs(a[1] 
  * (Cutting the course at its lowest sampled point instead does not work, and
  * was tried: over a coarse DEM the lowest pixel along the Elbe is in the
  * floodplain at Wittenberge, 150 km short of the sea.)
+ *
+ * SKIP THE JOINT. The few chain points nearest the join are excluded — the tail
+ * when appending, the HEAD when prepending, which the first version of this got
+ * wrong and so left the Yukon exactly as broken as before. This is because
+ * Natural Earth stitches long rivers with tiny connector stubs — the Yukon has
+ * four of two to four points each, spanning about 0.03 degrees, sitting exactly
+ * where its upper and lower halves meet. A stub is shorter than the tolerance,
+ * so its far end lands within 0.05 of the joint that was just made and the
+ * guard rejected it as a doubling-back. That cost the Yukon its entire upper
+ * course: Bennett to Fort Selkirk, which is the first half of the journey every
+ * story on that map makes. An alternate channel worth rejecting is kilometres
+ * long and lands far back down the chain, so a five-point window loses nothing.
  */
-const revisits = (chain, tip) => chain.some((p) => near(p, tip, 0.05))
+const JOINT = 5
+const revisits = (chain, tip, at) =>
+  (at === 'head' ? chain.slice(JOINT) : chain.slice(0, Math.max(0, chain.length - JOINT))).some(
+    (p) => near(p, tip, 0.05),
+  )
 const rest = parts.slice().sort((a, b) => b.length - a.length)
 let chain = rest.shift()
 for (let changed = true; changed && rest.length; ) {
@@ -154,10 +201,10 @@ for (let changed = true; changed && rest.length; ) {
   for (let i = 0; i < rest.length && !changed; i++) {
     for (const cand of [rest[i], rest[i].slice().reverse()]) {
       if (near(chain[chain.length - 1], cand[0])) {
-        if (revisits(chain, cand[cand.length - 1])) continue
+        if (revisits(chain, cand[cand.length - 1], 'tail')) continue
         chain = chain.concat(cand.slice(1))
       } else if (near(chain[0], cand[cand.length - 1])) {
-        if (revisits(chain, cand[0])) continue
+        if (revisits(chain, cand[0], 'head')) continue
         chain = cand.slice(0, -1).concat(chain)
       } else {
         continue
@@ -204,6 +251,32 @@ const heightAt = (x, z) => {
   const px = Math.round(((x + 1) / 2) * (png.width - 1))
   const py = Math.round(((z + 1) / 2) * (png.height - 1))
   return png.data[(py * png.width + px) * 4] / 255
+}
+
+/**
+ * Point the course downhill.
+ *
+ * There was no orientation step here at all until the White River: the finished
+ * chain ran whichever way the greedy stitching happened to leave it, and every
+ * river in the atlas came out source-to-mouth by luck, because Natural Earth
+ * mostly stores its longest segment that way. `check-rivers` was carrying the
+ * whole load — it reports "CLIMBS ... points reversed?" and it is what caught
+ * the White, which came out mouth-first and so appeared to run uphill into the
+ * hills and stop.
+ *
+ * A builder that can only be trusted because a checker exists is the wrong way
+ * round. This makes the course satisfy that check by construction, using the
+ * same end-to-end test the check applies: if the last point stands higher than
+ * the first, turn it round. Verified against every course already committed —
+ * all of them come out byte-identical, because all of them were already right.
+ */
+{
+  const a = toMap(clipped[0][0], clipped[0][1])
+  const b = toMap(clipped[clipped.length - 1][0], clipped[clipped.length - 1][1])
+  if (heightAt(b.x, b.z) > heightAt(a.x, a.z)) {
+    clipped.reverse()
+    console.error(`  (course was mouth-first in the source; turned downhill)`)
+  }
 }
 
 /** Ground distance between two lon/lat points, in km. */

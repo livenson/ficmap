@@ -466,6 +466,33 @@ export const PRESETS = {
     maxM: 2400,
     out: '../src/assets/ramayana-height.png',
   },
+  klondike: {
+    // The stampede route, end to end: tidewater at Skagway and Dyea, over the
+    // Chilkoot to Lake Bennett, and then the whole Yukon down past Lake
+    // Laberge, Five Finger Rapids and Fort Selkirk to Dawson — and on to
+    // Fortymile, Circle City and Fort Yukon, which are the places The Call of
+    // the Wild and White Fang name below the goldfields.
+    z: 7,
+    bbox: { lonMin: -148, lonMax: -132, latMin: 58.8, latMax: 67.2 },
+    // 16 degrees of longitude at ~63N is only 809 km — this far north the
+    // meridians have closed right up — against 932 km of latitude.
+    w: 1024,
+    h: 1180,
+    // The Coast Mountains behind Skagway top 2,000 m and the Chilkoot summit is
+    // 1,067; the interior plateau the river crosses runs 300 to 800. Capped at
+    // 2,200 so the pass reads as the wall it was without flattening the plateau
+    // into one tone.
+    capM: 2200,
+    landGamma: 0.6,
+    // The Lynn Canal reaches Skagway, so this box has real tidewater in its
+    // southern corner — the only salt water in it, and where every stampeder
+    // started.
+    flatOceanM: -20,
+    lakes: true,
+    minM: -20,
+    maxM: 2200,
+    out: '../src/assets/klondike-height.png',
+  },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that
     // into 1536 threw away four fifths of it and left ~26 km per pixel, which

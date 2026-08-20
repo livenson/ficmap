@@ -30,7 +30,7 @@ const QUIET = process.argv.includes('--quiet')
 const markerWorlds = [
   'latvia', 'lucerne', 'nibelungen', 'harz', 'flanders', 'tain', 'cid',
   'aotearoa', 'tasmania', 'ottokar', 'verne', 'indiana', 'kalevala',
-  'peergynt', 'nils', 'khunphaen', 'meghaduta', 'ramayana',
+  'peergynt', 'nils', 'khunphaen', 'meghaduta', 'ramayana', 'klondike',
 ]
 
 const jobs = [

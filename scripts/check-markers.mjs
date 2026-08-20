@@ -202,6 +202,22 @@ const WORLDS = {
     // drawn course.
     scenic: new Set(['ganga', 'panchavati-river', 'kishkindha-river']),
   },
+  klondike: {
+    png: '../src/assets/klondike-height.png',
+    story: '../src/stories/klondike.ts',
+    bbox: { lonMin: -148, lonMax: -132, latMin: 58.8, latMax: 67.2 },
+    seaLevel: 0.009,
+    reach: 0.09,
+    // Two of these really are lakes, and the marker belongs on the water. Lake
+    // Bennett is where seven thousand boats were built and launched, and Lake
+    // Laberge is where Service puts the derelict Alice May — in both cases the
+    // lake IS the place, so putting the pin on its shore to satisfy a checker
+    // would be moving the story to suit the tool.
+    wet: new Set(['bennett', 'laberge']),
+    // River markers, held instead by `check-rivers` to standing on their own
+    // drawn course.
+    scenic: new Set(['the-yukon', 'stewart-river', 'white-river']),
+  },
   ottokar: {
     png: '../src/assets/ottokar-height.png',
     story: '../src/stories/ottokar.ts',
