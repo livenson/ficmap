@@ -107,6 +107,7 @@ const PRESET_OF = {
   khunphaen: 'siam',
   meghaduta: 'meghaduta',
   ramayana: 'ramayana',
+  klondike: 'klondike',
   cid: 'spain',
   aotearoa: 'aotearoa',
   dante: 'dante',

@@ -86,10 +86,17 @@ export const PANEL = {
   // Europe is the taller of the two and that is not a mistake: twenty of the
   // atlas's twenty-four Earth worlds are in it, and the world map below carries
   // four. The inset is the main map here; the globe is the context.
-  // 290 rather than 200: the world view now covers 210 degrees of longitude by
-  // 122 of latitude, and 500x290 is that shape undistorted. The old 500x200
-  // was the full globe, where India's two worlds merged into one dot.
-  world: { w: 500, h: 290 },
+  // Deliberately taller than the view's true proportions, and this is the one
+  // place in the atlas where a map is knowingly stretched.
+  //
+  // The view is 330 degrees of longitude by 122 of latitude, which at 500 wide
+  // is 185 px undistorted — and at 185 the two Indian worlds fall 9.3 px apart,
+  // a third of a pixel clear of merging. 230 is a 1.24x vertical exaggeration
+  // and takes them to 11.1. That is a legitimate choice on a locator map, whose
+  // job is to say roughly where in the world a thing is rather than to measure
+  // anything, but it is a choice and not an accident, so: Africa is a little
+  // tall here on purpose.
+  world: { w: 500, h: 230 },
   europe: { w: 500, h: 400 },
 }
 

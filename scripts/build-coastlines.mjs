@@ -56,20 +56,19 @@ const PRECISION = 4
 const MIN_RING = 2e-5
 
 const VIEWS = {
-  // NOT the whole Earth: the half of it this atlas has anything in.
+  // Not the whole Earth: the polar margins are cropped, because Antarctica is a
+  // quarter of the height of a full -90..90 map and holds no world.
   //
-  // Cropping started with the poles — Antarctica is a quarter of the height of
-  // a full -90..90 map and holds no world — and went further when it had to.
-  // Two Indian worlds landed 8.5 px apart on a full-width world map, under the
-  // 9 px at which two pins visibly merge, and the answer to a crowded map is a
-  // larger scale rather than a smaller dot. Dropping the Americas and the empty
-  // ocean north and south of everything takes the same panel from 1.4 to 2.4
-  // pixels per degree, and those two pins to 14.6 px apart.
+  // It was cropped much harder than this for one commit — the Americas dropped
+  // entirely, to buy scale for two Indian worlds that were landing 8.5 px apart.
+  // The note then said that this could not rot quietly, because the check fails
+  // any pin outside its panel and the first American world would break the build
+  // rather than vanish from the picker. Two commits later the Klondike arrived
+  // and it did exactly that, which is the system working. The Americas are back.
   //
-  // This is safe to do because it cannot rot quietly: `check-atlas-map.mjs`
-  // fails any pin that falls outside its panel, so the first world added in the
-  // Americas will break the build rather than vanish from the picker.
-  world: { lonMin: -30, lonMax: 180, latMin: -50, latMax: 72 },
+  // The scale that crop was buying is bought instead by the panel's proportions;
+  // see PANEL.world in `atlasLayout.ts`.
+  world: { lonMin: -150, lonMax: 180, latMin: -50, latMax: 72 },
   // Europe, sized to hold every European world in the atlas with room to
   // separate: Lisbon to Karelia, Sicily to the North Cape.
   europe: { lonMin: -11, lonMax: 34, latMin: 35, latMax: 71 },

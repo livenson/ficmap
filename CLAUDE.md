@@ -169,6 +169,15 @@ of these scripts have the measured negative control written into their comments
   so passed the Elbe marker at the 0.0106 offset it had been written to catch. A
   threshold picked before measuring the fault is a threshold picked to pass.
 
+- A tool that is only correct because a checker exists is the wrong way round.
+  `build-river` had no orientation step at all: it emitted whatever direction
+  the greedy stitching left, and every river in the atlas came out
+  source-to-mouth by luck. `check-rivers` was carrying the whole load, and it
+  worked — it caught the White River coming out mouth-first — but the builder
+  now points the course downhill by construction, using the same end-to-end
+  test the check applies. Verified by rebuilding all 23 committed courses: 23
+  of 23 reproduce byte-identically, because all of them were already right.
+
 - A hit target wider than the gap between two targets silently eats its
   neighbour. The picker's map gave each pin a 13 px invisible disc so a
   fingertip could find a 4.5 px dot — but the closest pair of pins is 12.5 px
@@ -179,6 +188,15 @@ of these scripts have the measured negative control written into their comments
   regress when a world is added. The general shape: per-item hit areas need
   item spacing > 2x their radius, and if you cannot guarantee that, do not use
   per-item hit areas.
+
+- Browser automation moves the page. Playwright's `hover()` scrolls its target
+  into view, so `check-picker-map` hovering twenty-seven pins before measuring
+  the layout had quietly scrolled the popup — and the check then reported all
+  six off-Earth worlds visible when zero of them were on screen at 1280x800.
+  The same shape as `page.addInitScript` needing a reload: measure the state a
+  reader actually sees, before anything has touched the page, and assert
+  `scrollTop` is where you think it is. (The related trap: checking layout at a
+  generous viewport guarantees nothing about a laptop. Check where it is tight.)
 
 - A world can go missing from a UI without anything looking broken. The picker's
   map draws a perfectly tidy Europe whether it holds twenty pins or nineteen —

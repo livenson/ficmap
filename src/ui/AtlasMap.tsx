@@ -232,15 +232,18 @@ export function AtlasMap({ stories, currentId, onPick }: Props) {
   return (
     <div className="atlasmap">
       <div className="atlasmap__maps">
-        {panel('europe', europeCoast, europe, t('atlasEurope'))}
-        {panel('world', worldCoast, world, t('atlasWorld'))}
-
-        {/* Chips under the maps, not a section at the foot of the scrolling
-            name column — which is where these started, 941 px down a 650 px
-            column, so six worlds were invisible unless you thought to scroll.
-            They are not leftovers: two are the whole Earth rather than a point
-            on it, and four are not on Earth at all, which is worth saying
-            rather than pinning Middle-earth somewhere near Wales. */}
+        {/* ABOVE the maps, not below them.
+            These six worlds have no pin, and they have now been in the wrong
+            place twice. First at the foot of the scrolling name column — 941 px
+            down a 650 px column. Then under the maps, which looked fine at
+            1500x950 and put all six off screen at 1280x800, because the two
+            panels and their titles come to about 670 px before the chips start
+            and the popup is capped at 86vh. There is no arrangement in which
+            something below the maps is reliably visible: the maps cannot shrink
+            without pins merging, and the popup cannot grow past the window.
+            So the chips go first, where the height of everything under them
+            cannot reach. Leading with the worlds that are NOT on the map also
+            says plainly that the map does not hold everything. */}
         <div className="atlasmap__shelf">
           <h4 className="atlasmap__panel-title">{t('atlasElsewhere')}</h4>
           <div className="atlasmap__chips">
@@ -255,6 +258,10 @@ export function AtlasMap({ stories, currentId, onPick }: Props) {
             ))}
           </div>
         </div>
+
+        {panel('europe', europeCoast, europe, t('atlasEurope'))}
+        {panel('world', worldCoast, world, t('atlasWorld'))}
+
       </div>
 
       <div className="atlasmap__side" ref={sideRef}>
