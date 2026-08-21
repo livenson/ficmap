@@ -9,6 +9,11 @@
  *
  * `w`/`h` default to 256 (square) when omitted.
  *
+ * `lakeMaxM`, when given, is the highest ground a lake polygon will be carved
+ * into. The engine draws one water plane, so a lake only reads as water if it
+ * is sunk to the waterline — which turns a lake that stands at 4,600 m into a
+ * shaft through the map. See the note in `build-heightmap.mjs`.
+ *
  * `minM`/`maxM`, when given, pin the metre range that maps onto 0..255 instead
  * of letting it fall out of whatever the sampled grid happened to contain. A
  * whole-map render and a small detail tile see different data and so observe
@@ -492,6 +497,122 @@ export const PRESETS = {
     minM: -20,
     maxM: 2200,
     out: '../src/assets/klondike-height.png',
+  },
+  luzon: {
+    // Rizal country. The two novels share one small stage: Manila — Intramuros,
+    // Binondo, the Escolta, and Bagumbayan where the executions happen — the
+    // Pasig running east out of it, and Laguna de Bay at the other end of the
+    // river, with Calamba on its southern shore under Mount Makiling. San Diego
+    // is invented, and every reader has always placed it at Calamba, which was
+    // Rizal's own town and whose land dispute with the friars is the Ibarra
+    // family's dispute. The box reaches west to Cavite and Bataan for the bay
+    // both novels arrive across, and east over the Sierra Madre to the Pacific,
+    // because El Filibusterismo ends in a house on that coast.
+    z: 10,
+    bbox: { lonMin: 119.8, lonMax: 122.4, latMin: 13.2, latMax: 15.4 },
+    // Square-ish pixels on the ground: 2.6 degrees of longitude at ~14.3N
+    // (~281 km) by 2.2 degrees of latitude (~245 km).
+    w: 1024,
+    h: 894,
+    // Banahaw is 2,158 m in the south-east corner and is in neither novel.
+    // Makiling (1,090 m) is the mountain that matters — the tulisanes are in
+    // it, and Rizal's own country grew up on its slope — so cap just above it
+    // and let Banahaw and the Sierra Madre saturate. Everything the books
+    // actually happen in stands between 0 and 30 m.
+    capM: 1600,
+    landGamma: 0.5,
+    // The Pacific shelf drops past 4,000 m a few tens of kilometres off the
+    // Sierra Madre coast, which would spend a third of the range on water
+    // nobody looks at.
+    flatOceanM: -15,
+    // Laguna de Bay is the largest lake in the country and the middle of this
+    // map; Taal is the other one. Both come from the lake polygons — a DEM
+    // reads them as flat land at a few metres.
+    lakes: true,
+    minM: -15,
+    maxM: 1600,
+    out: '../src/assets/luzon-height.png',
+  },
+  xiyou: {
+    // The pilgrim road, as the record has it and as the novel embroiders it:
+    // Chang'an on the Wei, west through the Hexi Corridor to Dunhuang and the
+    // Jade Gate, round the Taklamakan, over the Tian Shan past Issyk-Kul to
+    // Samarkand, south over the Hindu Kush through Bamiyan and Gandhara, and
+    // down the Ganges to Nalanda. It is four thousand kilometres each way and
+    // the box has to hold all of it, so this is a continental map rather than
+    // a country one.
+    z: 6,
+    // Two degrees further west than the places need, so Samarkand and the Iron
+    // Gates are not standing on the frame.
+    bbox: { lonMin: 64.0, lonMax: 112.0, latMin: 21.5, latMax: 46.0 },
+    // 48 degrees of longitude at ~33.75N (~4,442 km) by 24.5 of latitude
+    // (~2,727 km).
+    w: 1536,
+    h: 943,
+    // Tibet fills the middle of this box at 4,500 m and the pilgrim goes round
+    // it — that detour IS the Silk Road, and the map should show why. Capped at
+    // 4,500 so the plateau saturates into the slab it is, while the corridor,
+    // the Tarim basin and the Gangetic plain keep their own range.
+    capM: 4500,
+    landGamma: 0.55,
+    // The head of the Bay of Bengal and the Indus mouth are the only salt
+    // water in the box, both along the southern edge.
+    flatOceanM: -10,
+    // Balkhash and Aydar Kol are near enough to sea level to sink to the
+    // waterline and read as lakes. Everything else in this box is not: Issyk-Kul
+    // stands at 1,600 m and Nam Co, Siling Co, Tangra Yumco and Yamzho Yumco at
+    // about 4,600 on the plateau, and carved they came out as six black pits
+    // punched through Tibet. Above the limit the DEM's own flat pan is kept.
+    lakes: true,
+    lakeMaxM: 400,
+    minM: -10,
+    maxM: 4500,
+    out: '../src/assets/xiyou-height.png',
+  },
+  kieu: {
+    // Two countries, because this poem needs both. Vietnamese in every line and
+    // Chinese in every scene: Nguyen Du's own country in the south — Thang Long
+    // and the Red River delta, Tien Dien in Ha Tinh where he grew up — and in
+    // the north and east the Ming China the tale is set in: Beijing, Lam Truy
+    // (Linzi in Shandong), Vo Tich (Wuxi), Hang Chau (Hangzhou) and the Tien
+    // Duong, which is the Qiantang. The 1813 embassy road from Thang Long to
+    // Beijing runs the length of the map, and Nguyen Du rode it.
+    z: 7,
+    // East to 124.5 for Lieu Duong — Liaoyang in Liaoning, at 123.2E — which
+    // is where Kim Trong is called away to bury his uncle, and therefore the
+    // reason the betrothal is not there to protect her.
+    bbox: { lonMin: 103.5, lonMax: 124.5, latMin: 17.8, latMax: 42.6 },
+    // 21 degrees of longitude at ~30.2N (~2,020 km) by 24.8 of latitude
+    // (~2,761 km) — taller than it is wide.
+    w: 1000,
+    h: 1367,
+    // Every place in this poem is lowland: Beijing 44 m, Linzi 30, Wuxi 5,
+    // Hangzhou 10, Hanoi 10. The relief in the box is the frame around them —
+    // the western Sichuan edge, the Qinling, the Taihang, and Fansipan above
+    // the Red River. Capped so those read as the walls of the corridor without
+    // crushing four deltas into one tone.
+    capM: 2600,
+    landGamma: 0.55,
+    // The Bohai, the Yellow Sea, the East China Sea and the Gulf of Tonkin.
+    flatOceanM: -20,
+    // The elevation data does not know where an estuary is: sampled at z10 it
+    // reads +8 to +11 m the whole way across the Qiantang below Hangzhou, and
+    // this map shipped once with fifty-five kilometres of Hangzhou Bay drawn as
+    // farmland — which is also why the Tiền Đường could not be drawn. Below
+    // 20 m the GSHHG shoreline overrules the DEM; above it nothing changes, so
+    // real ground is never traded for a generalised outline.
+    coastM: 20,
+    // Tai Hu, Hongze, Poyang, Dongting, Chao Hu and Gaoyou — the lakes of the
+    // Yangtze and Huai plains, all within 32 m of the sea, so almost nothing
+    // here is above the limit. Measured, it drops 117 pixels: the sliver of the
+    // Danjiangkou reservoir at 484 m that falls inside this box. Set anyway,
+    // because 117 pixels of shaft is still 117 pixels of shaft. (On the Journey
+    // to the West map the same rule saves 4,551.)
+    lakes: true,
+    lakeMaxM: 200,
+    minM: -20,
+    maxM: 2600,
+    out: '../src/assets/kieu-height.png',
   },
   world: {
     // The z5 source is 8192 px around the world (~4.9 km/px). Sampling that

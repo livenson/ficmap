@@ -377,8 +377,8 @@ export const snowqueen: Story = {
             'and that telling her would spoil it.',
           quote: {
             text:
-              'I can give her no greater power than she has already;\n' +
-              'don’t you see how great it is?',
+              'I can give her no more power than what she has already.\n' +
+              'Don’t you see how great it is?',
             source: 'Sixth Story · Andersen’s Fairy Tales, Project Gutenberg 1597',
           },
           focus: { marker: 'lapland', distance: 46, pitch: 44 },

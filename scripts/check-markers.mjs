@@ -218,6 +218,43 @@ const WORLDS = {
     // drawn course.
     scenic: new Set(['the-yukon', 'stewart-river', 'white-river']),
   },
+  kieu: {
+    png: '../src/assets/kieu-height.png',
+    story: '../src/stories/kieu.ts',
+    bbox: { lonMin: 103.5, lonMax: 124.5, latMin: 17.8, latMax: 42.6 },
+    seaLevel: 0.0076,
+    reach: 0.10,
+    // Hàng Châu is on the water on purpose: the pin is the last point of the
+    // drawn Qiantang, and that river is the place — Kiều goes into it. Moving
+    // the pin to the bank to satisfy a checker would be moving the story to
+    // suit the tool.
+    wet: new Set(['hang-chau']),
+  },
+  xiyou: {
+    png: '../src/assets/xiyou-height.png',
+    story: '../src/stories/xiyou.ts',
+    bbox: { lonMin: 64, lonMax: 112, latMin: 21.5, latMax: 46 },
+    seaLevel: 0.0022,
+    reach: 0.10,
+    // Nothing here is meant to be in the sea. The one piece of water inland is
+    // the Turpan Depression, which really is 154 m below sea level — see the
+    // note in the story — and the Gaochang pin is deliberately on the ridge
+    // north-east of it rather than in the basin.
+    wet: new Set([]),
+    // River markers, held instead by `check-rivers` to standing on their own
+    // drawn course.
+    scenic: new Set(['the-wei', 'the-huang']),
+  },
+  noli: {
+    png: '../src/assets/luzon-height.png',
+    story: '../src/stories/noli.ts',
+    bbox: { lonMin: 119.8, lonMax: 122.4, latMin: 13.2, latMax: 15.4 },
+    seaLevel: 0.0093,
+    reach: 0.09,
+    // Two of these are water and are meant to be: the bay every ship in either
+    // novel arrives across, and the lake the whole second book opens on.
+    wet: new Set(['manila-bay', 'laguna']),
+  },
   ottokar: {
     png: '../src/assets/ottokar-height.png',
     story: '../src/stories/ottokar.ts',

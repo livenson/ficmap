@@ -57,6 +57,66 @@ held by `check-rivers` to running downhill, reaching water, and having its
 marker standing on it. The Jalón, the Tagus and the Whanganui are still marked
 this way and still have no river under them.
 
+**When a check refuses something, look upstream of the thing it refused.**
+`check-rivers` accepts exactly three endings — water within 10 km, the edge of
+the map, or a confluence with another drawn course — and it once refused four
+rivers at the same time, which looked like four rivers that could not be drawn.
+Three of the four were something else:
+
+- **The Ganges was a bug in the builder.** Natural Earth carries the whole
+  delta, and `build-river`'s greedy stitcher took a Sundarbans channel that
+  dead-ends 88 km from any water while four other leaves of the same feature
+  reach the Bay of Bengal. Where several channels leave one node the greedy pass
+  takes the longest and never reconsiders, which is fine on a river with one
+  mouth and a coin toss on a delta. It now walks the unused channels when its
+  own tail reaches nothing. All 27 courses already committed reproduce
+  byte-identically, because the repair cannot fire on a river that already ends
+  properly — which is the negative control built into the change.
+- **The Tiền Đường was a bug in the map.** Both public-domain hydrographic
+  sources end the Qiantang at Hangzhou within 3 m of each other, and GSHHG's
+  high-resolution shoreline puts the coast 0.4 km from that point, because
+  Hangzhou Bay reaches the city. The heightmap disagreed, so the river ended in
+  a field the reader could see. See the next note.
+- **The Pasig is not in any public-domain source.** Natural Earth has no
+  Philippine centrelines at all; WDBII, searched at all eleven of its levels
+  over the whole of Luzon, has the Cagayan, the Agno, the Abra and the Pampanga
+  and no Pasig. OpenStreetMap has it and is ODbL rather than public domain,
+  which is a licence decision rather than a technical one. So it stays a route.
+- **Only the Tarim is a river that genuinely cannot be drawn.** It has no mouth:
+  it runs into the Taklamakan and stops, no branch of it arrives anywhere, and
+  the desert marker says so instead.
+
+The rule the refusals were defending is still the rule — a line stopping in a
+field with a river's name beside it is the Elbe fault again. The lesson is that
+"the check says no" is the start of the diagnosis and not the end of it.
+
+**The elevation data does not know where an estuary is.** Terrarium reads +8 to
++11 m the whole way across and along the Qiantang below Hangzhou — sampled
+directly at z10, so it is the source rather than the resampling — and the Kiều
+map shipped with fifty-five kilometres of Hangzhou Bay drawn as farmland. No
+zoom level fixes that; only vector shoreline data knows. `coastM`
+(`build-heightmap.mjs`) lets GSHHG's shoreline overrule the DEM *below a given
+elevation*, and the elevation guard is the whole design: replacing the coast
+wholesale would trade real ground for a generalised outline, while the limit
+confines it to the low, flat, wet places the DEM has miscalled land. Measured on
+the Kiều map: 3,874 pixels, 0.28% of it. Opt-in, so no other preset moves.
+
+**Nothing on the map is above suspicion, including the ground.** Two independent
+public-domain river datasets agreeing to within 3 m, against one elevation
+dataset, is not a tie — and the instinct on the first pass was to believe the
+heightmap and leave the river off, because the heightmap is what the reader
+sees. Measure the disagreement before deciding which source is wrong.
+
+**One water plane means a high lake is a hole.** The renderer draws water at a
+single `seaLevel`, so the only way to make a lake read as water is to sink it to
+the waterline — fine for Laguna de Bay at −1 m, and a shaft straight through the
+map for Nam Co at 4,724. The Journey to the West box came out with six black
+pits punched in Tibet before `lakeMaxM` (`build-heightmap.mjs`) bounded which
+lakes get carved; above the limit the DEM's own flat pan is kept, which is less
+true than a lake and much less wrong than a shaft. Measured: 4,551 pixels saved
+there, 117 on the Kiều map. The option is opt-in, so every preset that predates
+it is unchanged by construction rather than by a rebuild.
+
 **A heightmap byte means nothing without its metre range.** Presets normalise to
 whatever their own data contained, which is fine for a map built once and fatal
 for one that will be subdivided — a tile sees a different corner of the world
@@ -111,6 +171,7 @@ and runs it, so it sees what the app sees:
 | `check-dem-scale` | pinned presets agree with their stories |
 | `check-dem-tiles` | tiles sit on the base map, not above or below it |
 | `check-rivers` | a named river runs downhill to water, with its place on it |
+| `check-formulas` | a story's stated lon/lat formula is the one its map uses |
 | `check-atlas-map` | every world is pickable off the picker's map, and no two pins collide |
 | `profile-worlds` | draws, triangles, heap, per world |
 
@@ -168,6 +229,30 @@ of these scripts have the measured negative control written into their comments
 - The first `check-rivers` allowed a marker 0.02 map units from its river, and
   so passed the Elbe marker at the 0.0106 offset it had been written to catch. A
   threshold picked before measuring the fault is a threshold picked to pass.
+
+- **A quotation is a claim, and 3 of 31 of them were wrong.** Read end to end
+  against the named edition, the atlas's quotes came out: the Snow Queen's
+  Snow-Flower saying "I can give her no greater power than she has already"
+  where Gutenberg 1597 says "no more power than what she has already";
+  Attinghausen's dying speech in Wilhelm Tell splicing two of Martin's lines
+  with three lines silently cut out between them; and Švejk's itinerary
+  attributed to Švejk when the version quoted was the one-year volunteer's, and
+  spelling Hašek's "Volyň" as "Volyně". None of them was invented and all three
+  read perfectly well, which is the point — a paraphrase that has quotation
+  marks round it is indistinguishable from a quotation until somebody opens the
+  book. The other 28 are verbatim, including every one in a language the
+  checker's author does not read, because the test is mechanical: normalise
+  whitespace and quote marks, search the source, and print where the match
+  breaks off. OCR sources need a letters-only pass — Beal's Si-Yu-Ki hyphenates
+  across line breaks, and "impos¬ sible" is not a wrong quotation.
+
+- **A stated formula and the map it describes drift apart silently.** Twenty-two
+  worlds carry `map x = (lon − A) / B − 1` in their header, and it is the
+  instruction for placing the next marker. Widening a preset's box — which
+  happened twice while fitting the Journey to the West and Kiều maps — leaves
+  every existing marker correct and every word of that comment wrong, and
+  nothing noticed, because `check-markers` reads coordinates back through the
+  preset and so agrees with itself. `check-formulas` compares the two.
 
 - A tool that is only correct because a checker exists is the wrong way round.
   `build-river` had no orientation step at all: it emitted whatever direction

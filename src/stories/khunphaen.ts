@@ -378,7 +378,7 @@ export const khunphaen: Story = {
       id: 'lampang',
       name: 'Lampang',
       kind: 'town',
-      at: { x: -0.3814, z: -0.6453 },
+      at: { x: -0.3995, z: -0.6152 },
       description:
         'A Lanna town on the way over to Chiang Mai. It stands here for the ' +
         'last stretch of the march rather than for anything the poem describes ' +
