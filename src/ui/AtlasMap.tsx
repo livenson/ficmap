@@ -46,14 +46,28 @@ interface Props {
  * data. It is what found the pointer bug described on `nearest` below.
  */
 /**
- * How near the pointer must come to a pin to grab it, in panel pixels.
+ * How near the pointer must come to a pin to grab it, in REAL screen pixels.
  *
  * Comfortably bigger than the 6.5 px dot so the target is not the drawing, and
  * bigger than the 12.5 px closest pair is allowed to be, because nearest-wins
  * splits the difference between two pins instead of letting their targets
  * overlap.
+ *
+ * Screen pixels, not viewBox units, and that distinction is the whole of a bug.
+ * The panels are 500 units wide and CSS shrinks them to whatever fits: on a
+ * 390 px phone the Europe inset renders at 336 px, a scale of 0.672. Measured in
+ * viewBox units this radius was therefore 10.8 real pixels on a phone — under a
+ * quarter of a fingertip — so a tap aimed at a dot often grabbed nothing at all
+ * while a tap between two dots grabbed the further one. On a desktop the scale
+ * is 1 and nothing changes.
  */
 const GRAB = 16
+/**
+ * A finger is not a mouse. Coarse pointers get a wider reach, which costs
+ * nothing here because nearest-wins already decides between two pins by which
+ * is nearer rather than by whose target was drawn last.
+ */
+const GRAB_COARSE = 24
 
 export function AtlasMap({ stories, currentId, onPick }: Props) {
   // The pin under the pointer — or, on a touch screen where there is no
@@ -107,12 +121,15 @@ export function AtlasMap({ stories, currentId, onPick }: Props) {
      */
     const nearest = (e: { clientX: number; clientY: number; currentTarget: SVGSVGElement }) => {
       const r = e.currentTarget.getBoundingClientRect()
-      const mx = ((e.clientX - r.left) / r.width) * w
-      const my = ((e.clientY - r.top) / r.height) * h
+      // Compare in the panel's rendered pixels rather than its viewBox units,
+      // so the reach means the same thing at 500 px and at 336. See GRAB.
       let best = null
-      let bestD = GRAB
+      let bestD =
+        typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+          ? GRAB_COARSE
+          : GRAB
       for (const p of placed) {
-        const d = Math.hypot(p.x * w - mx, p.y * h - my)
+        const d = Math.hypot(r.left + p.x * r.width - e.clientX, r.top + p.y * r.height - e.clientY)
         if (d < bestD) {
           bestD = d
           best = p.story.id
